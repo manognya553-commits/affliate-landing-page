@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="400" height="500">
+  <rect width="100%" height="100%" fill="#FAF7F2" stroke="#E6DFD5" stroke-width="2" rx="24"/>
+  <circle cx="200" cy="210" r="90" fill="#D6F36B" fill-opacity="0.1" />
+  <circle cx="200" cy="180" r="45" fill="#D6F36B" fill-opacity="0.8" />
+  <path d="M130 290 Q200 230 270 290" fill="none" stroke="#D6F36B" stroke-width="8" stroke-linecap="round" />
+  <text x="200" y="340" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="18" font-weight="700" fill="#12101F" text-anchor="middle">Shop Owner or Tutor</text>
+  <text x="200" y="370" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-size="13" fill="#635E75" text-anchor="middle">Small shop / learning space</text>
+  <rect x="130" y="395" width="140" height="26" rx="13" fill="#12101F" fill-opacity="0.06" />
+  <text x="200" y="412" font-family="monospace" font-size="11" fill="#12101F" text-anchor="middle">portrait-4.svg</text>
+</svg>
