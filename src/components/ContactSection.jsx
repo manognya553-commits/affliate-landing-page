@@ -110,7 +110,7 @@ export default function ContactSection() {
         </div>
 
         {/* Contact Form Card */}
-        <div data-reveal="contact-card" className="w-full max-w-2xl bg-[#FAF7F2] rounded-[28px] card-depth p-8 sm:p-12">
+        <div data-reveal="contact-card" className="corner-mark w-full max-w-2xl bg-[#FAF7F2] rounded-[28px] card-depth p-8 sm:p-12 border border-[#12101F]/8">
           {isSuccess ? (
             <div className="flex flex-col items-center text-center gap-5 py-8" role="status" aria-live="polite">
               <div className="w-16 h-16 rounded-full bg-[#16A34A]/10 text-[#16A34A] flex items-center justify-center">

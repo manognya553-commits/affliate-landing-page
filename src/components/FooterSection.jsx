@@ -120,8 +120,13 @@ export default function FooterSection({
         </div>
 
         {/* Bottom Microcopy & Year */}
-        <div className="flex flex-col sm:flex-row justify-between items-center flex-wrap gap-4 pt-6 border-t border-white/10 text-xs text-white/40">
-          <p className="m-0">
+        <div className="flex flex-col sm:flex-row justify-between items-center flex-wrap gap-4 pt-6 border-t border-white/10 text-xs text-white/50">
+          <div className="inline-flex items-center gap-2 font-mono text-[11px] text-[#C4B5FD]/80">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D6F36B] animate-pulse" aria-hidden="true" />
+            <span>sBLOOM AFFILIATE PROGRAMME // ACTIVE</span>
+          </div>
+
+          <p className="m-0 font-mono text-[11px]">
             © 2026 sBLOOM. All rights reserved.
           </p>
         </div>

@@ -82,7 +82,7 @@ export default function WhatYouCanIntroduceSection() {
               <div
                 key={`introduce-tile-${idx}`}
                 data-reveal="card"
-                className="relative bg-white rounded-[28px] card-depth tilt-card p-6 sm:p-8 lg:p-9 flex flex-col justify-between gap-6 overflow-hidden group border border-[#12101F]/8 hover:border-[#6B3CFF]/30 transition-all duration-300"
+                className="corner-mark relative bg-white rounded-[28px] card-depth tilt-card p-7 sm:p-8 lg:p-9 flex flex-col justify-between gap-6 overflow-hidden group border border-[#12101F]/8 hover:border-[#6B3CFF]/30 transition-all duration-300"
                 role="listitem"
               >
                 {/* Sector Accent Top Line */}
@@ -99,11 +99,11 @@ export default function WhatYouCanIntroduceSection() {
                     className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-transform duration-300 group-hover:scale-105 shadow-xs ${config.accentBg} ${config.accentBorder}`}
                     aria-hidden="true"
                   >
-                    <Icon size={28} className={config.accentText} />
+                    <Icon size={26} className={config.accentText} />
                   </div>
 
-                  <span className="font-mono text-xs font-bold text-[#827C94] tracking-wider">
-                    {config.categoryCode}
+                  <span className="font-mono text-[11px] font-bold text-[#827C94] tracking-wider pr-4">
+                    {config.categoryCode} //
                   </span>
                 </div>
 
@@ -111,7 +111,7 @@ export default function WhatYouCanIntroduceSection() {
                   <h3 className="text-2xl font-bold font-headline text-[#12101F] tracking-tight m-0">
                     {tile.title}
                   </h3>
-                  <p className="text-[16px] sm:text-[17px] text-[#575266] leading-relaxed m-0">
+                  <p className="text-[15.5px] sm:text-[16.5px] text-[#575266] leading-relaxed m-0">
                     {tile.description}
                   </p>
                 </div>
@@ -120,7 +120,7 @@ export default function WhatYouCanIntroduceSection() {
           })}
         </div>
 
-        {/* Note Box */}
+        {/* Note Box with Telemetry Framing */}
         {data.note && (
           <div data-reveal="extra" className="flex items-center gap-3.5 px-6 sm:px-8 py-4 sm:py-5 bg-white border border-[#6B3CFF]/25 rounded-2xl text-sm sm:text-base text-[#12101F] font-medium shadow-md shadow-[#6B3CFF]/5 max-w-2xl text-center">
             <Info size={20} className="text-[#6B3CFF] shrink-0" aria-hidden="true" />

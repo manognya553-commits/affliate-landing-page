@@ -182,9 +182,9 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
           </div>
 
           {/* Stepper Two-Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] items-center gap-8 lg:gap-12 relative w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] items-center gap-8 lg:gap-14 relative w-full">
             {/* Left Column: Stepper List with Highlighted Active Step */}
-            <div data-reveal="card" className="relative flex flex-col gap-3.5 pl-1.5" role="tablist" aria-label="Four steps">
+            <div data-reveal="card" className="relative flex flex-col gap-4 pl-1.5" role="tablist" aria-label="Four steps">
               {stepsData.map((step, idx) => {
                 const isSelected = activeStep === idx
                 const isCompleted = idx < activeStep
@@ -197,10 +197,10 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
                     aria-selected={isSelected}
                     aria-controls={`step-panel-${idx}`}
                     tabIndex={0}
-                    className={`relative flex items-start gap-4 p-3.5 sm:p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                    className={`relative flex items-start gap-4 p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-300 ${
                       isSelected
-                        ? 'bg-white border-[#6B3CFF]/40 shadow-xl shadow-[#6B3CFF]/10'
-                        : 'bg-white/60 border-[#12101F]/5 hover:bg-white/95 hover:border-[#6B3CFF]/30 hover:shadow-md'
+                        ? 'bg-white border-[#6B3CFF]/45 shadow-xl shadow-[#6B3CFF]/12 translate-x-1.5'
+                        : 'bg-white/70 border-[#12101F]/8 hover:bg-white hover:border-[#6B3CFF]/30 hover:shadow-md'
                     }`}
                     onClick={() => setActiveStep(idx)}
                     onKeyDown={(e) => {
@@ -212,9 +212,9 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
                   >
                     <div className="shrink-0 flex items-center justify-center relative z-[2]">
                       <div
-                        className={`w-8 h-8 rounded-full border-2 text-xs font-bold flex items-center justify-center transition-all font-mono ${
+                        className={`w-9 h-9 rounded-full border-2 text-xs font-bold flex items-center justify-center transition-all font-mono ${
                           isSelected
-                            ? 'bg-[#6B3CFF] border-[#6B3CFF] text-white shadow-md shadow-[#6B3CFF]/35'
+                            ? 'bg-[#6B3CFF] border-[#6B3CFF] text-white shadow-md shadow-[#6B3CFF]/35 scale-110'
                             : isCompleted
                             ? 'bg-[#6B3CFF]/15 border-[#6B3CFF] text-[#6B3CFF]'
                             : 'bg-white border-[#12101F]/15 text-[#827C94]'
@@ -225,18 +225,28 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
                     </div>
 
                     <div className="flex flex-col gap-1 relative z-[2]">
-                      <h3 className="text-lg font-bold text-[#12101F] leading-tight m-0 font-headline tracking-tight">{step.title}</h3>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[10.5px] font-bold text-[#827C94] tracking-wider">
+                          STEP 0{idx + 1} //
+                        </span>
+                        {isSelected && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] font-mono font-bold bg-[#D6F36B]/40 text-[#12101F] border border-[#D6F36B]">
+                            ACTIVE
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-lg sm:text-xl font-bold text-[#12101F] leading-tight m-0 font-headline tracking-tight">{step.title}</h3>
                       <p className={`text-sm leading-relaxed text-[#575266] m-0 ${isSelected ? '' : 'pinshort:hidden'}`}>
                         {step.description}
                       </p>
                     </div>
 
-                    {/* Timeline Connector segment centered to circle (left: 34.5px) */}
+                    {/* Timeline Connector segment centered to circle */}
                     {idx < stepsData.length - 1 && (
                       <span
                         aria-hidden="true"
-                        className={`hidden sm:block absolute z-[1] left-[34.5px] top-[52px] -bottom-[26px] w-[3px] rounded-full transition-colors duration-300 ${
-                          idx < activeStep ? 'bg-gradient-to-b from-[#6B3CFF] to-[#FF4FA3]' : 'bg-[#12101F]/10'
+                        className={`hidden sm:block absolute z-[1] left-[35.5px] top-[56px] -bottom-[28px] w-[3px] rounded-full transition-all duration-300 ${
+                          idx < activeStep ? 'bg-gradient-to-b from-[#6B3CFF] to-[#D6F36B] shadow-xs' : 'bg-[#12101F]/10'
                         }`}
                       />
                     )}

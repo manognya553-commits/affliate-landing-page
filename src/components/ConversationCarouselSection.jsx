@@ -329,7 +329,7 @@ export default function ConversationCarouselSection() {
           tabIndex={0}
           role="region"
           aria-label={lang === 'te' ? 'సెక్టార్ సంభాషణ స్క్రీన్లు' : 'Sector message screens carousel'}
-          className="w-full flex items-center gap-4 sm:gap-6 lg:gap-8 overflow-x-auto snap-x snap-mandatory scrollbar-none py-6 px-4 sm:px-12 lg:justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B3CFF]/40 rounded-[44px]"
+          className="w-full flex items-center gap-4 sm:gap-6 lg:gap-8 overflow-x-auto snap-x snap-mandatory scrollbar-none py-8 px-4 sm:px-12 lg:justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B3CFF]/40 rounded-[44px]"
           style={{
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
@@ -339,6 +339,8 @@ export default function ConversationCarouselSection() {
           {sectors.map((sector, idx) => {
             const isSelected = activeIndex === idx
             const theme = SECTOR_THEMES[sector.id] || SECTOR_THEMES.healthcare
+            const isLeft = idx < activeIndex
+            const isRight = idx > activeIndex
 
             return (
               <div
@@ -349,10 +351,12 @@ export default function ConversationCarouselSection() {
                 onClick={() => {
                   if (!isSelected) scrollToCard(idx)
                 }}
-                className={`w-[86vw] max-w-[320px] sm:max-w-[335px] h-[510px] shrink-0 snap-center rounded-[40px] bg-white border-[8px] border-[#1A162B] transition-all duration-300 relative flex flex-col justify-between overflow-hidden shadow-2xl ${
+                className={`w-[86vw] max-w-[320px] sm:max-w-[335px] h-[520px] shrink-0 snap-center rounded-[44px] bg-white border-[9px] border-[#1E1A2E] transition-all duration-400 relative flex flex-col justify-between overflow-hidden shadow-2xl ${
                   isSelected
-                    ? 'scale-100 opacity-100 ring-4 ring-[#6B3CFF]/20 shadow-2xl z-10'
-                    : 'scale-[0.88] opacity-50 hover:opacity-80 shadow-md cursor-pointer z-0'
+                    ? 'scale-100 opacity-100 ring-4 ring-[#6B3CFF]/25 shadow-2xl z-20 translate-y-0'
+                    : `scale-[0.88] opacity-55 hover:opacity-85 shadow-md cursor-pointer z-10 translate-y-2 ${
+                        isLeft ? 'lg:-rotate-2' : isRight ? 'lg:rotate-2' : ''
+                      }`
                 }`}
               >
                 {/* Sector Ambient Radial Glow Header */}
@@ -362,15 +366,15 @@ export default function ConversationCarouselSection() {
                 />
 
                 {/* Top Notch & Status Bar */}
-                <div className="relative z-10 px-4 pt-3 pb-2 border-b border-[#12101F]/8 flex items-center justify-between gap-2 bg-white/80 backdrop-blur-xs">
+                <div className="relative z-10 px-4 pt-3.5 pb-2 border-b border-[#12101F]/8 flex items-center justify-between gap-2 bg-white/85 backdrop-blur-xs">
                   <span className="text-[11px] font-mono font-bold text-[#12101F]">9:41</span>
 
                   {/* Sleek Dynamic Island / Notch */}
-                  <div className="w-16 h-3 bg-[#1A162B] rounded-full mx-auto" aria-hidden="true" />
+                  <div className="w-18 h-3.5 bg-[#1E1A2E] rounded-full mx-auto" aria-hidden="true" />
 
                   {/* Sector Pill Badge */}
                   <div
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border"
+                    className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold border"
                     style={{
                       backgroundColor: theme.accentColor + '18',
                       borderColor: theme.accentColor + '40',
@@ -387,7 +391,7 @@ export default function ConversationCarouselSection() {
                 </div>
 
                 {/* Illustrative Scenario Disclaimer Bar */}
-                <div className="relative z-10 px-3 py-1 bg-[#FAF7F2] border-b border-[#12101F]/5 flex items-center justify-center gap-1.5 text-[10.5px] text-[#827C94]">
+                <div className="relative z-10 px-3 py-1 bg-[#FAF7F2] border-b border-[#12101F]/6 flex items-center justify-center gap-1.5 text-[10.5px] text-[#827C94]">
                   <Sparkles size={11} className="text-[#6B3CFF] shrink-0" aria-hidden="true" />
                   <span className="font-medium">{data.disclaimer}</span>
                 </div>
@@ -443,7 +447,7 @@ export default function ConversationCarouselSection() {
                 </div>
 
                 {/* Device Screen Footer & Permission Status */}
-                <div className="relative z-10 px-3.5 py-2 bg-[#FAF7F2] border-t border-[#12101F]/8 flex items-center justify-center gap-1.5 text-center">
+                <div className="relative z-10 px-3.5 py-2.5 bg-[#FAF7F2] border-t border-[#12101F]/8 flex items-center justify-center gap-1.5 text-center">
                   <ShieldCheck size={14} className="text-[#16A34A] shrink-0" aria-hidden="true" />
                   <span className="text-[11px] font-semibold text-[#575266] tracking-tight">
                     {sector.consentTag}
@@ -451,7 +455,7 @@ export default function ConversationCarouselSection() {
                 </div>
 
                 {/* Device Home Bar */}
-                <div className="w-24 h-1 bg-[#1A162B] rounded-full mx-auto my-1.5 opacity-25" aria-hidden="true" />
+                <div className="w-24 h-1 bg-[#1E1A2E] rounded-full mx-auto my-1.5 opacity-30" aria-hidden="true" />
               </div>
             )
           })}

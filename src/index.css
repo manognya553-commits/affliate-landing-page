@@ -27,18 +27,20 @@
   --color-brand-magenta: #FF4FA3;   /* Human connection accent */
   --color-brand-lime: #D6F36B;      /* Bloom opportunity lime */
   --color-stage-dark: #0E0B1E;      /* Dark stage section background */
+  --color-stage-card: #161226;      /* Dark stage card background */
 
   /* Sector Accents */
-  --color-sector-healthcare: #FF6B6B; /* Coral */
-  --color-sector-education: #D6F36B;  /* Lime */
-  --color-sector-professional: #2DD4BF; /* Teal */
+  --color-sector-healthcare: #FF6B6B; /* Coral / Care */
+  --color-sector-education: #16A34A;  /* Emerald / Growth */
+  --color-sector-professional: #0D9488; /* Teal / Advisory */
 
   /* Gradients */
   --gradient-bloom: linear-gradient(135deg, #6B3CFF 0%, #FF4FA3 52%, #D6F36B 100%);
   --gradient-bloom-text: linear-gradient(135deg, #6B3CFF 0%, #D6338A 55%, #E8590C 100%);
   --gradient-violet-magenta: linear-gradient(135deg, #6B3CFF 0%, #FF4FA3 100%);
-  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(250, 247, 242, 0.65) 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 247, 242, 0.78) 100%);
   --gradient-stage-card: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  --gradient-glow-violet: radial-gradient(circle, rgba(107, 60, 255, 0.15) 0%, transparent 70%);
 
   /* Typography Stacks */
   --font-headline: 'Fraunces', Georgia, serif;
@@ -59,7 +61,7 @@
   --text-title: 22px;
   --text-h3: 28px;
   --text-h2: 44px;
-  --text-h1: clamp(48px, 6vw, 84px);
+  --text-h1: clamp(44px, 5.5vw, 76px);
 
   /* Spacing */
   --space-1: 4px;
@@ -88,6 +90,7 @@
   --shadow-lg: 0 16px 44px rgba(18, 16, 31, 0.08);
   --shadow-glass: 0 12px 32px rgba(18, 16, 31, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.8);
   --shadow-violet-glow: 0 10px 30px rgba(107, 60, 255, 0.28);
+  --shadow-lime-glow: 0 8px 24px rgba(214, 243, 107, 0.25);
 
   /* Layout */
   --desktop-max-width: 1440px;
@@ -98,9 +101,10 @@
 
   /* Motion */
   --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --transition-fast: 180ms var(--ease-spring);
   --transition-normal: 300ms var(--ease-spring);
-  --transition-slow: 600ms var(--ease-spring);
+  --transition-slow: 600ms var(--ease-expo);
 }
 
 /* --------------------------------------------------------------------------
@@ -716,6 +720,65 @@ html.lang-te h2.section-heading {
   transform-origin: top center;
   transform: scaleY(0);
 }
+
+/* --------------------------------------------------------------------------
+   11. Precision Editorial HUD & Telemetry Styling
+   -------------------------------------------------------------------------- */
+.corner-mark {
+  position: relative;
+}
+
+.corner-mark::after {
+  content: '+';
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--color-ink-muted);
+  opacity: 0.55;
+  pointer-events: none;
+  font-weight: 400;
+}
+
+.telemetry-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(18, 16, 31, 0.08);
+  color: var(--color-ink-secondary);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(8px);
+}
+
+.dark-stage .telemetry-chip {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3.5s ease-in-out infinite;
+}
+
 
 
 

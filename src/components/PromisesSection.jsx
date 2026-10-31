@@ -84,101 +84,104 @@ export default function PromisesSection() {
               <div
                 key={idx}
                 data-reveal="card"
-                className="relative rounded-[28px] card-depth tilt-card p-8 sm:p-10 flex flex-col gap-6 overflow-hidden group"
+                className="corner-mark relative rounded-[28px] card-depth tilt-card p-8 sm:p-10 flex flex-col gap-6 overflow-hidden group border border-[#12101F]/8"
                 role="listitem"
               >
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-200 group-hover:scale-105 ${iconBg}`} aria-hidden="true">
-                  {idx === 0 && (
-                    /* Ask first: Bold line-art shield & consent checkmark */
-                    <svg viewBox="0 0 48 48" className={`w-11 h-11 overflow-visible ${drawn ? 'svg-drawn' : ''}`} fill="none">
-                      <path
-                        d="M 24 4 L 40 10 C 40 26, 24 42, 24 44 C 24 42, 8 26, 8 10 Z"
-                        stroke="#6B3CFF"
-                        strokeWidth="2.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="stroke-draw-path"
-                      />
-                      <path
-                        d="M 16 23 L 22 29 L 33 17"
-                        stroke="#FF4FA3"
-                        strokeWidth="3.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="stroke-draw-path path-check"
-                      />
-                    </svg>
-                  )}
+                <div className="flex items-center justify-between pr-4">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-200 group-hover:scale-105 ${iconBg}`} aria-hidden="true">
+                    {idx === 0 && (
+                      /* Ask first: Bold line-art shield & consent checkmark */
+                      <svg viewBox="0 0 48 48" className={`w-11 h-11 overflow-visible ${drawn ? 'svg-drawn' : ''}`} fill="none">
+                        <path
+                          d="M 24 4 L 40 10 C 40 26, 24 42, 24 44 C 24 42, 8 26, 8 10 Z"
+                          stroke="#6B3CFF"
+                          strokeWidth="2.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="stroke-draw-path"
+                        />
+                        <path
+                          d="M 16 23 L 22 29 L 33 17"
+                          stroke="#FF4FA3"
+                          strokeWidth="3.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="stroke-draw-path path-check"
+                        />
+                      </svg>
+                    )}
 
-                  {idx === 1 && (
-                    /* Stay in your lane: Pathway boundaries and expert handoff compass */
-                    <svg viewBox="0 0 48 48" className={`w-11 h-11 overflow-visible ${drawn ? 'svg-drawn' : ''}`} fill="none">
-                      <path
-                        d="M 12 40 L 18 8"
-                        stroke="#FF4FA3"
-                        strokeWidth="2.8"
-                        strokeLinecap="round"
-                        className="stroke-draw-path"
-                      />
-                      <path
-                        d="M 36 40 L 30 8"
-                        stroke="#FF4FA3"
-                        strokeWidth="2.8"
-                        strokeLinecap="round"
-                        className="stroke-draw-path"
-                      />
-                      <circle
-                        cx="24"
-                        cy="24"
-                        r="12"
-                        stroke="#6B3CFF"
-                        strokeWidth="2.6"
-                        className="stroke-draw-path"
-                      />
-                      <path
-                        d="M 24 16 L 27 23 L 32 24 L 27 25 L 24 32 L 21 25 L 16 24 L 21 23 Z"
-                        fill="rgba(107, 60, 255, 0.2)"
-                        stroke="#6B3CFF"
-                        strokeWidth="2"
-                        strokeLinejoin="round"
-                        className="stroke-draw-path path-check"
-                      />
-                    </svg>
-                  )}
+                    {idx === 1 && (
+                      /* Stay in your lane: Pathway boundaries and expert handoff compass */
+                      <svg viewBox="0 0 48 48" className={`w-11 h-11 overflow-visible ${drawn ? 'svg-drawn' : ''}`} fill="none">
+                        <path
+                          d="M 12 40 L 18 8"
+                          stroke="#FF4FA3"
+                          strokeWidth="2.8"
+                          strokeLinecap="round"
+                          className="stroke-draw-path"
+                        />
+                        <path
+                          d="M 36 40 L 30 8"
+                          stroke="#FF4FA3"
+                          strokeWidth="2.8"
+                          strokeLinecap="round"
+                          className="stroke-draw-path"
+                        />
+                        <circle
+                          cx="24"
+                          cy="24"
+                          r="12"
+                          stroke="#6B3CFF"
+                          strokeWidth="2.6"
+                          className="stroke-draw-path"
+                        />
+                        <path
+                          d="M 24 16 L 27 23 L 32 24 L 27 25 L 24 32 L 21 25 L 16 24 L 21 23 Z"
+                          fill="rgba(107, 60, 255, 0.2)"
+                          stroke="#6B3CFF"
+                          strokeWidth="2"
+                          strokeLinejoin="round"
+                          className="stroke-draw-path path-check"
+                        />
+                      </svg>
+                    )}
 
-                  {idx === 2 && (
-                    /* Tell the truth: Open book & balance star */
-                    <svg viewBox="0 0 48 48" className={`w-11 h-11 overflow-visible ${drawn ? 'svg-drawn' : ''}`} fill="none">
-                      <path
-                        d="M 6 36 C 14 34, 20 37, 24 40 C 28 37, 34 34, 42 36 L 42 12 C 34 10, 28 13, 24 16 C 20 13, 14 10, 6 12 Z"
-                        stroke="#059669"
-                        strokeWidth="2.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="stroke-draw-path"
-                      />
-                      <path
-                        d="M 24 16 L 24 40"
-                        stroke="#059669"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        className="stroke-draw-path path-check"
-                      />
-                      <circle
-                        cx="24"
-                        cy="8"
-                        r="3.5"
-                        fill="#D6F36B"
-                        stroke="#059669"
-                        strokeWidth="2"
-                        className="stroke-draw-path path-star"
-                      />
-                    </svg>
-                  )}
+                    {idx === 2 && (
+                      /* Tell the truth: Open book & balance star */
+                      <svg viewBox="0 0 48 48" className={`w-11 h-11 overflow-visible ${drawn ? 'svg-drawn' : ''}`} fill="none">
+                        <path
+                          d="M 6 36 C 14 34, 20 37, 24 40 C 28 37, 34 34, 42 36 L 42 12 C 34 10, 28 13, 24 16 C 20 13, 14 10, 6 12 Z"
+                          stroke="#059669"
+                          strokeWidth="2.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="stroke-draw-path"
+                        />
+                        <path
+                          d="M 24 16 L 24 40"
+                          stroke="#059669"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          className="stroke-draw-path path-check"
+                        />
+                        <circle
+                          cx="24"
+                          cy="8"
+                          r="3.5"
+                          fill="#D6F36B"
+                          stroke="#059669"
+                          strokeWidth="2"
+                          className="stroke-draw-path path-star"
+                        />
+                      </svg>
+                    )}
+                  </div>
+
+                  <span className="text-xs font-bold text-[#827C94] tracking-wider font-mono">0{idx + 1} //</span>
                 </div>
 
-                <div className="flex flex-col gap-3 flex-1">
-                  <span className="text-xs font-bold text-[#827C94] tracking-wider font-mono">0{idx + 1}</span>
+                <div className="flex flex-col gap-2.5 flex-1">
                   <h3 className="text-2xl font-bold text-[#12101F] leading-tight tracking-tight m-0 font-headline">{item.title}</h3>
                   <p className="text-base leading-relaxed text-[#575266] m-0">{item.description}</p>
                 </div>

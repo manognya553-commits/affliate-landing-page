@@ -7,6 +7,7 @@ export default function Navigation({ onBecomeAffiliate }) {
   const { lang, setLang, copy } = useLanguage()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const [activeSection, setActiveSection] = useState('hero')
 
   const drawerRef = useRef(null)
   const closeBtnRef = useRef(null)
@@ -18,6 +19,33 @@ export default function Navigation({ onBecomeAffiliate }) {
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Track active section for indicator
+  useEffect(() => {
+    const sections = ['hero', 'why-join', 'how-it-works', 'who-can-join', 'earning', 'faq']
+    const observers = []
+
+    sections.forEach((id) => {
+      const el = document.getElementById(id)
+      if (!el) return
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(id)
+            }
+          })
+        },
+        { rootMargin: '-20% 0px -60% 0px' }
+      )
+      obs.observe(el)
+      observers.push(obs)
+    })
+
+    return () => {
+      observers.forEach((obs) => obs.disconnect())
+    }
   }, [])
 
   // Manage body scroll lock, Escape key, focus trapping, and focus restoration for mobile drawer
@@ -89,34 +117,45 @@ export default function Navigation({ onBecomeAffiliate }) {
   return (
     <header className="fixed top-3.5 inset-x-0 z-[1000] px-4 sm:px-8 pointer-events-none transition-all duration-300">
       <div
-        className={`pointer-events-auto max-w-[1200px] mx-auto rounded-full px-3.5 sm:px-6 py-2 flex items-center justify-between gap-4 transition-all duration-200 border bg-white ${
+        className={`pointer-events-auto max-w-[1240px] mx-auto rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between gap-4 transition-all duration-300 border backdrop-blur-md ${
           isScrolled
-            ? 'border-[#D5CCBD] shadow-lg'
-            : 'border-[#E8E2D8] shadow-md'
+            ? 'bg-white/92 border-[#12101F]/12 shadow-lg shadow-[#12101F]/6 py-2'
+            : 'bg-white/80 border-[#12101F]/8 shadow-sm py-2.5'
         }`}
       >
         {/* Brand Wordmark */}
-        <a href="#hero" className="inline-flex items-center gap-0.5 shrink-0 no-underline" aria-label="sBLOOM Home">
-          <span className="font-body text-[22px] font-extrabold text-brand-violet leading-none">s</span>
-          <span className="font-body text-[20px] font-extrabold text-ink tracking-tight leading-none mr-2">BLOOM</span>
-          <span className="hidden xl:inline-block font-mono text-[11px] font-bold uppercase tracking-wider text-brand-violet bg-brand-violet/10 px-2.5 py-0.5 rounded-full border border-brand-violet/20">
-            {copy.nav.brandSubtitle}
+        <a href="#hero" className="inline-flex items-center gap-1 shrink-0 no-underline group" aria-label="sBLOOM Home">
+          <span className="font-body text-[22px] font-black text-brand-violet leading-none transition-transform group-hover:scale-105">s</span>
+          <span className="font-body text-[20px] font-black text-ink tracking-tight leading-none mr-2">BLOOM</span>
+          <span className="hidden xl:inline-flex items-center gap-1.5 font-mono text-[10.5px] font-bold uppercase tracking-wider text-brand-violet bg-brand-violet/[0.08] px-2.5 py-0.5 rounded-full border border-brand-violet/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand-violet animate-pulse" aria-hidden="true" />
+            <span>{copy.nav.brandSubtitle}</span>
           </span>
         </a>
 
         {/* 5 Desktop Nav Links (each strictly on one line) */}
         <nav className="hidden lg:flex items-center" aria-label="Primary Navigation">
-          <ul className="flex items-center gap-5 list-none m-0 p-0">
-            {copy.nav.links.map((link) => (
-              <li key={link.id}>
-                <a
-                  href={link.href}
-                  className="text-[14.5px] font-semibold text-ink-secondary hover:text-brand-violet whitespace-nowrap px-1 py-1.5 transition-colors duration-200"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
+          <ul className="flex items-center gap-6 list-none m-0 p-0">
+            {copy.nav.links.map((link) => {
+              const isActive = activeSection === link.id
+              return (
+                <li key={link.id} className="relative">
+                  <a
+                    href={link.href}
+                    className={`text-[14px] font-semibold whitespace-nowrap px-1 py-1 transition-all duration-200 flex items-center gap-1.5 ${
+                      isActive
+                        ? 'text-brand-violet font-bold'
+                        : 'text-ink-secondary hover:text-ink'
+                    }`}
+                  >
+                    <span>{link.label}</span>
+                    {isActive && (
+                      <span className="w-1 h-1 rounded-full bg-brand-violet animate-pulse" aria-hidden="true" />
+                    )}
+                  </a>
+                </li>
+              )
+            })}
           </ul>
         </nav>
 

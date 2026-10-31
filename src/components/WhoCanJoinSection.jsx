@@ -119,7 +119,7 @@ export default function WhoCanJoinSection() {
               <div
                 key={`who-card-${idx}`}
                 data-reveal="card"
-                className={`relative rounded-[28px] card-depth tilt-card p-5 sm:p-6 lg:p-8 flex flex-col justify-between overflow-hidden group bg-white border border-[#12101F]/10 hover:border-[#6B3CFF]/30 transition-all duration-300 ${gridPlacement}`}
+                className={`corner-mark relative rounded-[28px] card-depth tilt-card p-6 sm:p-7 lg:p-8 flex flex-col justify-between overflow-hidden group bg-white border border-[#12101F]/10 hover:border-[#6B3CFF]/30 transition-all duration-300 ${gridPlacement}`}
                 role="listitem"
               >
                 {/* Subtle Ambient Radial Glow on Hover */}
@@ -129,7 +129,7 @@ export default function WhoCanJoinSection() {
                 />
 
                 {/* Card Top: Portrait / Avatar & Restrained Network Indicator */}
-                <div className="relative z-10 flex items-center justify-between gap-3 mb-6">
+                <div className="relative z-10 flex items-center justify-between gap-3 mb-5 pr-5">
                   {config.type === 'photo' && config.image ? (
                     <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white shadow-md shadow-[#12101F]/10 shrink-0 group-hover:scale-105 transition-transform duration-300">
                       <img
@@ -142,22 +142,22 @@ export default function WhoCanJoinSection() {
                     </div>
                   ) : (
                     <div
-                      className={`w-16 h-16 rounded-2xl flex items-center justify-center border transition-transform duration-300 group-hover:scale-105 shrink-0 shadow-sm ${config.accentBg} ${config.accentBorder}`}
+                      className={`w-16 h-16 rounded-2xl flex items-center justify-center border transition-transform duration-300 group-hover:scale-105 shrink-0 shadow-xs ${config.accentBg} ${config.accentBorder}`}
                       aria-hidden="true"
                     >
-                      <Icon size={28} className={config.accentText} />
+                      <Icon size={26} className={config.accentText} />
                     </div>
                   )}
 
                   {/* Restrained Network Link Badge */}
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#FAF7F2] border border-[#12101F]/10 rounded-full text-[11px] font-mono text-[#827C94] shadow-xs">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#6B3CFF] animate-pulse" aria-hidden="true" />
-                    <span>0{idx + 1}</span>
+                    <span>0{idx + 1} //</span>
                   </div>
                 </div>
 
                 {/* Card Body */}
-                <div className="relative z-10 flex flex-col gap-2.5">
+                <div className="relative z-10 flex flex-col gap-2">
                   <h3 className="text-xl sm:text-2xl font-bold font-headline text-[#12101F] tracking-tight m-0">
                     {card.title}
                   </h3>

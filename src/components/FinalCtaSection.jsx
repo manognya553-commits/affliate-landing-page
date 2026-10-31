@@ -28,7 +28,7 @@ export default function FinalCtaSection({ onBecomeAffiliate, onOpenTerms }) {
     >
       <div className="site-container">
         {/* Dark Stage Card per Design Plan Section 12 */}
-        <div data-reveal="card" className="relative rounded-[32px] bg-[#0E0B1E] text-white p-10 sm:p-14 lg:p-20 overflow-hidden shadow-2xl flex flex-col items-center text-center gap-8">
+        <div data-reveal="card" className="corner-mark relative rounded-[36px] bg-[#0E0B1E] text-white p-10 sm:p-14 lg:p-20 overflow-hidden shadow-2xl flex flex-col items-center text-center gap-7 border border-white/12">
           {/* Subtle Ambient Bloom Gradients */}
           <div
             className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#6B3CFF]/30 blur-[120px] pointer-events-none"
@@ -39,10 +39,16 @@ export default function FinalCtaSection({ onBecomeAffiliate, onOpenTerms }) {
             aria-hidden="true"
           />
 
+          {/* Faint Concentric Orbitals */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-0" aria-hidden="true">
+            <div className="w-[480px] h-[480px] rounded-full border border-white/[0.04]" />
+            <div className="w-[320px] h-[320px] rounded-full border border-dashed border-white/[0.06]" />
+          </div>
+
           {/* Eyebrow Pill */}
           <div className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/15 text-xs sm:text-sm font-mono text-white/80">
             <Sparkles size={14} className="text-[#D6F36B]" aria-hidden="true" />
-            <span>sBLOOM Affiliate</span>
+            <span>05 // sBLOOM Affiliate</span>
           </div>
 
           {/* Headline */}
@@ -51,12 +57,12 @@ export default function FinalCtaSection({ onBecomeAffiliate, onOpenTerms }) {
           </h2>
 
           {/* Subheading */}
-          <p className="relative text-lg sm:text-xl text-white/70 max-w-xl m-0 leading-relaxed">
+          <p className="relative text-base sm:text-lg text-white/75 max-w-xl m-0 leading-relaxed">
             {data.subheading}
           </p>
 
           {/* Action Row */}
-          <div className="relative flex flex-col sm:flex-row items-center gap-5 mt-2">
+          <div className="relative flex flex-col sm:flex-row items-center gap-4 mt-2">
             <button
               type="button"
               onClick={onBecomeAffiliate}
@@ -70,9 +76,9 @@ export default function FinalCtaSection({ onBecomeAffiliate, onOpenTerms }) {
               <a
                 href="#terms"
                 onClick={handleTermsClick}
-                className="inline-flex items-center gap-2 text-sm sm:text-base text-white/70 hover:text-white underline underline-offset-4 transition-colors py-2 px-3"
+                className="inline-flex items-center gap-2 text-sm sm:text-base text-white/70 hover:text-white underline underline-offset-4 transition-colors py-2 px-3 font-mono text-xs"
               >
-                <FileText size={16} />
+                <FileText size={15} />
                 <span>{data.secondaryLink}</span>
               </a>
             )}
