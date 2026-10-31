@@ -41,7 +41,7 @@ export default function PromisesSection() {
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/90 border border-[#12101F]/10 rounded-full shadow-sm text-sm text-[#827C94]">
             <HandHeart size={14} className="text-[#6B3CFF]" aria-hidden="true" />
             <span className="font-mono">
-              {lang === 'te' ? 'బాధ్యతాయుతమైన పరిచయం' : 'Our core commitment'}
+              {lang === 'te' ? 'మా ముఖ్య నియమాలు' : 'Our core commitment'}
             </span>
           </div>
 

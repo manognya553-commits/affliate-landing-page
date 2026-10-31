@@ -20,16 +20,16 @@ export function getTranslation(keyPath, lang = 'en') {
     return enVal
   }
 
-  // If Telugu requested, check confirmed kit first
-  const teConfVal = getDeep(teConfirmed, keyPath)
-  if (teConfVal !== undefined) {
-    return teConfVal
-  }
-
-  // Next check draft Telugu
+  // Check colloquial draft Telugu first
   const teDraftVal = getDeep(teDraft, keyPath)
   if (teDraftVal !== undefined) {
     return teDraftVal
+  }
+
+  // Next check confirmed kit
+  const teConfVal = getDeep(teConfirmed, keyPath)
+  if (teConfVal !== undefined) {
+    return teConfVal
   }
 
   // Graceful fallback to English
@@ -52,12 +52,12 @@ export function getCopy(lang = 'en') {
         ...link,
         label: teDraft.nav?.links?.[idx]?.label || link.label,
       })),
-      cta: teConfirmed.nav?.cta || enCopy.nav.cta,
+      cta: teDraft.nav?.cta || teConfirmed.nav?.cta || enCopy.nav.cta,
     },
     hero: {
       eyebrow: teDraft.hero?.eyebrow || enCopy.hero.eyebrow,
-      headlineLead: teConfirmed.hero?.headlineLead || enCopy.hero.headlineLead,
-      headlineAccent: teConfirmed.hero?.headlineAccent || enCopy.hero.headlineAccent,
+      headlineLead: teDraft.hero?.headlineLead || teConfirmed.hero?.headlineLead || enCopy.hero.headlineLead,
+      headlineAccent: teDraft.hero?.headlineAccent || teConfirmed.hero?.headlineAccent || enCopy.hero.headlineAccent,
       subheading: teDraft.hero?.subheading || enCopy.hero.subheading,
       primaryCta: teDraft.hero?.primaryCta || enCopy.hero.primaryCta,
       secondaryCta: teDraft.hero?.secondaryCta || enCopy.hero.secondaryCta,
@@ -66,7 +66,7 @@ export function getCopy(lang = 'en') {
     },
     soundFamiliar: {
       eyebrow: teDraft.soundFamiliar?.eyebrow || enCopy.soundFamiliar.eyebrow,
-      headline: teConfirmed.soundFamiliar?.headline || teDraft.soundFamiliar?.headline || enCopy.soundFamiliar.headline,
+      headline: teDraft.soundFamiliar?.headline || teConfirmed.soundFamiliar?.headline || enCopy.soundFamiliar.headline,
       subheading: teDraft.soundFamiliar?.subheading || enCopy.soundFamiliar.subheading,
       trustLine: teDraft.soundFamiliar?.trustLine || enCopy.soundFamiliar.trustLine,
       conclusion: teDraft.soundFamiliar?.conclusion || enCopy.soundFamiliar.conclusion,
@@ -84,13 +84,13 @@ export function getCopy(lang = 'en') {
       sectors: teDraft.conversations?.sectors || enCopy.conversations.sectors,
     },
     howItWorks: {
-      eyebrow: teConfirmed.howItWorks?.eyebrow || teDraft.howItWorks?.eyebrow || enCopy.howItWorks.eyebrow,
+      eyebrow: teDraft.howItWorks?.eyebrow || teConfirmed.howItWorks?.eyebrow || enCopy.howItWorks.eyebrow,
       headline: teDraft.howItWorks?.headline || enCopy.howItWorks.headline,
       subheading: teDraft.howItWorks?.subheading || enCopy.howItWorks.subheading,
       steps: teDraft.howItWorks?.steps || enCopy.howItWorks.steps,
     },
     promises: {
-      headline: teConfirmed.promises?.headline || enCopy.promises.headline,
+      headline: teDraft.promises?.headline || teConfirmed.promises?.headline || enCopy.promises.headline,
       lead: teDraft.promises?.lead || enCopy.promises.lead,
       subhead: teDraft.promises?.subhead || enCopy.promises.subhead,
       items: teDraft.promises?.items || enCopy.promises.items,

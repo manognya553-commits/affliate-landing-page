@@ -180,7 +180,7 @@ export default function WhyJoinVideoExplainer() {
               <div className="bg-black/75 backdrop-blur-md border border-white/15 rounded-2xl p-3.5 sm:p-4 shadow-lg flex flex-col gap-1.5">
                 <span className="text-[10px] font-mono text-[#D6F36B] font-bold uppercase tracking-wider flex items-center gap-1">
                   <Sparkles size={11} />
-                  {lang === 'te' ? 'కమ్యూనిటీ సంభాషణ' : 'Real Everyday Conversation'}
+                  {lang === 'te' ? 'రోజూ జరిగే సంభాషణ' : 'Real Everyday Conversation'}
                 </span>
                 <p className="text-xs sm:text-sm font-medium text-white/95 leading-relaxed m-0 italic font-headline">
                   {activeScene.quote}
@@ -205,7 +205,7 @@ export default function WhyJoinVideoExplainer() {
                   </span>
                   <div>
                     <span className="font-mono text-[10px] text-white/50 uppercase block">
-                      {lang === 'te' ? 'రిఫరల్ & సంపాదన విశ్లేషణ' : 'Referral & Earning Analytics'}
+                      {lang === 'te' ? 'పరిచయం & సంపాదన ట్రాకింగ్' : 'Referral & Earning Analytics'}
                     </span>
                     <h4 className="text-sm sm:text-base font-bold text-white m-0">
                       {activeScene.title}
@@ -215,7 +215,7 @@ export default function WhyJoinVideoExplainer() {
 
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#10B981]/15 text-[#34D399] border border-[#10B981]/30">
                   <CheckCircle2 size={11} />
-                  {lang === 'te' ? 'అర్హత పొందింది' : 'Qualified Referral'}
+                  {lang === 'te' ? 'అర్హత సాధించింది' : 'Qualified Referral'}
                 </span>
               </div>
 
@@ -229,7 +229,7 @@ export default function WhyJoinVideoExplainer() {
                     2. {lang === 'te' ? 'పరిశీలన' : 'Provider Review'}
                   </span>
                   <span className="text-[#A78BFA] font-bold">
-                    3. {lang === 'te' ? 'పరిహారం' : 'Compensation'}
+                    3. {lang === 'te' ? 'సంపాదన' : 'Compensation'}
                   </span>
                 </div>
 
@@ -248,7 +248,7 @@ export default function WhyJoinVideoExplainer() {
                   <span className="text-[10px] sm:text-xs font-bold text-white truncate">
                     {lang === 'te' ? 'అనుమతితో' : 'With Permission'}
                   </span>
-                  <span className="text-[8.5px] sm:text-[9.5px] text-[#34D399]">✓ {lang === 'te' ? 'ధృవీకరించబడింది' : 'Confirmed'}</span>
+                  <span className="text-[8.5px] sm:text-[9.5px] text-[#34D399]">✓ {lang === 'te' ? 'తీసుకున్నాం' : 'Confirmed'}</span>
                 </div>
 
                 <div className="bg-white/7 border border-white/10 rounded-xl p-2 sm:p-2.5 flex flex-col gap-0.5">
@@ -256,9 +256,9 @@ export default function WhyJoinVideoExplainer() {
                     {lang === 'te' ? 'ప్రొవైడర్ నిబంధనలు' : 'Provider Terms'}
                   </span>
                   <span className="text-[10px] sm:text-xs font-bold text-white truncate">
-                    {lang === 'te' ? 'స్పష్టమైన ప్రమాణాలు' : 'Visible Upfront'}
+                    {lang === 'te' ? 'ముందే తెలుస్తాయి' : 'Visible Upfront'}
                   </span>
-                  <span className="text-[8.5px] sm:text-[9.5px] text-[#D6F36B]">✓ {lang === 'te' ? 'అర్హత పరిశీలన' : 'Criteria Met'}</span>
+                  <span className="text-[8.5px] sm:text-[9.5px] text-[#D6F36B]">✓ {lang === 'te' ? 'పరిశీలన' : 'Criteria Met'}</span>
                 </div>
 
                 <div className="bg-[#6B3CFF]/20 border border-[#6B3CFF]/40 rounded-xl p-2 sm:p-2.5 flex flex-col gap-0.5">
@@ -266,9 +266,9 @@ export default function WhyJoinVideoExplainer() {
                     {lang === 'te' ? 'సంపాదన అవకాశం' : 'Earning'}
                   </span>
                   <span className="text-[10px] sm:text-xs font-bold text-[#D6F36B] truncate">
-                    {lang === 'te' ? 'అర్హత సాధించినప్పుడు' : 'Earn When Eligible'}
+                    {lang === 'te' ? 'అర్హత ఉంటే' : 'Earn When Eligible'}
                   </span>
-                  <span className="text-[8.5px] sm:text-[9.5px] text-white/60">{lang === 'te' ? 'ఉచితంగా చేరండి' : 'Free to Join'}</span>
+                  <span className="text-[8.5px] sm:text-[9.5px] text-white/60">{lang === 'te' ? 'చేరడం ఫ్రీ' : 'Free to Join'}</span>
                 </div>
               </div>
 

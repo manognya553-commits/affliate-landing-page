@@ -166,7 +166,7 @@ export default function FooterSection({
                 <div className="bg-white border border-[#12101F]/10 rounded-2xl p-6 shadow-sm">
                   <p className="text-sm sm:text-base text-[#575266] m-0 leading-relaxed">
                     {lang === 'te'
-                      ? 'మీ వివరాలు ప్రోగ్రామ్ వద్దే సురక్షితంగా ఉంటాయి మరియు మీ దరఖాస్తు గురించి సంప్రదించడానికి మాత్రమే ఉపయోగించబడతాయి. మేము మీ వ్యక్తిగత సమాచారాన్ని ఇతరులతో పంచుకోము.'
+                      ? 'మీ వివరాలు మా వద్దే భద్రంగా ఉంటాయి. మీతో మాట్లాడటానికి తప్ప వేరే ఎవరికీ మీ వివరాలు ఇవ్వము.'
                       : 'Your details stay with the programme and are used only to communicate with you about your application. We never share your personal information with third parties.'}
                   </p>
                 </div>

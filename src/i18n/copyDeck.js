@@ -492,26 +492,26 @@ export const enCopy = {
  */
 export const teConfirmed = {
   hero: {
-    headlineLead: 'మీకు తెలిసిన వారికి సరైన సేవను చూపించండి.',
+    headlineLead: 'మీకు తెలిసిన వాళ్లకు మంచి సేవను చూపించండి.',
     headlineAccent: 'ఫలితం వస్తే మీకూ సంపాదన.',
     trustRow: {
-      freeToJoin: 'చేరడం పూర్తిగా ఉచితం',
+      freeToJoin: 'చేరడం ఫ్రీ',
       earningsUnderTerms: 'నిబంధనల ప్రకారం సంపాదన',
     },
   },
   nav: {
-    howItWorks: 'ఇది ఎలా పనిచేస్తుంది',
+    howItWorks: 'ఎలా పనిచేస్తుంది',
     cta: 'అఫిలియేట్ అవ్వండి',
   },
   howItWorks: {
-    eyebrow: 'ఇది ఎలా పనిచేస్తుంది',
+    eyebrow: 'ఎలా పనిచేస్తుంది',
   },
   soundFamiliar: {
-    headline: 'మీ పరిచయాలు ఒక సంపాదన అవకాశంగా మారవచ్చు.',
+    headline: 'మీ పరిచయాలే మీకు సంపాదన అవకాశం.',
   },
   promises: {
-    headline: 'మీరు పరిచయం చేయండి. సలహా ఇచ్చేది నిపుణులే.',
-    askFirst: 'ముందు అడగండి. అంగీకారం తర్వాతే వివరాలు పంచండి.',
+    headline: 'మీరు పరిచయం చేయండి. సలహాలు నిపుణులే ఇస్తారు.',
+    askFirst: 'ముందు అడగండి. అనుమతి తర్వాతే చెప్పండి.',
   },
   earning: {
     headline: 'ప్రతి సేవా సంస్థ తమ నిబంధనలను తామే నిర్ణయిస్తుంది.',
@@ -522,7 +522,7 @@ export const teConfirmed = {
   },
   common: {
     wordCarriesWeight: 'మీ మాటకు విలువ ఉంది.',
-    notExpert: 'మీరు నిపుణులు కానవస్సిన అవసరం లేదు.',
-    fromHome: 'ఇంటి నుంచి, మీ సమయంలో',
+    notExpert: 'మీరు నిపుణులు కానక్కర్లేదు.',
+    fromHome: 'ఇంటి నుంచే, మీ సమయంలో',
   },
 }

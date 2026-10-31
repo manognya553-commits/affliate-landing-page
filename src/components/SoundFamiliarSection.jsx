@@ -64,7 +64,7 @@ export default function SoundFamiliarSection() {
                   {data.conclusion}
                 </p>
                 <span className="text-[11px] font-mono text-[#6B3CFF] font-bold">
-                  {lang === 'te' ? 'ఉచితంగా చేరండి · మీ మాటకు విలువ ఉంది' : 'Free to join · Your word carries weight'}
+                  {lang === 'te' ? 'చేరడం ఫ్రీ · మీ మాటకు విలువ ఉంది' : 'Free to join · Your word carries weight'}
                 </span>
               </div>
             </div>
