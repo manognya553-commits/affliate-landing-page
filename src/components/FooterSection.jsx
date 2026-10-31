@@ -1,24 +1,87 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { X, ShieldCheck, FileText } from 'lucide-react'
 import { useLanguage } from '../context/useLanguage'
 
-export default function FooterSection() {
-  const { copy } = useLanguage()
-  const [activeModal, setActiveModal] = useState(null) // 'terms' | 'privacy' | null
+export default function FooterSection({
+  activeModal: controlledModal,
+  onOpenTerms,
+  onOpenPrivacy,
+  onCloseModal,
+}) {
+  const { lang, copy } = useLanguage()
+  const [internalModal, setInternalModal] = useState(null)
+  const isControlled = controlledModal !== undefined
+  const activeModal = isControlled ? controlledModal : internalModal
+
+  const modalRef = useRef(null)
+  const closeBtnRef = useRef(null)
 
   const handleOpenTerms = (e) => {
     e.preventDefault()
-    setActiveModal('terms')
+    if (onOpenTerms) onOpenTerms()
+    else setInternalModal('terms')
   }
 
   const handleOpenPrivacy = (e) => {
     e.preventDefault()
-    setActiveModal('privacy')
+    if (onOpenPrivacy) onOpenPrivacy()
+    else setInternalModal('privacy')
   }
 
-  const handleClose = () => {
-    setActiveModal(null)
-  }
+  const handleClose = useCallback(() => {
+    if (onCloseModal) onCloseModal()
+    else setInternalModal(null)
+  }, [onCloseModal])
+
+  // Handle focus management, keyboard trap, and body scroll lock when modal is open
+  useEffect(() => {
+    if (!activeModal) return
+
+    const lastActive = document.activeElement
+    document.body.style.overflow = 'hidden'
+
+    // Focus the close button once modal mounts
+    const timer = setTimeout(() => {
+      closeBtnRef.current?.focus()
+    }, 50)
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        handleClose()
+        return
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusables = modalRef.current.querySelectorAll(
+          'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+        if (focusables.length === 0) return
+
+        const firstEl = focusables[0]
+        const lastEl = focusables[focusables.length - 1]
+
+        if (e.shiftKey && document.activeElement === firstEl) {
+          e.preventDefault()
+          lastEl.focus()
+        } else if (!e.shiftKey && document.activeElement === lastEl) {
+          e.preventDefault()
+          firstEl.focus()
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('keydown', handleKeyDown)
+      document.body.style.overflow = ''
+      if (lastActive && typeof lastActive.focus === 'function') {
+        lastActive.focus()
+      }
+    }
+  }, [activeModal, handleClose])
 
   return (
     <footer className="bg-[#0E0B1E] text-white/70 pt-16 pb-12 mt-auto border-t border-white/10" aria-label="Footer">
@@ -68,6 +131,7 @@ export default function FooterSection() {
       {activeModal && (
         <div className="fixed inset-0 bg-[#0E0B1E]/70 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-[fadeIn_0.2s_ease-out]" onClick={handleClose} role="presentation">
           <div
+            ref={modalRef}
             className="bg-[#FAF7F2] text-[#12101F] w-full max-w-[560px] rounded-3xl shadow-2xl overflow-hidden border border-[#E8E2D8]"
             role="dialog"
             aria-modal="true"
@@ -79,6 +143,7 @@ export default function FooterSection() {
                 {activeModal === 'terms' ? copy.footer.termsLink : copy.footer.privacyLink}
               </h3>
               <button
+                ref={closeBtnRef}
                 type="button"
                 className="text-[#827C94] hover:text-[#12101F] hover:bg-black/5 p-1 rounded-lg transition-all"
                 onClick={handleClose}

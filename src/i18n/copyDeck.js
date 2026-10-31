@@ -25,14 +25,14 @@ export const enCopy = {
     headlineLead: 'Help someone find the right service.',
     headlineAccent: 'Earn when it works out.',
     subheading:
-      'People already ask you, “Do you know a good doctor? A good course? Someone who can help with this?” Join sBLOOM free, introduce them to services in healthcare, education and professional services, and earn under each provider’s terms.',
+      'You already help friends, family and people in your community find the right services. sBLOOM gives you a way to turn relevant introductions into an earning opportunity when those introductions qualify under each provider’s terms.',
     primaryCta: 'Become an affiliate — it’s free',
     secondaryCta: 'See how it works',
     trustRow: [
       'Free to join',
       'Open to anyone in India',
       'You see each provider’s terms first',
-      'Track every referral',
+      'Earnings under provider terms',
     ],
     bubbles: {
       ask: '“Do you know a good doctor?”',
@@ -42,48 +42,146 @@ export const enCopy = {
     },
   },
 
-  // Sound familiar? (Stage 2)
+  // Sound familiar? (Why Join Section)
   soundFamiliar: {
-    headline: 'You’re already the person people ask.',
-    questions: [
-      '“Which coaching centre is good for my son?”',
-      '“Do you know a good doctor for my mother?”',
-      '“My cousin needs help with business papers. Anyone know someone?”',
-      '“Which course should I do after my degree?”',
-    ],
-    reply: '“Yes, let me introduce you.”',
+    eyebrow: 'Why join',
+    headline: 'Your connections could become an earning opportunity.',
+    subheading:
+      'You already help friends, family and people in your community find the right services. With sBLOOM, you can make relevant introductions to service providers and explore an opportunity to earn when those introductions qualify under the provider’s terms.',
+    trustLine: 'Free to join. No sales background required. Earnings are not guaranteed.',
     conclusion:
       'You answer from the heart, for free, every week. sBLOOM gives those moments a structure, and a reward when your introduction leads somewhere.',
+    questions: [
+      {
+        speaker: 'Neighbour',
+        initial: 'N',
+        text: '“Do you know a good doctor for my mother?”',
+        category: 'Healthcare',
+      },
+      {
+        speaker: 'Parent',
+        initial: 'P',
+        text: '“Which coaching centre is good for my son?”',
+        category: 'Education',
+      },
+      {
+        speaker: 'Relative',
+        initial: 'R',
+        text: '“My cousin needs help with business papers. Anyone know someone?”',
+        category: 'Professional Services',
+      },
+      {
+        speaker: 'Student',
+        initial: 'S',
+        text: '“Which course should I do after my degree?”',
+        category: 'Education',
+      },
+    ],
+    pillars: [
+      {
+        id: 'introduce',
+        title: 'Relevant introductions',
+        description:
+          'Introduce people to relevant service providers when a genuine need arises. No sales background required.',
+      },
+      {
+        id: 'earn',
+        title: 'Opportunity to earn',
+        description:
+          'Explore an opportunity to earn when your introduction qualifies under the provider’s specific compensation terms.',
+      },
+      {
+        id: 'guidance',
+        title: 'Information and guidance',
+        description:
+          'sBLOOM provides service information and guidance so you can make informed, helpful introductions with confidence.',
+      },
+    ],
+    reply: '“Yes, let me introduce you.”',
   },
 
-  // How it works (Stage 2)
+  // What an introduction sounds like (Three-Phone Conversation Carousel)
+  conversations: {
+    eyebrow: 'What an introduction sounds like',
+    headline: 'A friendly, permission-first message is all it takes.',
+    subheading:
+      'The affiliate initiates the conversation based on something previously mentioned. Explore how an introduction looks across each sector:',
+    disclaimer: 'Illustrative scenario · Example introduction',
+    rule: 'The rule behind all three: a clear yes before any details are shared. No income is guaranteed.',
+    sectors: [
+      {
+        id: 'healthcare',
+        name: 'Healthcare',
+        code: '01 · HEALTHCARE',
+        contactRole: 'Neighbour',
+        contactInitial: 'N',
+        contactMessage: '“You said your mother needs a doctor. I know a service that might help.”',
+        contactTime: '10:24 AM',
+        affiliateRole: 'You (Affiliate)',
+        affiliateMessage: '“I can introduce you to a relevant healthcare provider. Would you like me to connect you?”',
+        affiliateTime: '10:26 AM',
+        consentTag: 'Ask first · Permission confirmed',
+        permissionLabel: 'Permission-first introduction',
+      },
+      {
+        id: 'education',
+        name: 'Education',
+        code: '02 · EDUCATION',
+        contactRole: 'Friend',
+        contactInitial: 'F',
+        contactMessage: '“You mentioned you’re looking for a coaching institute.”',
+        contactTime: '11:15 AM',
+        affiliateRole: 'You (Affiliate)',
+        affiliateMessage: '“I can introduce you to an institute that offers relevant programmes. Would you like to know more?”',
+        affiliateTime: '11:17 AM',
+        consentTag: 'Ask first · Permission confirmed',
+        permissionLabel: 'Permission-first introduction',
+      },
+      {
+        id: 'professional',
+        name: 'Professional Services',
+        code: '03 · PROFESSIONAL SERVICES',
+        contactRole: 'Business Owner',
+        contactInitial: 'B',
+        contactMessage: '“I need help improving my business online.”',
+        contactTime: '02:40 PM',
+        affiliateRole: 'You (Affiliate)',
+        affiliateMessage: '“I know a service provider who may be able to help. Would you like an introduction?”',
+        affiliateTime: '02:42 PM',
+        consentTag: 'Ask first · Permission confirmed',
+        permissionLabel: 'Permission-first introduction',
+      },
+    ],
+  },
+
+  // How it works (Section 2 · How Earning Works)
   howItWorks: {
     eyebrow: 'How it works',
-    headline: 'Four simple steps',
+    headline: 'Make a connection. Understand the terms. Earn when eligible.',
+    subheading: 'Four steps from finding a genuine need to an eligible referral:',
     steps: [
       {
         number: '1',
-        title: 'Sign up.',
-        description:
-          'Tell us your name, your email and the areas where people trust you. It takes about two minutes and it’s free. Our team reviews every sign-up.',
+        title: 'Find a genuine need.',
+        description: 'Someone in your network is looking for a service.',
       },
       {
         number: '2',
-        title: 'Learn the service.',
+        title: 'Make an introduction.',
         description:
-          'Open the sBLOOM knowledge platform. Simple briefs tell you what each service is, who it suits and what people usually ask. You don’t have to memorise anything.',
+          'With their permission, connect them with a relevant provider.',
       },
       {
         number: '3',
-        title: 'Introduce.',
+        title: 'Understand the provider’s terms.',
         description:
-          'When someone you know needs a service and says yes to being introduced, pass on the referral through sBLOOM. You introduce. The provider takes it from there.',
+          'Check what qualifies for compensation before making the referral.',
       },
       {
         number: '4',
-        title: 'Track and earn.',
+        title: 'Earn when the conditions are met.',
         description:
-          'See the status of every referral in the platform. If it qualifies under the provider’s terms, you earn.',
+          'Compensation depends on the specific provider’s terms and whether the referral qualifies.',
       },
     ],
   },
@@ -158,25 +256,25 @@ export const enCopy = {
 
   // Sectors (Stage 3)
   sectors: {
-    headline: 'Three areas people ask about most',
+    headline: 'One network of connections. Three areas of opportunity.',
     items: [
       {
         id: 'healthcare',
         title: 'Healthcare',
-        description: 'Introduce people to healthcare providers and care services listed on sBLOOM.',
+        description: 'Introduce someone looking for a suitable healthcare service to a relevant provider.',
       },
       {
         id: 'education',
         title: 'Education',
-        description: 'Introduce people to courses, institutions and learning programmes.',
+        description: 'Connect students and families with relevant educational services.',
       },
       {
         id: 'professional',
         title: 'Professional services',
-        description: 'Introduce people and businesses to professional and advisory services.',
+        description: 'Introduce businesses and individuals to providers whose services may meet their needs.',
       },
     ],
-    note: 'Services available to introduce depend on the providers on the platform.',
+    note: 'A referral’s eligibility and compensation depend on the relevant provider’s terms.',
   },
 
   // Introduction conversations (Stage 3)
@@ -201,17 +299,31 @@ export const enCopy = {
     rule: 'The rule behind all three: a clear yes before any details are shared.',
   },
 
-  // Earning (Stage 3)
+  // Earning (Section 4 · Why sBLOOM)
   earning: {
-    headline: 'Every provider sets its own terms, and you see them first.',
-    lead:
-      'Different services reward referrals in different ways. Some may reward when a person shows genuine interest. Some may reward when the person goes ahead. Some may do both. Before you introduce anyone, you can see how that provider rewards referrals and what has to happen for a referral to count.',
-    cards: [
-      { title: 'See the terms first.', description: 'No surprises after you’ve introduced someone.' },
-      { title: 'Watch the status.', description: 'The platform tracks each referral and its progress.' },
-      { title: 'Earn when it qualifies.', description: 'Under the provider’s approved terms.' },
+    headline: 'More than just making referrals.',
+    subheading: 'sBLOOM gives you the information, clarity and structure to introduce with confidence:',
+    blocks: [
+      {
+        title: 'Learn before you introduce',
+        description: 'Understand the services and providers.',
+      },
+      {
+        title: 'Refer with confidence',
+        description: 'Use relevant information to make more informed introductions.',
+      },
+      {
+        title: 'Know the terms',
+        description: 'Review the provider’s compensation conditions before referring.',
+      },
+      {
+        title: 'Build around your network',
+        description: 'Introduce services that genuinely match people’s needs.',
+      },
     ],
     caution:
+      'Compensation varies by service provider and is subject to the applicable terms. Joining and making a referral do not guarantee earnings.',
+    noGuarantee:
       'Earnings depend on each provider’s terms and on your referrals qualifying. No income is guaranteed.',
   },
 
@@ -253,27 +365,53 @@ export const enCopy = {
   // FAQ (Stage 4)
   faq: {
     headline: 'Frequently asked questions',
-    tabs: ['Joining', 'Earning', 'Safety'],
+    tabs: ['Earning', 'Joining', 'Safety'],
     questions: [
+      {
+        q: 'Can I earn money as an sBLOOM affiliate?',
+        a: 'Yes, the programme offers an opportunity to earn through eligible referrals. Whether a referral qualifies and what compensation applies depend on the relevant service provider’s terms. Earnings are not guaranteed.',
+        category: 'Earning',
+      },
+      {
+        q: 'How much can I earn per referral?',
+        a: 'Compensation varies by service provider. The applicable amount or payment arrangement and qualifying conditions should be communicated by the provider. We do not publish a universal commission rate.',
+        category: 'Earning',
+      },
+      {
+        q: 'Do I get paid for every person I introduce?',
+        a: 'Not necessarily. Compensation depends on the provider’s terms and whether the referral meets the applicable conditions.',
+        category: 'Earning',
+      },
+      {
+        q: 'Do I need to pay to join?',
+        a: 'No. Joining the sBLOOM Affiliate Programme is free.',
+        category: 'Joining',
+      },
+      {
+        q: 'When will I receive payment?',
+        a: 'Payment timing depends on the relevant provider’s terms. Specific timelines should be communicated only when they have been confirmed.',
+        category: 'Earning',
+      },
       { q: 'Is it really free to join?', a: 'Yes. There is no joining fee.', category: 'Joining' },
       { q: 'I’m a homemaker. Can I do this?', a: 'Yes. If people around you trust your word, you can express interest. You can do it from your phone in a couple of minutes.', category: 'Joining' },
       { q: 'Do I need to be an expert?', a: 'No. You introduce, and the provider advises. The briefs in the platform help you understand each service.', category: 'Joining' },
       { q: 'Do I have to convince or push people?', a: 'No. You only introduce people who need a service and say yes to being introduced. No pressure.', category: 'Safety' },
       { q: 'I have a job. Can I join?', a: 'You can express interest while you work. We’ll explain what’s expected when we get in touch.', category: 'Joining' },
       { q: 'Can I use this in Telugu?', a: 'This page is available in Telugu and English. We’ll tell you which languages the platform and briefs support when you join.', category: 'Joining' },
-      { q: 'How much will I earn?', a: 'It depends on each provider’s terms and on whether your referral qualifies. You see the terms first. No income is guaranteed.', category: 'Earning' },
-      { q: 'When do I get paid?', a: '[Add approved timing.] You’ll see the payment terms before you introduce anyone.', category: 'Earning' },
-      { q: 'How will I know what happened to my referral?', a: 'The platform tracks referrals and shows their status.', category: 'Earning' },
-      { q: 'Do I need to live in Andhra Pradesh or Telangana?', a: 'No. Anyone in India with a relevant network can express interest. Which services you can introduce may depend on where providers operate.', category: 'Joining' },
-      { q: 'Is my information, and my friends’ information, safe?', a: 'Share details only after someone says yes. Information is used only for the programme. [Link to privacy notice]', category: 'Safety' },
+      { q: 'Is my information, and my friends’ information, safe?', a: 'Share details only after someone says yes. Information is used only for the programme.', category: 'Safety' },
     ],
   },
 
   // Final CTA (Stage 5)
   finalCta: {
-    headline: 'Someone you know is looking for the right help right now.',
-    lead: 'Be the person who points them in the right direction. It’s free to join, and it takes about two minutes to start.',
-    button: 'Become an affiliate',
+    headline: 'Your next introduction could open an opportunity.',
+    subheading:
+      'Join the sBLOOM Affiliate Programme for free and explore how your trusted connections can become an earning opportunity.',
+    disclaimer:
+      'Compensation varies by service provider and is subject to the applicable terms. Joining and making a referral do not guarantee earnings.',
+    primaryCta: 'Become an affiliate — it’s free',
+    secondaryLink: 'Read the programme terms',
+    button: 'Become an affiliate — it’s free',
   },
 
   // Form (Stage 5)
@@ -328,7 +466,7 @@ export const teConfirmed = {
     headlineAccent: 'ఫలితం వస్తే మీకూ సంపాదన.',
     trustRow: {
       freeToJoin: 'చేరడం పూర్తిగా ఉచితం',
-      trackEveryReferral: 'ప్రతి రిఫరల్ స్థితిని చూడండి',
+      earningsUnderTerms: 'నిబంధనల ప్రకారం సంపాదన',
     },
   },
   nav: {
@@ -339,7 +477,7 @@ export const teConfirmed = {
     eyebrow: 'ఇది ఎలా పనిచేస్తుంది',
   },
   soundFamiliar: {
-    headline: 'అందరూ అడిగే వ్యక్తి మీరే.',
+    headline: 'మీ పరిచయాలు ఒక సంపాదన అవకాశంగా మారవచ్చు.',
   },
   promises: {
     headline: 'మీరు పరిచయం చేయండి. సలహా ఇచ్చేది నిపుణులే.',

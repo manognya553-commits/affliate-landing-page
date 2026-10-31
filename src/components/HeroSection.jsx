@@ -82,16 +82,16 @@ export default function HeroSection({ onBecomeAffiliate }) {
             </a>
           </div>
 
-          {/* 4-Item Trust Row Chips (all four fit neatly in one row or two balanced rows, no orphan) */}
-          <div className="grid grid-cols-2 lg:flex lg:flex-nowrap items-center gap-2 sm:gap-2.5 pt-3.5 mt-1 border-t border-ink/10 w-full" role="list" aria-label="Programme Highlights">
+          {/* 4-Item Trust Row Chips (wraps neatly inside the left column and divider line) */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 pt-3.5 mt-1 border-t border-ink/10 w-full" role="list" aria-label="Programme Highlights">
             {copy.hero.trustRow.map((chip, idx) => (
               <div
                 key={idx}
                 className="inline-flex items-center gap-1.5 bg-white/85 border border-ink/10 rounded-full px-2.5 sm:px-3 py-1.5 text-xs sm:text-[12.5px] font-medium text-ink-secondary shadow-sm hover:bg-white hover:border-brand-violet/30 hover:-translate-y-0.5 transition-all duration-200 justify-start"
                 role="listitem"
               >
-                <CheckCircle2 size={14} className="text-brand-violet shrink-0" aria-hidden="true" />
-                <span className="whitespace-nowrap">{chip}</span>
+                <CheckCircle2 size={14} className="text-brand-violet" aria-hidden="true" />
+                <span>{chip}</span>
               </div>
             ))}
           </div>
@@ -107,14 +107,15 @@ export default function HeroSection({ onBecomeAffiliate }) {
             </div>
 
             {/* Organic SVG Blob Container */}
-            <div className="relative w-[270px] h-[270px] sm:w-[310px] sm:h-[310px] lg:w-[340px] lg:h-[340px] rounded-[38%] overflow-hidden blob-clip-organic shadow-xl z-[2]">
+            {/* Organic SVG Blob Container with Authentic Community Warmth */}
+            <div className="relative w-[270px] h-[270px] sm:w-[310px] sm:h-[310px] lg:w-[340px] lg:h-[340px] rounded-[38%] overflow-hidden blob-clip-organic shadow-2xl z-[2] group">
               <img
-                src="/assets/hero-video-placeholder.svg"
-                alt="Real everyday conversations between community members"
-                className="w-full h-full object-cover"
+                src="/assets/hero-community.jpg"
+                alt="Everyday trusted conversations between community members"
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                 loading="eager"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-violet/15 to-transparent pointer-events-none" aria-hidden="true" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-violet/20 via-transparent to-transparent pointer-events-none" aria-hidden="true" />
             </div>
 
             {/* Glowing Organic Border Outline */}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Menu, X, ArrowUpRight } from 'lucide-react'
 import { useLanguage } from '../context/useLanguage'
 import { LOGIN_URL } from '../config/links'
@@ -8,6 +8,10 @@ export default function Navigation({ onBecomeAffiliate }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
 
+  const drawerRef = useRef(null)
+  const closeBtnRef = useRef(null)
+  const hamburgerBtnRef = useRef(null)
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20)
@@ -16,26 +20,57 @@ export default function Navigation({ onBecomeAffiliate }) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Close mobile drawer on Escape key
+  // Manage body scroll lock, Escape key, focus trapping, and focus restoration for mobile drawer
   useEffect(() => {
+    if (!isMenuOpen) return
+
+    const lastActive = document.activeElement
+    const hamburgerBtn = hamburgerBtnRef.current
+    document.body.style.overflow = 'hidden'
+
+    // Move focus into the drawer close button on open
+    const timer = setTimeout(() => {
+      closeBtnRef.current?.focus()
+    }, 50)
+
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isMenuOpen) {
+      if (e.key === 'Escape') {
+        e.preventDefault()
         setIsMenuOpen(false)
+        return
+      }
+
+      if (e.key === 'Tab' && drawerRef.current) {
+        const focusables = drawerRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+        if (focusables.length === 0) return
+
+        const firstEl = focusables[0]
+        const lastEl = focusables[focusables.length - 1]
+
+        if (e.shiftKey && document.activeElement === firstEl) {
+          e.preventDefault()
+          lastEl.focus()
+        } else if (!e.shiftKey && document.activeElement === lastEl) {
+          e.preventDefault()
+          firstEl.focus()
+        }
       }
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isMenuOpen])
 
-  // Prevent body scroll when mobile drawer open
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    window.addEventListener('keydown', handleKeyDown)
+
     return () => {
+      clearTimeout(timer)
+      window.removeEventListener('keydown', handleKeyDown)
       document.body.style.overflow = ''
+      // Return focus to the hamburger button that opened the menu
+      if (hamburgerBtn && typeof hamburgerBtn.focus === 'function') {
+        hamburgerBtn.focus()
+      } else if (lastActive && typeof lastActive.focus === 'function') {
+        lastActive.focus()
+      }
     }
   }, [isMenuOpen])
 
@@ -141,10 +176,12 @@ export default function Navigation({ onBecomeAffiliate }) {
 
           {/* Mobile Hamburger Button */}
           <button
+            ref={hamburgerBtnRef}
             type="button"
             className="flex lg:hidden w-9 h-9 rounded-full items-center justify-center text-ink bg-canvas-subtle hover:bg-border/60 transition-colors"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-expanded={isMenuOpen}
+            aria-controls="mobile-navigation-drawer"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
             {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -163,8 +200,15 @@ export default function Navigation({ onBecomeAffiliate }) {
 
       {/* Mobile Drawer Menu */}
       <div
-        className={`fixed top-0 right-0 w-[310px] h-screen bg-white p-6 z-[1100] shadow-2xl flex flex-col pointer-events-auto transition-transform duration-300 ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        id="mobile-navigation-drawer"
+        ref={drawerRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation Menu"
+        className={`fixed top-0 right-0 w-[310px] h-screen bg-white p-6 z-[1100] shadow-2xl flex flex-col pointer-events-auto transition-all duration-300 ${
+          isMenuOpen
+            ? 'translate-x-0 opacity-100 visible'
+            : 'translate-x-full opacity-0 invisible pointer-events-none'
         }`}
         aria-hidden={!isMenuOpen}
       >
@@ -174,6 +218,7 @@ export default function Navigation({ onBecomeAffiliate }) {
             <span className="font-body text-[20px] font-extrabold text-ink tracking-tight leading-none">BLOOM</span>
           </div>
           <button
+            ref={closeBtnRef}
             type="button"
             className="w-9 h-9 rounded-full bg-canvas-subtle flex items-center justify-center text-ink hover:bg-border/60 transition-colors"
             onClick={() => setIsMenuOpen(false)}

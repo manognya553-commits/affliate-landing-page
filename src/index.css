@@ -124,6 +124,13 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 p {
@@ -252,6 +259,12 @@ html.lang-te [aria-label="Conversation Introduction"] p {
   line-height: 1.45 !important;
 }
 
+/* Why Join sector message bubbles in Telugu */
+html.lang-te #why-join p {
+  font-size: 15.5px !important;
+  line-height: 1.6 !important;
+}
+
 body {
   min-height: 100vh;
   overflow-x: hidden;
@@ -376,10 +389,17 @@ h1, h2 {
 
 .section,
 section {
-  padding-top: var(--space-20);
-  padding-bottom: var(--space-20);
   position: relative;
   scroll-margin-top: 96px;
+}
+
+/* Scroll reveal base guarantees: visible by default so content is NEVER hidden if JS fails */
+[data-reveal="heading"],
+[data-reveal="card"],
+[data-reveal="extra"],
+[data-reveal="faq-row"],
+[data-reveal="contact-card"] {
+  opacity: 1;
 }
 
 
@@ -534,3 +554,169 @@ html.lenis body {
     stroke-dashoffset: 0;
   }
 }
+
+/* --------------------------------------------------------------------------
+   10. Section Rhythm, Typography Scale & Card Depth
+   -------------------------------------------------------------------------- */
+.section-heading {
+  font-size: clamp(40px, 4.5vw, 64px);
+  line-height: 1.15;
+}
+
+html.lang-te .section-heading,
+html.lang-te h2.section-heading {
+  font-size: clamp(34px, 3.8vw, 54px) !important;
+  line-height: 1.25 !important;
+}
+
+.section-py {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+@media (min-width: 1024px) {
+  .section-py {
+    padding-top: 112px;
+    padding-bottom: 112px;
+  }
+}
+
+/* Light Card Depth: 28px radius, softer layered shadows, gradient hairline border on hover */
+.card-depth {
+  border-radius: 28px;
+  position: relative;
+  background-color: #ffffff;
+  border: 1px solid rgba(18, 16, 31, 0.08);
+  box-shadow: 0 4px 20px -2px rgba(18, 16, 31, 0.03), 0 12px 32px -4px rgba(18, 16, 31, 0.05);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
+}
+
+.card-depth::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 29px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(107, 60, 255, 0.5), rgba(255, 79, 163, 0.4), rgba(214, 243, 107, 0.45));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-depth:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px -4px rgba(107, 60, 255, 0.09), 0 22px 44px -6px rgba(18, 16, 31, 0.08);
+  border-color: transparent;
+}
+
+.card-depth:hover::before {
+  opacity: 1;
+}
+
+/* Dark Card Depth: For dark stage sections (e.g. Earning) */
+.card-dark-depth {
+  border-radius: 28px;
+  position: relative;
+  background-color: #161226;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.35), 0 20px 48px -6px rgba(14, 11, 30, 0.5);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
+}
+
+.card-dark-depth::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 29px;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(107, 60, 255, 0.75), rgba(255, 79, 163, 0.6), rgba(214, 243, 107, 0.55));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card-dark-depth:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px -4px rgba(107, 60, 255, 0.25), 0 24px 52px -6px rgba(0, 0, 0, 0.65);
+  border-color: transparent;
+}
+
+.card-dark-depth:hover::before {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   8. Motion & Card 3D Tilt Utilities (Pass 2)
+   -------------------------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  .tilt-card {
+    will-change: transform;
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-style: preserve-3d;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .tilt-card {
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .thread-line-progress {
+    transform: scaleY(1) !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. Progressive Gradient Thread Line (Pass 2)
+   Selector: .thread-line-track (track) and .thread-line-progress (drawn line)
+   -------------------------------------------------------------------------- */
+.thread-line-track {
+  display: none;
+}
+
+@media (min-width: 1025px) {
+  .thread-line-track {
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: max(24px, calc(50vw - 640px));
+    width: 2px;
+    background: linear-gradient(180deg, rgba(107, 60, 255, 0.45) 0%, rgba(255, 79, 163, 0.45) 50%, rgba(214, 243, 107, 0.45) 100%);
+    pointer-events: none;
+    z-index: 35;
+  }
+}
+
+.thread-line-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #6B3CFF 0%, #FF4FA3 50%, #D6F36B 100%);
+  box-shadow: 0 0 10px rgba(107, 60, 255, 0.65), 0 0 4px rgba(255, 79, 163, 0.8), 0 0 6px rgba(214, 243, 107, 0.7);
+  transform-origin: top center;
+  transform: scaleY(0);
+}
+
+
+
+

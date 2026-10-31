@@ -54,9 +54,9 @@ This document tracks all elements that are currently kept empty or hidden pendin
 - **File:** [`src/i18n/landingCopyAdditions.js`](file:///c:/Users/Sree%20sisters/Desktop/sbloom/src/i18n/landingCopyAdditions.js) (FAQ 4 & FAQ 9)
 - **Current State:** Cleaned of all brackets (`[X working days]` and `[date]`):
   - **FAQ 4 (Approval):**
-    - English: *"Our team reviews every sign-up and lets you know by email."*
-    - Telugu: *"మా బృందం ప్రతి దరఖాస్తును పరిశీలిస్తుంది మరియు ఈమెయిల్ ద్వారా తెలియజేస్తుంది."*
+    - English: *"When we get in touch, we will explain the next steps and get you started."*
+    - Telugu: *"మేము మిమ్మల్ని సంప్రదించినప్పుడు, తదుపరి దశలను వివరించి ప్రారంభించడానికి సహాయం చేస్తాము."*
   - **FAQ 9 (Payment):**
     - English: *"Once a month. At month end you get an invoice, and we pay it to your bank account."*
     - Telugu: *"నెలకు ఒకసారి. నెల చివరలో ఇన్వాయిస్ వస్తుంది, మరియు మీ బ్యాంక్ ఖాతాకు చెల్లిస్తాం."*
-- **How to Update:** If exact turnaround times (e.g. "within 2 business days") or cutoff dates (e.g. "by the 5th") are formalized, add them to `faq.items` in `landingCopyAdditions.js`.
+- **How to Update:** If exact turnaround times (e.g. "within 2 business days") or cutoff dates (e.g. "by the 5th") are formalized, add them to `faq.items` in `landingCopyAdditions.js`. Note: Operational review claims ("Our team reviews every sign-up") are omitted pending formal verification.

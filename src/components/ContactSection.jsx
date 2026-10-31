@@ -83,18 +83,24 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative py-24 lg:py-32 bg-white border-t border-[#12101F]/10 scroll-mt-24"
+      className="relative py-20 lg:py-[112px] bg-white scroll-mt-24"
       aria-label={data.heading}
     >
-      <div className="site-container flex flex-col items-center gap-12">
+      {/* Soft Gradient Fade: Cream to White (80px tall, no hard edge) */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[80px] bg-gradient-to-b from-[#FAF7F2] to-[#FFFFFF] pointer-events-none z-10"
+        aria-hidden="true"
+      />
+
+      <div className="site-container relative z-10 flex flex-col items-center gap-12">
         {/* Section Header */}
-        <div className="text-center max-w-[820px] flex flex-col items-center gap-4">
+        <div data-reveal="heading" className="text-center max-w-[820px] flex flex-col items-center gap-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#FAF7F2] border border-[#12101F]/10 rounded-full shadow-sm text-sm text-[#827C94]">
             <Mail size={14} className="text-[#6B3CFF]" aria-hidden="true" />
             <span className="font-mono">{lang === 'te' ? 'సంప్రదించండి' : 'Get in touch'}</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.15] text-[#12101F] tracking-tight m-0 font-headline">
+          <h2 className="section-heading font-bold text-[#12101F] tracking-tight m-0 font-headline">
             {data.heading}
           </h2>
 
@@ -104,7 +110,7 @@ export default function ContactSection() {
         </div>
 
         {/* Contact Form Card */}
-        <div className="w-full max-w-2xl bg-[#FAF7F2] border border-[#12101F]/10 rounded-3xl p-8 sm:p-12 shadow-xl shadow-[#12101F]/5">
+        <div data-reveal="contact-card" className="w-full max-w-2xl bg-[#FAF7F2] rounded-[28px] card-depth p-8 sm:p-12">
           {isSuccess ? (
             <div className="flex flex-col items-center text-center gap-5 py-8" role="status" aria-live="polite">
               <div className="w-16 h-16 rounded-full bg-[#16A34A]/10 text-[#16A34A] flex items-center justify-center">

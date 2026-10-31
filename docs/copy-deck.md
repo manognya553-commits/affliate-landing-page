@@ -73,17 +73,21 @@ Why join · How it works · Who can join · Earning · FAQ · \[Express Your Int
 
 **Headline:** Help someone find the right service. Earn when it works out.
 
-**Subheading:** People already ask you, “Do you know a good doctor? A good course? Someone who can help with this?” Join sBLOOM free, introduce them to services in healthcare, education and professional services, and earn under each provider’s terms.
+**Subheading:** You already help friends, family and people in your community find the right services. sBLOOM gives you a way to turn relevant introductions into an earning opportunity when those introductions qualify under each provider’s terms.
 
 **Primary button:** Express Your Interest — it’s free
 
 **Secondary button:** See how it works
 
-**Trust row:** Free to join · Open to anyone in India · You see each provider’s terms first · Track every referral
+**Trust row:** Free to join · Open to anyone in India · You see each provider’s terms first · Earnings under provider terms
 
-### Sound familiar?
+### Section 1 · Why Join
 
-**Headline:** You’re already the person people ask.
+**Headline:** Your connections could become an earning opportunity.
+
+**Subheading:** You already help friends, family and people in your community find the right services. With sBLOOM, you can make relevant introductions to service providers and explore an opportunity to earn when those introductions qualify under the provider’s terms.
+
+**Trust line:** Free to join. No sales background required. Earnings are not guaranteed.
 
 - “Which coaching centre is good for my son?”
 - “Do you know a good doctor for my mother?”
@@ -92,12 +96,14 @@ Why join · How it works · Who can join · Earning · FAQ · \[Express Your Int
 
 You answer from the heart, for free, every week. sBLOOM gives those moments a structure, and a reward when your introduction leads somewhere.
 
-### How it works: four simple steps
+### Section 2 · How Earning Works
 
-1. **Express your interest.** Tell us your name, your mobile number and the areas where people trust you. It takes about two minutes and it’s free.
-2. **Learn the service.** Open the sBLOOM knowledge platform. Simple briefs tell you what each service is, who it suits and what people usually ask. You don’t have to memorise anything.
-3. **Introduce.** When someone you know needs a service and says yes to being introduced, pass on the referral through sBLOOM. You introduce. The provider takes it from there.
-4. **Track and earn.** See the status of every referral in the platform. If it qualifies under the provider’s terms, you earn.
+**Headline:** Make a connection. Understand the terms. Earn when eligible.
+
+1. **Find a genuine need.** Someone in your network is looking for a service.
+2. **Make an introduction.** With their permission, connect them with a relevant provider.
+3. **Understand the provider’s terms.** Check what qualifies for compensation before making the referral.
+4. **Earn when the conditions are met.** Compensation depends on the specific provider’s terms and whether the referral qualifies.
 
 ### You introduce. The experts advise.
 
@@ -122,56 +128,59 @@ Anyone in India with a relevant network and an interest in helping can express i
 
 Not sure if it’s for you? Express your interest and we’ll explain.
 
-### Three areas people ask about most
+### Section 3 · Three Service Sectors
 
-- **Healthcare.** Introduce people to healthcare providers and care services listed on sBLOOM.
-- **Education.** Introduce people to courses, institutions and learning programmes.
-- **Professional services.** Introduce people and businesses to professional and advisory services.
+**Headline:** One network of connections. Three areas of opportunity.
 
-Services available to introduce depend on the providers on the platform.
+- **Healthcare.** Introduce someone looking for a suitable healthcare service to a relevant provider.
+- **Education.** Connect students and families with relevant educational services.
+- **Professional Services.** Introduce businesses and individuals to providers whose services may meet their needs.
+
+A referral’s eligibility and compensation depend on the relevant provider’s terms.
 
 ### What an introduction sounds like
 
-A friendly, permission-first message is all it takes. These are examples to show on the page:
+A friendly, permission-first message is all it takes. The affiliate initiates the conversation based on something the person previously mentioned:
 
-- **Healthcare:** “Radha, you said your mother needs a specialist. I’m part of a platform that connects people to clinics and care services. Would you like me to share your details so their team can call you? Only if you’re comfortable.”
-- **Education:** “Ravi, since you’re planning your next course, I can introduce you to a team that explains the options. Shall I pass on your number?”
-- **Professional services:** “Suresh garu, you were asking about setting up your business papers. I can connect you with a team that helps. Should I share your contact?”
+- **Healthcare:**
+  Neighbour: “You said your mother needs a doctor. I know a service that might help.”
+  You (Affiliate): “I can introduce you to a relevant healthcare provider. Would you like me to connect you?”
+- **Education:**
+  Friend: “You mentioned you’re looking for a coaching institute.”
+  You (Affiliate): “I can introduce you to an institute that offers relevant programmes. Would you like to know more?”
+- **Professional Services:**
+  Business Owner: “I need help improving my business online.”
+  You (Affiliate): “I know a service provider who may be able to help. Would you like an introduction?”
 
-The rule behind all three: a clear yes before any details are shared.
+The rule behind all three: a clear yes before any details are shared. No income is guaranteed.
 
-### How you earn
+### Section 4 · Why sBLOOM
 
-**Headline:** Every provider sets its own terms, and you see them first.
+**Headline:** More than just making referrals.
 
-Different services reward referrals in different ways. Some may reward when a person shows genuine interest. Some may reward when the person goes ahead. Some may do both. Before you introduce anyone, you can see how that provider rewards referrals and what has to happen for a referral to count.
+- **Learn before you introduce:** Understand the services and providers.
+- **Refer with confidence:** Use relevant information to make more informed introductions.
+- **Know the terms:** Review the provider’s compensation conditions before referring.
+- **Build around your network:** Introduce services that genuinely match people’s needs.
 
-- **See the terms first.** No surprises after you’ve introduced someone.
-- **Watch the status.** The platform tracks each referral and its progress.
-- **Earn when it qualifies.** Under the provider’s approved terms.
+**One honest line:** Earnings depend on each provider’s terms and on your referrals qualifying. No income is guaranteed.
 
-**One honest line (shown once, not repeated in boxes):** Earnings depend on each provider’s terms and on your referrals qualifying. No income is guaranteed.
+### Frequently Asked Questions About Earning
 
-**Payout details:** \[Add approved payout timing and method before publishing.\]
+**Can I earn money as an sBLOOM affiliate?**
+Yes, the programme offers an opportunity to earn through eligible referrals. Whether a referral qualifies and what compensation applies depend on the relevant service provider’s terms. Earnings are not guaranteed.
 
-### Everything in one place, so you never feel lost
+**How much can I earn per referral?**
+Compensation varies by service provider. The applicable amount or payment arrangement and qualifying conditions should be communicated by the provider. We do not publish a universal commission rate.
 
-- **Service briefs in simple language.** What the service is, who it suits, what you can say and what you should not say.
-- **Answers to common questions.** So you can respond with confidence.
-- **A referral tracker.** See every introduction and where it stands.
-- **Provider terms in one place.** Compare how each one works before you act.
+**Do I get paid for every person I introduce?**
+Not necessarily. Compensation depends on the provider’s terms and whether the referral meets the applicable conditions.
 
-### Built to feel safe, for you and for the people you introduce
+**Do I need to pay to join?**
+No. Joining the sBLOOM Affiliate Programme is free.
 
-- **Free to join.** There is no joining fee.
-- **Permission first.** No one is contacted unless they say yes.
-- **Terms before action.** You see how each provider rewards referrals before you introduce anyone.
-- **Status you can see.** The platform tracks your referrals and their progress.
-- **Your details stay with the programme.** \[Link to privacy notice\]
-
-### Frequently asked questions
-
-**Is it really free to join?** Yes. There is no joining fee.
+**When will I receive payment?**
+Payment timing depends on the relevant provider’s terms. Specific timelines should be communicated only when they have been confirmed.
 
 **I’m a homemaker. Can I do this?** Yes. If people around you trust your word, you can express interest. You can do it from your phone in a couple of minutes.
 
@@ -183,21 +192,15 @@ Different services reward referrals in different ways. Some may reward when a pe
 
 **Can I use this in Telugu?** This page is available in Telugu and English. We’ll tell you which languages the platform and briefs support when you join.
 
-**How much will I earn?** It depends on each provider’s terms and on whether your referral qualifies. You see the terms first. No income is guaranteed.
+**Is my information, and my friends’ information, safe?** Share details only after someone says yes. Information is used only for the programme. [Link to privacy notice]
 
-**When do I get paid?** \[Add approved timing.\] You’ll see the payment terms before you introduce anyone.
+### Section 5 · Final Call to Action
 
-**How will I know what happened to my referral?** The platform tracks referrals and shows their status.
+**Headline:** Your next introduction could open an opportunity.
 
-**Do I need to live in Andhra Pradesh or Telangana?** No. Anyone in India with a relevant network can express interest. Which services you can introduce may depend on where providers operate.
+**Subheading:** Join the sBLOOM Affiliate Programme for free and explore how your trusted connections can become an earning opportunity.
 
-**Is my information, and my friends’ information, safe?** Share details only after someone says yes. Information is used only for the programme. \[Link to privacy notice\]
-
-### Final call to action
-
-**Headline:** Someone you know is looking for the right help right now.
-
-Be the person who points them in the right direction. It’s free to join, and it takes about two minutes to start.
+**Disclaimer:** Compensation varies by service provider and is subject to the applicable terms. Joining and making a referral do not guarantee earnings.
 
 **Button:** Express Your Interest
 

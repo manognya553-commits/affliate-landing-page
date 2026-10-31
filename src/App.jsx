@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Lenis from 'lenis'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Navigation from './components/Navigation'
 import HeroSection from './components/HeroSection'
 import SoundFamiliarSection from './components/SoundFamiliarSection'
+import ConversationCarouselSection from './components/ConversationCarouselSection'
 import HowItWorksSection from './components/HowItWorksSection'
 import PromisesSection from './components/PromisesSection'
 import WhoCanJoinSection from './components/WhoCanJoinSection'
@@ -14,11 +15,17 @@ import FaqSection from './components/FaqSection'
 import FinalCtaSection from './components/FinalCtaSection'
 import ContactSection from './components/ContactSection'
 import FooterSection from './components/FooterSection'
+import ThreadLine from './components/ThreadLine'
+import { useLanguage } from './context/useLanguage'
+import { initScrollReveals, initCardTilt } from './utils/motion'
 import { SIGNUP_URL } from './config/links'
 
 gsap.registerPlugin(ScrollTrigger)
 
 function App() {
+  const { lang } = useLanguage()
+  const [activeLegalModal, setActiveLegalModal] = useState(null) // 'terms' | 'privacy' | null
+
   // Initialize Lenis smooth scroll and connect with GSAP ScrollTrigger
   useEffect(() => {
     const lenis = new Lenis({
@@ -42,6 +49,33 @@ function App() {
     }
   }, [])
 
+  // Initialize scroll reveals and card hover 3D tilt
+  useEffect(() => {
+    const cleanupReveals = initScrollReveals()
+    const cleanupTilt = initCardTilt()
+
+    // Refresh ScrollTrigger after web fonts load
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        ScrollTrigger.refresh()
+      })
+    }
+
+    return () => {
+      cleanupReveals()
+      cleanupTilt()
+    }
+  }, [])
+
+  // Refresh ScrollTrigger on language toggle after layout settles
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh()
+    }, 250)
+
+    return () => clearTimeout(timer)
+  }, [lang])
+
   const handleBecomeAffiliate = () => {
     if (SIGNUP_URL && SIGNUP_URL.trim() !== '') {
       window.open(SIGNUP_URL, '_blank', 'noopener,noreferrer')
@@ -61,15 +95,20 @@ function App() {
       <Navigation onBecomeAffiliate={handleBecomeAffiliate} />
 
       {/* Main Content Area */}
-      <main id="main-content" className="flex-1 flex flex-col">
+      <main id="main-content" className="relative flex-1 flex flex-col">
+        {/* Luminous Progressive Thread Line (desktop width 1025px and above) */}
+        <ThreadLine />
+
         {/* Stage 1: Hero Section with Organic Blob and Luminous Thread */}
         <HeroSection onBecomeAffiliate={handleBecomeAffiliate} />
 
-        {/* Stage 2 Story Sections */}
-        {/* 1. “Sound familiar?” Simulated Community Chat */}
+        {/* 1. “Why Join / Sound familiar?” Restored Programme Value Proposition */}
         <SoundFamiliarSection />
 
-        {/* 2. Four-Step Stepper with Dynamic Phone Mockups */}
+        {/* 2. Dedicated Three-Phone Conversation Carousel: What an introduction sounds like */}
+        <ConversationCarouselSection />
+
+        {/* 3. Four-Step Stepper with Dynamic Phone Mockups */}
         <HowItWorksSection onBecomeAffiliate={handleBecomeAffiliate} />
 
         {/* 3. Three Promise Cards: Ask first, Stay in your lane, Tell the truth */}
@@ -88,14 +127,22 @@ function App() {
         <FaqSection />
 
         {/* 5. Final CTA: headline, subheading, primary CTA, secondary terms link */}
-        <FinalCtaSection onBecomeAffiliate={handleBecomeAffiliate} />
+        <FinalCtaSection
+          onBecomeAffiliate={handleBecomeAffiliate}
+          onOpenTerms={() => setActiveLegalModal('terms')}
+        />
 
         {/* 6. Contact: message form with honeypot, validation, submitContact */}
         <ContactSection />
       </main>
 
       {/* Footer Section */}
-      <FooterSection />
+      <FooterSection
+        activeModal={activeLegalModal}
+        onOpenTerms={() => setActiveLegalModal('terms')}
+        onOpenPrivacy={() => setActiveLegalModal('privacy')}
+        onCloseModal={() => setActiveLegalModal(null)}
+      />
     </div>
   )
 }

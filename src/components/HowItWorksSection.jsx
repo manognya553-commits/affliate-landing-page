@@ -84,15 +84,15 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
         note: 'You introduce. The provider takes it from there.',
       },
       step4: {
-        badge: 'Tracker',
-        title: 'Referral Tracker',
-        subtitle: 'Live status for every introduction',
+        badge: 'Terms',
+        title: 'Provider Terms & Status',
+        subtitle: 'Check qualifying conditions under provider terms',
         items: [
-          { label: 'Active Introduction', status: 'Submitted', time: '10m ago', color: '#6B3CFF' },
-          { label: 'Provider Review', status: 'In progress', time: 'Today', color: '#FF4FA3' },
-          { label: 'Status Update', status: 'Qualified', time: 'Terms met', color: '#10B981' },
+          { label: 'Introduction Submitted', status: 'Submitted', time: '10m ago', color: '#6B3CFF' },
+          { label: 'Provider Evaluation', status: 'In review', time: 'Today', color: '#FF4FA3' },
+          { label: 'Terms Qualified', status: 'Eligible', time: 'Terms met', color: '#10B981' },
         ],
-        footer: 'If it qualifies under provider terms, you earn.',
+        footer: 'Compensation depends on provider terms and referral eligibility.',
       },
     },
     te: {
@@ -130,15 +130,15 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
         note: 'మీరు పరిచయం చేయండి. అక్కడి నుండి సంస్థ చూసుకుంటుంది.',
       },
       step4: {
-        badge: 'ట్రాకర్',
-        title: 'రిఫరల్ ట్రాకర్',
-        subtitle: 'ప్రతి పరిచయానికి ప్రత్యక్ష స్థితి',
+        badge: 'నిబంధనలు',
+        title: 'ప్రొవైడర్ నిబంధనలు & అర్హత',
+        subtitle: 'నిబంధనల ప్రకారం అర్హతను పరిశీలించండి',
         items: [
-          { label: 'యాక్టివ్ పరిచయం', status: 'సమర్పించబడింది', time: '10 నిమిషాల క్రితం', color: '#6B3CFF' },
-          { label: 'ప్రొవైడర్ సమీక్ష', status: 'పురోగతిలో ఉంది', time: 'ఈరోజు', color: '#FF4FA3' },
-          { label: 'అర్హత స్థితి', status: 'నిబంధనల ప్రకారం', time: 'అర్హత పొందింది', color: '#10B981' },
+          { label: 'పరిచయం సమర్పించబడింది', status: 'సమర్పించబడింది', time: '10 నిమిషాల క్రితం', color: '#6B3CFF' },
+          { label: 'ప్రొవైడర్ పరిశీలన', status: 'పురోగతిలో ఉంది', time: 'ఈరోజు', color: '#FF4FA3' },
+          { label: 'అర్హత షరతులు', status: 'అర్హత సాధించింది', time: 'నిబంధనల ప్రకారం', color: '#10B981' },
         ],
-        footer: 'నిబంధనల ప్రకారం అర్హత పొందితే సంపాదన.',
+        footer: 'పరిహారం ప్రొవైడర్ నిబంధనలు మరియు రిఫరల్ అర్హతపై ఆధారపడి ఉంటుంది.',
       },
     },
   }
@@ -149,23 +149,23 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
     <section
       id="how-it-works"
       ref={sectionRef}
-      className="relative bg-[#FAF7F2] scroll-mt-24 py-16 pin:py-0"
+      className="relative bg-[#FAF7F2] scroll-mt-24 py-12 lg:py-20 pin:py-0"
       aria-label="How it works"
     >
       <div
         ref={pinWrapperRef}
-        className="relative w-full flex flex-col items-center px-4 pt-8 pb-10 overflow-visible
-                   pin:h-screen pin:justify-start pin:pt-[96px] pin:pb-4 pin:overflow-hidden"
+        className="relative w-full flex flex-col items-center px-4 pt-0 pb-0 overflow-visible
+                   pin:h-screen pin:justify-start pin:pt-[96px] pin:pb-4 pin:overflow-visible"
       >
         <div className="site-container flex flex-col gap-5 pin:gap-6 w-full">
           {/* Section Header */}
-          <div className="text-left max-w-[680px] flex flex-col items-start gap-3">
+          <div data-reveal="heading" className="text-left max-w-[680px] flex flex-col items-start gap-3">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/90 border border-[#12101F]/10 rounded-full shadow-sm text-sm text-[#827C94]">
               <ListOrdered size={14} className="text-[#6B3CFF]" aria-hidden="true" />
               <span className="font-mono">{copy.howItWorks.eyebrow}</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.15] text-[#12101F] tracking-tight m-0 font-headline">
+            <h2 className="section-heading font-bold text-[#12101F] tracking-tight m-0 font-headline">
               {copy.howItWorks.headline.split(' ').map((word, idx) => (
                 <React.Fragment key={`hiw-word-${idx}`}>
                   <span className="inline-block">{word}</span>
@@ -173,12 +173,18 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
                 </React.Fragment>
               ))}
             </h2>
+
+            {copy.howItWorks.subheading && (
+              <p className="text-base sm:text-lg text-[#575266] m-0 leading-relaxed max-w-[620px]">
+                {copy.howItWorks.subheading}
+              </p>
+            )}
           </div>
 
           {/* Stepper Two-Column Layout */}
           <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] items-center gap-8 lg:gap-12 relative w-full">
             {/* Left Column: Stepper List with Highlighted Active Step */}
-            <div className="relative flex flex-col gap-4 pl-1.5" role="tablist" aria-label="Four steps">
+            <div data-reveal="card" className="relative flex flex-col gap-3.5 pl-1.5" role="tablist" aria-label="Four steps">
               {stepsData.map((step, idx) => {
                 const isSelected = activeStep === idx
                 const isCompleted = idx < activeStep
@@ -191,7 +197,7 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
                     aria-selected={isSelected}
                     aria-controls={`step-panel-${idx}`}
                     tabIndex={0}
-                    className={`relative flex items-start gap-4 p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                    className={`relative flex items-start gap-4 p-3.5 sm:p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${
                       isSelected
                         ? 'bg-white border-[#6B3CFF]/40 shadow-xl shadow-[#6B3CFF]/10'
                         : 'bg-white/60 border-[#12101F]/5 hover:bg-white/95 hover:border-[#6B3CFF]/30 hover:shadow-md'
@@ -229,7 +235,7 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
                     {idx < stepsData.length - 1 && (
                       <span
                         aria-hidden="true"
-                        className={`hidden sm:block absolute z-[1] left-[34.5px] top-[56px] -bottom-[34px] w-[3px] rounded-full transition-colors duration-300 ${
+                        className={`hidden sm:block absolute z-[1] left-[34.5px] top-[52px] -bottom-[26px] w-[3px] rounded-full transition-colors duration-300 ${
                           idx < activeStep ? 'bg-gradient-to-b from-[#6B3CFF] to-[#FF4FA3]' : 'bg-[#12101F]/10'
                         }`}
                       />
@@ -240,9 +246,9 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
             </div>
 
             {/* Right Column: Dynamic Phone Mockup Changing Per Step */}
-            <div className="flex justify-center w-full">
+            <div data-reveal="card" className="flex justify-center w-full">
               <div
-                className="w-full max-w-[340px] h-[460px] pin:h-[clamp(400px,calc(100svh-300px),480px)] bg-white
+                className="w-full max-w-[340px] h-[450px] pin:h-[clamp(380px,calc(100svh-280px),450px)] bg-white
                            border-[9px] border-[#1A162B] rounded-[40px] shadow-2xl shadow-[#12101F]/10
                            flex flex-col p-3 sm:p-3.5 box-border overflow-hidden"
                 role="tabpanel"

@@ -20,18 +20,24 @@ export default function FaqSection() {
   return (
     <section
       id="faq"
-      className="relative py-24 lg:py-32 bg-white border-t border-[#12101F]/10 scroll-mt-24"
+      className="relative pt-16 pb-16 sm:pt-20 sm:pb-20 lg:pt-24 lg:pb-28 bg-[#FAF7F2] scroll-mt-24"
       aria-label={data.headline}
     >
-      <div className="site-container flex flex-col gap-14 items-center">
+      {/* Soft Gradient Fade: Dark Stage to Warm Cream (80px tall, no hard edge) */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[80px] bg-gradient-to-b from-[#0E0B1E] to-[#FAF7F2] pointer-events-none z-10"
+        aria-hidden="true"
+      />
+
+      <div className="site-container relative z-10 flex flex-col gap-10 sm:gap-12 items-center">
         {/* Section Header */}
-        <div className="text-center max-w-[820px] flex flex-col items-center gap-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#FAF7F2] border border-[#12101F]/10 rounded-full shadow-sm text-sm text-[#827C94]">
+        <div data-reveal="heading" className="text-center max-w-[820px] flex flex-col items-center gap-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/90 border border-[#12101F]/10 rounded-full shadow-sm text-sm text-[#827C94]">
             <HelpCircle size={14} className="text-[#6B3CFF]" aria-hidden="true" />
             <span className="font-mono">{data.eyebrow}</span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-[1.15] text-[#12101F] tracking-tight m-0 font-headline">
+          <h2 className="section-heading font-bold text-[#12101F] tracking-tight m-0 font-headline">
             {data.headline}
           </h2>
         </div>
@@ -44,10 +50,11 @@ export default function FaqSection() {
             return (
               <div
                 key={`faq-item-${idx}`}
-                className={`border rounded-2xl bg-[#FAF7F2] transition-all duration-300 shadow-sm ${
+                data-reveal="faq-row"
+                className={`rounded-[28px] card-depth bg-white transition-all duration-300 ${
                   isOpen
-                    ? 'border-[#6B3CFF]/40 shadow-md ring-1 ring-[#6B3CFF]/20 bg-white'
-                    : 'border-[#12101F]/10 hover:border-[#6B3CFF]/20'
+                    ? 'ring-2 ring-[#6B3CFF]/40 border-transparent shadow-lg'
+                    : 'hover:border-[#6B3CFF]/30'
                 }`}
               >
                 <button

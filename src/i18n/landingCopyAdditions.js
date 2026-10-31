@@ -27,7 +27,7 @@ export const copyAdditionsEn = {
     eyebrow: 'Who can join',
     headline: 'Anyone people trust can join.',
     subheading:
-      'You don’t need a sales background, a shop or a degree. You need people who ask you for suggestions.',
+      'These profiles are examples, not eligibility restrictions. Anyone whose circle trusts their recommendations can join—no sales background or degree required.',
     cards: [
       {
         title: 'Homemakers',
@@ -49,143 +49,143 @@ export const copyAdditionsEn = {
       {
         title: 'Anyone else',
         description:
-          'Retired people, community volunteers, or anyone whose circle trusts them.',
+          'Entrepreneurs, freelancers, community connectors, retired people, or anyone whose circle trusts them.',
       },
     ],
-    closing: 'Open to anyone in India. Free to join. Our team reviews every sign-up.',
+    closing: 'Open to anyone in India with a trusted network. Free to join.',
   },
 
   whatYouCanIntroduce: {
     id: 'what-you-can-introduce',
-    eyebrow: 'What you can introduce',
-    headline: 'Three areas, one platform.',
+    eyebrow: 'Three service sectors',
+    headline: 'One network of connections. Three areas of opportunity.',
     subheading:
-      'You introduce. The providers advise. Available services vary by city and provider.',
+      'You can introduce relevant offerings across healthcare, education, and professional services on the platform. You introduce. The providers advise.',
     tiles: [
       {
-        title: 'Education',
-        description: 'Coaching, courses, admissions and career guidance.',
-      },
-      {
         title: 'Healthcare',
-        description: 'Clinics, consultations, diagnostic and care services.',
+        description: 'Introduce someone looking for a suitable healthcare service to a relevant provider.',
       },
       {
-        title: 'Professional services',
+        title: 'Education',
+        description: 'Connect students and families with relevant educational services.',
+      },
+      {
+        title: 'Professional Services',
         description:
-          'Business paperwork, accounting, legal and financial help from qualified providers.',
+          'Introduce businesses and individuals to providers whose services may meet their needs.',
       },
     ],
-    note: 'You can introduce one service or several, across any of these areas.',
+    note: 'A referral’s eligibility and compensation depend on the relevant provider’s terms.',
   },
 
   earning: {
     id: 'earning',
-    eyebrow: 'Earning',
-    headline: 'You earn when an introduction works out.',
+    eyebrow: 'Why sBLOOM',
+    headline: 'More than just making referrals.',
     subheading:
-      'Every service shows its terms before you choose it, so you know how you will be paid.',
+      'sBLOOM gives you the information, clarity and structure to introduce with confidence:',
     blocks: [
       {
-        title: 'Pick a payment model',
-        description:
-          'Depending on the provider, you earn a commission for each successful introduction, or a monthly retainer plus commission.',
+        title: 'Learn before you introduce',
+        description: 'Understand the services and providers.',
       },
       {
-        title: 'Paid for results the provider confirms',
-        description:
-          'An introduction counts once the provider confirms it. You can see its status on your dashboard.',
+        title: 'Refer with confidence',
+        description: 'Use relevant information to make more informed introductions.',
       },
       {
-        title: 'One invoice a month',
-        description:
-          'At month end we add up everything confirmed that month, across all providers, into a single invoice for you.',
+        title: 'Know the terms',
+        description: 'Review the provider’s compensation conditions before referring.',
       },
       {
-        title: 'Paid to your bank account',
-        description:
-          'Add your bank details when you choose a paid service. You don’t need them before that.',
+        title: 'Build around your network',
+        description: 'Introduce services that genuinely match people’s needs.',
       },
     ],
-    example: {
-      title: 'A sample month',
-      intro:
-        'In one month, 3 introductions to a clinic and 2 to a coaching centre were confirmed. You get one invoice with both, grouped by provider, and one total.',
-      // TODO: fill real amounts, or hide rows and total until figures are available
-      rows: [
-        'Clinic: 3 × ₹[commission] = ₹[subtotal]',
-        'Coaching centre: 2 × ₹[commission] = ₹[subtotal]',
-      ],
-      total: 'Invoice total: ₹[total]',
-      footnote:
-        'Illustration only. Actual amounts depend on each provider’s terms. Introductions confirmed after month end go into the next month’s invoice.',
-    },
+    caution:
+      'Compensation varies by service provider and is subject to the applicable terms. Joining and making a referral do not guarantee earnings.',
     noGuarantee:
-      'Your earnings depend on how many of your introductions the providers confirm. We don’t promise a fixed income.',
+      'Earnings depend on each provider’s terms and on your referrals qualifying. No income is guaranteed.',
   },
 
   faq: {
     id: 'faq',
     eyebrow: 'FAQ',
-    headline: 'Common questions',
+    headline: 'Frequently asked questions',
     items: [
+      {
+        question: 'Can I earn money as an sBLOOM affiliate?',
+        answer:
+          'Yes, the programme offers an opportunity to earn through eligible referrals. Whether a referral qualifies and what compensation applies depend on the relevant service provider’s terms. Earnings are not guaranteed.',
+      },
+      {
+        question: 'How much can I earn per referral?',
+        answer:
+          'Compensation varies by service provider. The applicable amount or payment arrangement and qualifying conditions should be communicated by the provider. We do not publish a universal commission rate.',
+      },
+      {
+        question: 'Do I get paid for every person I introduce?',
+        answer:
+          'Not necessarily. Compensation depends on the provider’s terms and whether the referral meets the applicable conditions.',
+      },
+      {
+        question: 'Do I need to pay to join?',
+        answer: 'No. Joining the sBLOOM Affiliate Programme is free.',
+      },
+      {
+        question: 'When will I receive payment?',
+        answer:
+          'Payment timing depends on the relevant provider’s terms. Specific timelines should be communicated only when they have been confirmed.',
+      },
       {
         question: 'Who can become an affiliate?',
         answer:
-          'Anyone people ask for suggestions: homemakers, students, shopkeepers, working professionals and others. You don’t need sales experience.',
+          'Anyone people ask for suggestions: students, homemakers, shopkeepers, working professionals, entrepreneurs, freelancers, and others. These are examples, not restrictions. You don’t need sales experience.',
       },
       {
-        question: 'Does it cost anything to join?',
-        answer: 'No. Joining is free, and we never ask you for a payment.',
-      },
-      {
-        question: 'What do I need to start?',
+        question: 'I’m a homemaker. Can I do this?',
         answer:
-          'Your name, your area and an email address (or a mobile number if you don’t have email). Bank details are needed only when you choose a paid service.',
+          'Yes. If people around you trust your word, you can express interest. You can do it from your phone in a couple of minutes.',
       },
       {
-        question: 'How long does approval take?',
+        question: 'Do I need to be an expert?',
         answer:
-          'Our team reviews every sign-up and lets you know by email.',
+          'No. You introduce, and the provider advises. The briefs in the platform help you understand each service.',
       },
       {
-        question: 'Can I introduce more than one service?',
-        answer: 'Yes. You can choose one or many services, in any area.',
-      },
-      {
-        question: 'What if I don’t know enough about a service?',
+        question: 'Do I have to convince or push people?',
         answer:
-          'The sBLOOM knowledge platform has simple briefs for every service. You don’t have to memorise anything, and you can ask your questions there.',
+          'No. You only introduce people who need a service and say yes to being introduced. No pressure.',
       },
       {
-        question: 'Can I share someone’s details?',
+        question: 'I have a job. Can I join?',
         answer:
-          'Only after they clearly say yes. You confirm their permission when you submit an introduction.',
+          'You can express interest while you work. We’ll explain what’s expected when we get in touch.',
       },
       {
-        question: 'How do I know my introduction counted?',
+        question: 'Can I use this in Telugu?',
         answer:
-          'Your dashboard shows the status of every introduction. It is marked confirmed when the provider confirms it.',
+          'This page is available in Telugu and English. We’ll tell you which languages the platform and briefs support when you join.',
       },
       {
-        question: 'When and how do I get paid?',
+        question: 'Is my information, and my friends’ information, safe?',
         answer:
-          'Once a month. At month end you get an invoice, and we pay it to your bank account.',
-      },
-      {
-        question: 'Do I need to know English?',
-        answer:
-          'No. The site is also in Telugu. Some service material may be in English only for now, and we are adding Telugu step by step.',
+          'Share details only after someone says yes. Information is used only for the programme.',
       },
     ],
   },
 
   finalCta: {
     id: 'final-cta',
-    headline: 'Ready to start introducing?',
-    subheading: 'Free to join. Our team reviews every sign-up.',
+    headline: 'Your next introduction could open an opportunity.',
+    subheading:
+      'Join the sBLOOM Affiliate Programme for free and explore how your trusted connections can become an earning opportunity.',
+    disclaimer:
+      'Compensation varies by service provider and is subject to the applicable terms. Joining and making a referral do not guarantee earnings.',
     primaryCta: 'Become an affiliate — it’s free',
     secondaryLink: 'Read the programme terms',
+    button: 'Become an affiliate — it’s free',
   },
 
   contact: {
@@ -211,7 +211,7 @@ export const copyAdditionsTe = {
     eyebrow: 'ఎవరు చేరవచ్చు',
     headline: 'ప్రజలు నమ్మే ఎవరైనా చేరవచ్చు.',
     subheading:
-      'మీకు సేల్స్ అనుభవం, షాపు లేదా డిగ్రీ అవసరం లేదు. సలహా కోసం మిమ్మల్ని అడిగే వాళ్లు ఉంటే చాలు.',
+      'ఈ వర్గాలు ఉదాహరణలు మాత్రమే, పరిమితులు కావు. తమ పరిచయస్తులు నమ్మే భారతదేశంలోని ఎవరైనా చేరవచ్చు—సేల్స్ అనుభవం లేదా డిగ్రీ అవసరం లేదు.',
     cards: [
       {
         title: 'గృహిణులు',
@@ -234,80 +234,65 @@ export const copyAdditionsTe = {
       {
         title: 'ఇంకా ఎవరైనా',
         description:
-          'రిటైర్ అయినవారు, స్వచ్ఛంద కార్యకర్తలు, మిమ్మల్ని నమ్మే వర్గం ఉన్న ఎవరైనా.',
+          'వ్యాపారవేత్తలు, ఫ్రీలాన్సర్లు, రిటైర్ అయినవారు, కమ్యూనిటీ కార్యకర్తలు, లేదా ప్రజలు నమ్మే ఎవరైనా.',
       },
     ],
     closing:
-      'భారతదేశంలో ఎవరైనా చేరవచ్చు. చేరడం పూర్తిగా ఉచితం. మా బృందం ప్రతి దరఖాస్తును పరిశీలిస్తుంది.',
+      'నమ్మకమైన పరిచయాలు ఉన్న భారతదేశంలోని ఎవరైనా చేరవచ్చు. చేరడం పూర్తిగా ఉచితం.',
   },
 
   whatYouCanIntroduce: {
     id: 'what-you-can-introduce',
-    eyebrow: 'మీరు పరిచయం చేయగల సేవలు',
-    headline: 'మూడు రంగాలు, ఒకే వేదిక.',
+    eyebrow: 'సేవా రంగాలు',
+    headline: 'పరిచయాల ఒకే నెట్‌వర్క్. అవకాశాల మూడు రంగాలు.',
     subheading:
-      'మీరు పరిచయం చేయండి, సలహా ఇచ్చేది సేవా సంస్థలే. సేవలు నగరం, సంస్థను బట్టి మారవచ్చు.',
+      'అఫిలియేట్లు వేదికపై హెల్త్‌కేర్, విద్య, మరియు ప్రొఫెషనల్ సేవలన్నింటిలోనూ సేవలను పరిచయం చేయవచ్చు. మీరు పరిచయం చేయండి, సలహా ఇచ్చేది సేవా సంస్థలే.',
     tiles: [
       {
-        title: 'విద్య',
-        description: 'కోచింగ్, కోర్సులు, అడ్మిషన్లు, కెరీర్ మార్గదర్శకత్వం.',
+        title: 'హెల్త్‌కేర్',
+        description: 'తగిన హెల్త్‌కేర్ సేవ కోసం చూస్తున్న వారిని సంబంధిత ప్రొవైడర్‌కు పరిచయం చేయండి.',
       },
       {
-        title: 'ఆరోగ్యం',
-        description: 'క్లినిక్‌లు, సంప్రదింపులు, డయాగ్నస్టిక్ మరియు సంరక్షణ సేవలు.',
+        title: 'విద్య',
+        description: 'విద్యార్థులు మరియు కుటుంబాలను సంబంధిత విద్యా సేవలతో అనుసంధానించండి.',
       },
       {
         title: 'ప్రొఫెషనల్ సేవలు',
         description:
-          'వ్యాపార పత్రాలు, అకౌంటింగ్, చట్టపరమైన మరియు ఆర్థిక సహాయం అందించే అర్హత గల నిపుణులు.',
+          'వ్యాపారాలు మరియు వ్యక్తులను వారి అవసరాలకు సరిపోయే సర్వీస్ ప్రొవైడర్లకు పరిచయం చేయండి.',
       },
     ],
-    note: 'మీరు ఈ రంగాల్లో ఒకటి లేదా అనేక సేవలను పరిచయం చేయవచ్చు.',
+    note: 'రిఫరల్ యొక్క అర్హత మరియు పరిహారం సంబంధిత ప్రొవైడర్ నిబంధనలపై ఆధారపడి ఉంటాయి.',
   },
 
   earning: {
     id: 'earning',
-    eyebrow: 'సంపాదన',
-    headline: 'పరిచయం ఫలిస్తే మీకు సంపాదన.',
+    eyebrow: 'sBLOOM ఎందుకు',
+    headline: 'కేవలం రిఫరల్స్ చేయడం కంటే ఎక్కువ.',
     subheading:
-      'ప్రతి సేవ నిబంధనలు ముందే కనిపిస్తాయి, కాబట్టి మీకు ఎలా చెల్లిస్తారో తెలుస్తుంది.',
+      'నమ్మకంతో పరిచయం చేయడానికి sBLOOM మీకు సమాచారం, స్పష్టత మరియు విధానాన్ని అందిస్తుంది:',
     blocks: [
       {
-        title: 'చెల్లింపు విధానాన్ని ఎంచుకోండి',
-        description:
-          'ప్రొవైడర్‌ను బట్టి, విజయవంతమైన ప్రతి పరిచయానికి కమీషన్ లేదా నెలవారీ రిటైనర్ + కమీషన్ లభిస్తుంది.',
+        title: 'పరిచయం చేసే ముందే తెలుసుకోండి',
+        description: 'సేవలు మరియు ప్రొవైడర్ల గురించి అర్థం చేసుకోండి.',
       },
       {
-        title: 'ప్రొవైడర్ నిర్ధారించిన ఫలితాలకే చెల్లింపు',
-        description:
-          'ప్రొవైడర్ నిర్ధారించినప్పుడు రిఫరల్ లెక్కలోకి వస్తుంది. దాని స్థితిని మీ డాష్‌బోర్డ్‌లో చూడవచ్చు.',
+        title: 'ఆత్మవిశ్వాసంతో రిఫర్ చేయండి',
+        description: 'మరింత సమాచారంతో కూడిన పరిచయాలు చేయడానికి సంబంధిత వివరాలను ఉపయోగించండి.',
       },
       {
-        title: 'నెలకు ఒక ఇన్వాయిస్',
-        description:
-          'నెల చివరలో ఆ నెలలో నిర్ధారించినవన్నీ, అన్ని ప్రొవైడర్లవీ కలిపి మీకు ఒకే ఇన్వాయిస్ ఇస్తాం.',
+        title: 'నిబంధనలను తెలుసుకోండి',
+        description: 'రిఫర్ చేసే ముందే ప్రొవైడర్ పరిహార నిబంధనలను సమీక్షించండి.',
       },
       {
-        title: 'నేరుగా మీ బ్యాంక్ ఖాతాకు',
-        description:
-          'చెల్లింపు ఉన్న సేవను ఎంచుకున్నప్పుడే బ్యాంక్ వివరాలు ఇవ్వండి, అంతకుముందు అవసరం లేదు.',
+        title: 'మీ నెట్‌వర్క్ చుట్టూ నిర్మించండి',
+        description: 'ప్రజల అవసరాలకు నిజంగా సరిపోయే సేవలను పరిచయం చేయండి.',
       },
     ],
-    example: {
-      title: 'ఒక నమూనా నెల',
-      intro:
-        'ఒక నెలలో క్లినిక్‌కు 3 పరిచయాలు, కోచింగ్ సెంటర్‌కు 2 పరిచయాలు నిర్ధారణ అయ్యాయనుకోండి. మీకు రెండూ ప్రొవైడర్ వారీగా చూపిస్తూ ఒకే ఇన్వాయిస్, ఒకే మొత్తం వస్తుంది.',
-      // TODO: fill real amounts, or hide rows and total until figures are available
-      rows: [
-        'క్లినిక్: 3 × ₹[కమీషన్] = ₹[ఉప మొత్తం]',
-        'కోచింగ్ సెంటర్: 2 × ₹[కమీషన్] = ₹[ఉప మొత్తం]',
-      ],
-      total: 'ఇన్వాయిస్ మొత్తం: ₹[మొత్తం]',
-      footnote:
-        'ఇది ఉదాహరణ మాత్రమే. అసలు మొత్తాలు ప్రతి ప్రొవైడర్ నిబంధనలపై ఆధారపడతాయి. నెల చివరి తర్వాత నిర్ధారణ అయినవి తర్వాతి నెల ఇన్వాయిస్‌లోకి వెళ్తాయి.',
-    },
+    caution:
+      'పరిహారం సర్వీస్ ప్రొవైడర్‌ను బట్టి మారుతుంది మరియు వర్తించే నిబంధనలకు లోబడి ఉంటుంది. చేరడం మరియు రిఫరల్ చేయడం వల్ల ఆదాయానికి హామీ ఉండదు.',
     noGuarantee:
-      'మీ సంపాదన ప్రొవైడర్లు ఎన్ని పరిచయాలను నిర్ధారిస్తారనే దానిపై ఆధారపడుతుంది. స్థిరమైన ఆదాయానికి మేము హామీ ఇవ్వము.',
+      'ఆదాయం ప్రతి ప్రొవైడర్ నిబంధనలు మరియు మీ రిఫరల్స్ అర్హతపై ఆధారపడి ఉంటుంది. ఆదాయానికి హామీ లేదు.',
   },
 
   faq: {
@@ -316,63 +301,77 @@ export const copyAdditionsTe = {
     headline: 'తరచుగా అడిగే ప్రశ్నలు',
     items: [
       {
+        question: 'sBLOOM అఫిలియేట్‌గా నేను డబ్బు సంపాదించవచ్చా?',
+        answer:
+          'అవును, అర్హత కలిగిన రిఫరల్స్ ద్వారా సంపాదించే అవకాశాన్ని ఈ ప్రోగ్రామ్ అందిస్తుంది. రిఫరల్ అర్హత పొందుతుందా లేదా మరియు ఏ పరిహారం వర్తిస్తుంది అనేది సంబంధిత సర్వీస్ ప్రొవైడర్ నిబంధనలపై ఆధారపడి ఉంటుంది. ఆదాయానికి హామీ లేదు.',
+      },
+      {
+        question: 'ప్రతి రిఫరల్‌కు నేను ఎంత సంపాదించగలను?',
+        answer:
+          'పరిహారం సర్వీస్ ప్రొవైడర్‌ను బట్టి మారుతుంది. వర్తించే మొత్తం లేదా చెల్లింపు విధానం మరియు అర్హత షరతులు ప్రొవైడర్ ద్వారా తెలియజేయబడతాయి. మేము సార్వత్రిక కమీషన్ రేటును ప్రచురించము.',
+      },
+      {
+        question: 'నేను పరిచయం చేసే ప్రతి వ్యక్తికి నాకు చెల్లింపు లభిస్తుందా?',
+        answer:
+          'ఖచ్చితంగా కాదు. పరిహారం ప్రొవైడర్ నిబంధనలు మరియు రిఫరల్ వర్తించే షరతులను నెరవేరుస్తుందా లేదా అనే దానిపై ఆధారపడి ఉంటుంది.',
+      },
+      {
+        question: 'చేరడానికి నేను డబ్బు చెల్లించాలా?',
+        answer: 'లేదు. sBLOOM అఫిలియేట్ ప్రోగ్రామ్‌లో చేరడం పూర్తిగా ఉచితం.',
+      },
+      {
+        question: 'నాకు చెల్లింపు ఎప్పుడు అందుతుంది?',
+        answer:
+          'చెల్లింపు సమయం సంబంధిత ప్రొవైడర్ నిబంధనలపై ఆధారపడి ఉంటుంది. నిర్దిష్ట కాలక్రమం ధృవీకరించబడినప్పుడు మాత్రమే తెలియజేయబడుతుంది.',
+      },
+      {
         question: 'ఎవరు అఫిలియేట్ కావచ్చు?',
         answer:
-          'సలహా కోసం ప్రజలు అడిగే ఎవరైనా: గృహిణులు, విద్యార్థులు, షాపు యజమానులు, ఉద్యోగులు, ఇతరులు. సేల్స్ అనుభవం అవసరం లేదు.',
+          'సలహా కోసం ప్రజలు అడిగే ఎవరైనా: విద్యార్థులు, గృహిణులు, షాపు యజమానులు, ఉద్యోగులు, వ్యాపారవేత్తలు, ఫ్రీలాన్సర్లు, ఇతరులు. ఇవి ఉదాహరణలు మాత్రమే, పరిమితులు కావు. సేల్స్ అనుభవం అవసరం లేదు.',
       },
       {
-        question: 'చేరడానికి ఖర్చు ఉందా?',
-        answer: 'లేదు. చేరడం పూర్తిగా ఉచితం, మేము ఎప్పుడూ చెల్లింపు అడగము.',
-      },
-      {
-        question: 'ప్రారంభించడానికి ఏం కావాలి?',
+        question: 'నేను గృహిణిని. నేను ఇది చేయవచ్చా?',
         answer:
-          'మీ పేరు, ప్రాంతం, ఈమెయిల్ (ఈమెయిల్ లేకపోతే మొబైల్ నంబర్). బ్యాంక్ వివరాలు చెల్లింపు ఉన్న సేవను ఎంచుకున్నప్పుడు మాత్రమే అవసరం.',
+          'అవును. మీ చుట్టూ ఉన్నవారు మీ మాటను నమ్మితే, మీరు ఆసక్తి వ్యక్తం చేయవచ్చు. మీ ఫోన్ నుండి రెండు నిమిషాల్లో చేయవచ్చు.',
       },
       {
-        question: 'ఆమోదానికి ఎంత సమయం పడుతుంది?',
+        question: 'నేను నిపుణురాలిని/నిపుణుడిని కావాలా?',
         answer:
-          'మా బృందం ప్రతి దరఖాస్తును పరిశీలిస్తుంది మరియు ఈమెయిల్ ద్వారా తెలియజేస్తుంది.',
+          'కాదు. మీరు పరిచయం చేస్తారు, సేవా సంస్థ సలహా ఇస్తుంది. ప్లాట్‌ఫారమ్‌లోని వివరణలు ప్రతి సేవను అర్థం చేసుకోవడానికి సహాయపడతాయి.',
       },
       {
-        question: 'ఒకటి కంటే ఎక్కువ సేవలను పరిచయం చేయవచ్చా?',
+        question: 'నేను ప్రజలను ఒప్పించాలా లేదా ఒత్తిడి చేయాలా?',
         answer:
-          'చేయవచ్చు. మీరు ఏ రంగంలోనైనా ఒకటి లేదా అనేక సేవలను ఎంచుకోవచ్చు.',
+          'లేదు. సేవ అవసరమై, పరిచయానికి అంగీకరించిన వారిని మాత్రమే మీరు పరిచయం చేస్తారు. ఒత్తిడి లేదు.',
       },
       {
-        question: 'సేవ గురించి నాకు తెలియకపోతే ఏం చేయాలి?',
+        question: 'నాకు ఉద్యోగం ఉంది. నేను చేరవచ్చా?',
         answer:
-          'sBLOOM నాలెడ్జ్ ప్లాట్‌ఫారమ్‌లో ప్రతి సేవ గురించి సులభమైన వివరణలు ఉంటాయి. మీరు ఏదీ బట్టీ పట్టాల్సిన అవసరం లేదు, సందేహాలుంటే అక్కడే అడగవచ్చు.',
+          'మీ ఉద్యోగంతో పాటే మీరు ఆసక్తిని వ్యక్తం చేయవచ్చు. మేము సంప్రదించినప్పుడు వివరాలు వివరిస్తాము.',
       },
       {
-        question: 'ఇతరుల వివరాలను పంచుకోవచ్చా?',
+        question: 'నేను దీన్ని తెలుగులో ఉపయోగించవచ్చా?',
         answer:
-          'వారు స్పష్టంగా అవును అన్న తర్వాత మాత్రమే. పరిచయాన్ని పంపేటప్పుడు వారి అనుమతిని మీరు నిర్ధారించాలి.',
+          'ఈ పేజీ తెలుగు మరియు ఇంగ్లీషులో అందుబాటులో ఉంది. ప్లాట్‌ఫారమ్ ఏయే భాషలకు మద్దతు ఇస్తుందో చేరిన తర్వాత తెలియజేస్తాము.',
       },
       {
-        question: 'నా పరిచయం లెక్కలోకి వచ్చిందో ఎలా తెలుస్తుంది?',
+        question: 'నా సమాచారం, నా స్నేహితుల సమాచారం సురక్షితమేనా?',
         answer:
-          'మీ డాష్‌బోర్డ్‌లో ప్రతి పరిచయం స్థితి కనిపిస్తుంది. ప్రొవైడర్ నిర్ధారించినప్పుడు అది “నిర్ధారించబడింది” అని చూపిస్తుంది.',
-      },
-      {
-        question: 'చెల్లింపు ఎప్పుడు, ఎలా?',
-        answer:
-          'నెలకు ఒకసారి. నెల చివరలో ఇన్వాయిస్ వస్తుంది, మరియు మీ బ్యాంక్ ఖాతాకు చెల్లిస్తాం.',
-      },
-      {
-        question: 'నాకు ఇంగ్లీష్ రావాలా?',
-        answer:
-          'అవసరం లేదు. వెబ్‌సైట్ తెలుగులో కూడా ఉంది. కొన్ని సేవల సమాచారం ప్రస్తుతానికి ఇంగ్లీష్‌లో మాత్రమే ఉండవచ్చు, తెలుగును క్రమంగా చేరుస్తున్నాం.',
+          'ఎవరైనా అంగీకరించిన తర్వాత మాత్రమే వివరాలను పంచుకోండి. సమాచారం ప్రోగ్రామ్ కోసం మాత్రమే ఉపయోగించబడుతుంది.',
       },
     ],
   },
 
   finalCta: {
     id: 'final-cta',
-    headline: 'పరిచయం చేయడం ప్రారంభిద్దామా?',
-    subheading: 'చేరడం ఉచితం. మా బృందం ప్రతి దరఖాస్తును పరిశీలిస్తుంది.',
+    headline: 'మీ తదుపరి పరిచయం ఒక అవకాశాన్ని తెరవవచ్చు.',
+    subheading:
+      'sBLOOM అఫిలియేట్ ప్రోగ్రామ్‌లో ఉచితంగా చేరండి మరియు మీ నమ్మకమైన పరిచయాలు ఎలా సంపాదన అవకాశంగా మారవచ్చో అన్వేషించండి.',
+    disclaimer:
+      'పరిహారం సర్వీస్ ప్రొవైడర్‌ను బట్టి మారుతుంది మరియు వర్తించే నిబంధనలకు లోబడి ఉంటుంది. చేరడం మరియు రిఫరల్ చేయడం వల్ల ఆదాయానికి హామీ ఉండదు.',
     primaryCta: 'అఫిలియేట్ అవ్వండి — ఉచితం',
     secondaryLink: 'ప్రోగ్రామ్ నిబంధనలు చదవండి',
+    button: 'అఫిలియేట్ అవ్వండి',
   },
 
   contact: {

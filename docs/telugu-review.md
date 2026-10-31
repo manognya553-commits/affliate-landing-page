@@ -114,3 +114,59 @@ All strings below are currently flagged as `[needs native review]`. If any strin
 - Trust strip 5 items: Free to join, Permission first, Terms before action, Status you can see, Your details stay with programme `[needs native review]`.
 - 11 FAQ items: Questions and answers in 3 tabs `[needs native review]`.
 - 3-step form labels, inputs, consent, and success modal `[needs native review]`.
+
+---
+
+## 3. Working Strings Requiring Native Telugu Review (`src/i18n/landingCopyAdditions.js`)
+
+The following updated strings clarify universal audience positioning (examples, not restrictions) and multi-sector cross-promotion without unconfirmed operational or architectural claims:
+
+| English Source | Telugu Translation (`[needs native review]`) | Context / Component |
+| :--- | :--- | :--- |
+| **These profiles are examples, not eligibility restrictions. Anyone whose circle trusts their recommendations can join—no sales background or degree required.** | ఈ వర్గాలు ఉదాహరణలు మాత్రమే, పరిమితులు కావు. తమ పరిచయస్తులు నమ్మే భారతదేశంలోని ఎవరైనా చేరవచ్చు—సేల్స్ అనుభవం లేదా డిగ్రీ అవసరం లేదు. | `whoCanJoin.subheading` |
+| **Entrepreneurs, freelancers, community connectors, retired people, or anyone whose circle trusts them.** | వ్యాపారవేత్తలు, ఫ్రీలాన్సర్లు, రిటైర్ అయినవారు, కమ్యూనిటీ కార్యకర్తలు, లేదా ప్రజలు నమ్మే ఎవరైనా. | `whoCanJoin.cards[4].description` |
+| **Open to anyone in India with a trusted network. Free to join.** | నమ్మకమైన పరిచయాలు ఉన్న భారతదేశంలోని ఎవరైనా చేరవచ్చు. చేరడం పూర్తిగా ఉచితం. | `whoCanJoin.closing` |
+| **You can introduce relevant offerings across healthcare, education, and professional services on the platform. You introduce. The providers advise.** | అఫిలియేట్లు వేదికపై హెల్త్‌కేర్, విద్య, మరియు ప్రొఫెషనల్ సేవలన్నింటిలోనూ సేవలను పరిచయం చేయవచ్చు. మీరు పరిచయం చేయండి, సలహా ఇచ్చేది సేవా సంస్థలే. | `whatYouCanIntroduce.subheading` |
+| **You can introduce offerings in one area or across healthcare, education, and professional services depending on what your circle needs.** | మీ పరిచయస్తుల అవసరాలను బట్టి మీరు ఆరోగ్యం, విద్య లేదా ప్రొఫెషనల్ సేవలన్నింటిలోనూ సేవలను పరిచయం చేయవచ్చు. | `whatYouCanIntroduce.note` |
+| **Anyone people ask for suggestions: students, homemakers, shopkeepers, working professionals, entrepreneurs, freelancers, and others. These are examples, not restrictions. You don’t need sales experience.** | సలహా కోసం ప్రజలు అడిగే ఎవరైనా: విద్యార్థులు, గృహిణులు, షాపు యజమానులు, ఉద్యోగులు, వ్యాపారవేత్తలు, ఫ్రీలాన్సర్లు, ఇతరులు. ఇవి ఉదాహరణలు మాత్రమే, పరిమితులు కావు. సేల్స్ అనుభవం అవసరం లేదు. | `faq.items[0].answer` |
+| **When we get in touch, we will explain the next steps and get you started.** | మేము మిమ్మల్ని సంప్రదించినప్పుడు, తదుపరి దశలను వివరించి ప్రారంభించడానికి సహాయం చేస్తాము. | `faq.items[3].answer` |
+| **Yes. You can introduce relevant offerings across healthcare, education, and professional services based on your network’s needs. You are never limited to a single sector.** | చేయవచ్చు. మీ పరిచయస్తుల అవసరాల ఆధారంగా మీరు హెల్త్‌కేర్, విద్య, ప్రొఫెషనల్ సేవలన్నింటిలోనూ సేవలను పరిచయం చేయవచ్చు. మీరు ఎప్పుడూ ఒకే రంగానికి పరిమితం కారు. | `faq.items[4].answer` |
+| **Free to join.** | చేరడం ఉచితం. | `finalCta.subheading` |
+
+---
+
+## 4. Earning-Focused Landing Page Copy (`[needs native review]`)
+
+The following draft translations correspond to the earning-focused revision. All strings are marked `[needs native review]`:
+
+| English Source | Telugu Translation (`[needs native review]`) | Location / Usage |
+| :--- | :--- | :--- |
+| **Your connections could become an earning opportunity.** | మీ పరిచయాలు ఒక సంపాదన అవకాశంగా మారవచ్చు. | Section 1 · Why Join Headline |
+| **You already help friends, family and people in your community find the right services. With sBLOOM, you can make relevant introductions to service providers and explore an opportunity to earn when those introductions qualify under the provider’s terms.** | మీ స్నేహితులు, కుటుంబ సభ్యులు మరియు మీ కమ్యూనిటీలోని వారికి సరైన సేవలను కనుగొనడంలో మీరు ఇప్పటికే సహాయం చేస్తున్నారు. sBLOOM తో, మీరు సర్వీస్ ప్రొవైడర్లకు తగిన పరిచయాలు చేయవచ్చు మరియు ఆ పరిచయాలు ప్రొవైడర్ నిబంధనల ప్రకారం అర్హత పొందినప్పుడు సంపాదించే అవకాశాన్ని అన్వేషించవచ్చు. | Section 1 · Why Join Body |
+| **Free to join. No sales background required. Earnings are not guaranteed.** | చేరడం ఉచితం. సేల్స్ అనుభవం అవసరం లేదు. ఆదాయానికి హామీ లేదు. | Section 1 · Why Join Trust Line |
+| **Make a connection. Understand the terms. Earn when eligible.** | పరిచయం చేయండి. నిబంధనలు తెలుసుకోండి. అర్హత సాధించినప్పుడు సంపాదించండి. | Section 2 · How Earning Works Headline |
+| **Find a genuine need. Someone in your network is looking for a service.** | నిజమైన అవసరాన్ని గుర్తించండి. మీ నెట్‌వర్క్‌లోని ఒకరు సేవ కోసం చూస్తున్నారు. | Step 1 |
+| **Make an introduction. With their permission, connect them with a relevant provider.** | పరిచయం చేయండి. వారి అనుమతితో, సంబంధిత ప్రొవైడర్‌తో అనుసంధానించండి. | Step 2 |
+| **Understand the provider’s terms. Check what qualifies for compensation before making the referral.** | ప్రొవైడర్ నిబంధనలను అర్థం చేసుకోండి. రిఫరల్ చేసే ముందు పరిహారానికి ఏమి అర్హత సాధిస్తుందో పరిశీలించండి. | Step 3 |
+| **Earn when the conditions are met. Compensation depends on the specific provider’s terms and whether the referral qualifies.** | నిబంధనలు నెరవేరినప్పుడు సంపాదించండి. పరిహారం నిర్దిష్ట ప్రొవైడర్ నిబంధనలు మరియు రిఫరల్ అర్హతపై ఆధారపడి ఉంటుంది. | Step 4 |
+| **One network of connections. Three areas of opportunity.** | పరిచయాల ఒకే నెట్‌వర్క్. అవకాశాల మూడు రంగాలు. | Section 3 · Three Service Sectors Headline |
+| **Introduce someone looking for a suitable healthcare service to a relevant provider.** | తగిన హెల్త్‌కేర్ సేవ కోసం చూస్తున్న వారిని సంబంధిత ప్రొవైడర్‌కు పరిచయం చేయండి. | Sector 1 · Healthcare |
+| **Connect students and families with relevant educational services.** | విద్యార్థులు మరియు కుటుంబాలను సంబంధిత విద్యా సేవలతో అనుసంధానించండి. | Sector 2 · Education |
+| **Introduce businesses and individuals to providers whose services may meet their needs.** | వ్యాపారాలు మరియు వ్యక్తులను వారి అవసరాలకు సరిపోయే సర్వీస్ ప్రొవైడర్లకు పరిచయం చేయండి. | Sector 3 · Professional Services |
+| **A referral’s eligibility and compensation depend on the relevant provider’s terms.** | రిఫరల్ యొక్క అర్హత మరియు పరిహారం సంబంధిత ప్రొవైడర్ నిబంధనలపై ఆధారపడి ఉంటాయి. | Sector Note |
+| **More than just making referrals.** | కేవలం రిఫరల్స్ చేయడం కంటే ఎక్కువ. | Section 4 · Why sBLOOM Headline |
+| **Learn before you introduce: Understand the services and providers.** | పరిచయం చేసే ముందే తెలుసుకోండి: సేవలు మరియు ప్రొవైడర్ల గురించి అర్థం చేసుకోండి. | Why sBLOOM Block 1 |
+| **Refer with confidence: Use relevant information to make more informed introductions.** | ఆత్మవిశ్వాసంతో రిఫర్ చేయండి: మరింత సమాచారంతో కూడిన పరిచయాలు చేయడానికి సంబంధిత వివరాలను ఉపయోగించండి. | Why sBLOOM Block 2 |
+| **Know the terms: Review the provider’s compensation conditions before referring.** | నిబంధనలను తెలుసుకోండి: రిఫర్ చేసే ముందే ప్రొవైడర్ పరిహార నిబంధనలను సమీక్షించండి. | Why sBLOOM Block 3 |
+| **Build around your network: Introduce services that genuinely match people’s needs.** | మీ నెట్‌వర్క్ చుట్టూ నిర్మించండి: ప్రజల అవసరాలకు నిజంగా సరిపోయే సేవలను పరిచయం చేయండి. | Why sBLOOM Block 4 |
+| **Can I earn money as an sBLOOM affiliate? Yes, the programme offers an opportunity to earn through eligible referrals. Whether a referral qualifies and what compensation applies depend on the relevant service provider’s terms. Earnings are not guaranteed.** | sBLOOM అఫిలియేట్‌గా నేను డబ్బు సంపాదించవచ్చా? అవును, అర్హత కలిగిన రిఫరల్స్ ద్వారా సంపాదించే అవకాశాన్ని ఈ ప్రోగ్రామ్ అందిస్తుంది. రిఫరల్ అర్హత పొందుతుందా లేదా మరియు ఏ పరిహారం వర్తిస్తుంది అనేది సంబంధిత సర్వీస్ ప్రొవైడర్ నిబంధనలపై ఆధారపడి ఉంటుంది. ఆదాయానికి హామీ లేదు. | FAQ 1 |
+| **How much can I earn per referral? Compensation varies by service provider. The applicable amount or payment arrangement and qualifying conditions should be communicated by the provider. We do not publish a universal commission rate.** | ప్రతి రిఫరల్‌కు నేను ఎంత సంపాదించగలను? పరిహారం సర్వీస్ ప్రొవైడర్‌ను బట్టి మారుతుంది. వర్తించే మొత్తం లేదా చెల్లింపు విధానం మరియు అర్హత షరతులు ప్రొవైడర్ ద్వారా తెలియజేయబడతాయి. మేము సార్వత్రిక కమీషన్ రేటును ప్రచురించము. | FAQ 2 |
+| **Do I get paid for every person I introduce? Not necessarily. Compensation depends on the provider’s terms and whether the referral meets the applicable conditions.** | నేను పరిచయం చేసే ప్రతి వ్యక్తికి నాకు చెల్లింపు లభిస్తుందా? ఖచ్చితంగా కాదు. పరిహారం ప్రొవైడర్ నిబంధనలు మరియు రిఫరల్ వర్తించే షరతులను నెరవేరుస్తుందా లేదా అనే దానిపై ఆధారపడి ఉంటుంది. | FAQ 3 |
+| **Do I need to pay to join? No. Joining the sBLOOM Affiliate Programme is free.** | చేరడానికి నేను డబ్బు చెల్లించాలా? లేదు. sBLOOM అఫిలియేట్ ప్రోగ్రామ్‌లో చేరడం పూర్తిగా ఉచితం. | FAQ 4 |
+| **When will I receive payment? Payment timing depends on the relevant provider’s terms. Specific timelines should be communicated only when they have been confirmed.** | నాకు చెల్లింపు ఎప్పుడు అందుతుంది? చెల్లింపు సమయం సంబంధిత ప్రొవైడర్ నిబంధనలపై ఆధారపడి ఉంటుంది. నిర్దిష్ట కాలక్రమం ధృవీకరించబడినప్పుడు మాత్రమే తెలియజేయబడుతుంది. | FAQ 5 |
+| **Your next introduction could open an opportunity.** | మీ తదుపరి పరిచయం ఒక అవకాశాన్ని తెరవవచ్చు. | Section 5 · Final CTA Headline |
+| **Join the sBLOOM Affiliate Programme for free and explore how your trusted connections can become an earning opportunity.** | sBLOOM అఫిలియేట్ ప్రోగ్రామ్‌లో ఉచితంగా చేరండి మరియు మీ నమ్మకమైన పరిచయాలు ఎలా సంపాదన అవకాశంగా మారవచ్చో అన్వేషించండి. | Section 5 · Final CTA Subhead |
+| **Compensation varies by service provider and is subject to the applicable terms. Joining and making a referral do not guarantee earnings.** | పరిహారం సర్వీస్ ప్రొవైడర్‌ను బట్టి మారుతుంది మరియు వర్తించే నిబంధనలకు లోబడి ఉంటుంది. చేరడం మరియు రిఫరల్ చేయడం వల్ల ఆదాయానికి హామీ ఉండదు. | Section 5 · Final CTA Disclaimer |
+
+
+

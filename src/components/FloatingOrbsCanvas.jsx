@@ -5,9 +5,7 @@ export default function FloatingOrbsCanvas() {
   const canvasRef = useRef(null)
   const { lang } = useLanguage()
 
-  // Labels translated in Telugu from copy-deck.md Section 6:
-  // "Healthcare · Education · Professional services" -> "ఆరోగ్యం · విద్య · ప్రొఫెషనల్ సేవలు"
-  // "You" -> "మీరు"
+  // Approved labels from copy-deck.md Section 6
   const orbLabels = {
     en: {
       you: 'You',
@@ -44,10 +42,11 @@ export default function FloatingOrbsCanvas() {
     }
     motionQuery.addEventListener('change', handleMotionChange)
 
-    let mouse = { x: 0, y: 0, targetX: 0, targetY: 0 }
+    const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 }
 
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect()
+      if (rect.width <= 0 || rect.height <= 0) return
       mouse.targetX = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)
       mouse.targetY = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2)
     }
@@ -84,180 +83,254 @@ export default function FloatingOrbsCanvas() {
 
     handleResize()
     const rafResizeId = requestAnimationFrame(handleResize)
-    const timer1 = setTimeout(handleResize, 50)
-    const timer2 = setTimeout(handleResize, 150)
-    const timer3 = setTimeout(handleResize, 350)
+    const timer1 = setTimeout(handleResize, 60)
+    const timer2 = setTimeout(handleResize, 200)
 
     let resizeObserver = null
     if (typeof ResizeObserver !== 'undefined' && canvas.parentElement) {
-      resizeObserver = new ResizeObserver(() => {
-        handleResize()
-      })
+      resizeObserver = new ResizeObserver(() => handleResize())
       resizeObserver.observe(canvas.parentElement)
     }
     window.addEventListener('resize', handleResize, { passive: true })
 
-    // 4 Connected Orbs radiating around the central video blob:
-    // Move orbs outside the blob edge: "You" to x:-215, "Education" to x:235 (so the whole word shows outside the blob)
-    const orbsConfig = [
+    // 3D Nodes configuration radiating around the central hero visual
+    const nodes3D = [
       {
         id: 'you',
         labelKey: 'you',
-        x: -215,
-        y: -20,
-        r: 22,
+        x: -200,
+        y: -10,
+        z: 35,
+        r: 24,
         color: '#6B3CFF',
+        specular: '#C4B5FD',
         glow: 'rgba(107, 60, 255, 0.45)',
-        speed: 0.001,
+        orbitSpeed: 0.001,
+        phase: 0,
         pillPosition: 'bottom',
       },
       {
         id: 'health',
         labelKey: 'health',
-        x: 130,
-        y: -145,
-        r: 18,
-        color: '#FF6B6B',
-        glow: 'rgba(255, 107, 107, 0.4)',
-        speed: 0.0012,
+        x: 140,
+        y: -140,
+        z: -25,
+        r: 20,
+        color: '#FF4FA3',
+        specular: '#FBCFE8',
+        glow: 'rgba(255, 79, 163, 0.45)',
+        orbitSpeed: 0.0012,
+        phase: 1.8,
         pillPosition: 'top',
       },
       {
         id: 'edu',
         labelKey: 'edu',
-        x: 235,
-        y: -10,
-        r: 18,
-        color: '#D6F36B',
-        glow: 'rgba(214, 243, 107, 0.45)',
-        speed: 0.0009,
+        x: 225,
+        y: 10,
+        z: 40,
+        r: 20,
+        color: '#16A34A',
+        specular: '#BBF7D0',
+        glow: 'rgba(22, 163, 74, 0.4)',
+        orbitSpeed: 0.0009,
+        phase: 3.4,
         pillPosition: 'bottom',
       },
       {
         id: 'prof',
         labelKey: 'prof',
-        x: -125,
-        y: 135,
-        r: 18,
-        color: '#2DD4BF',
-        glow: 'rgba(45, 212, 191, 0.4)',
-        speed: 0.0011,
+        x: -120,
+        y: 145,
+        z: -20,
+        r: 20,
+        color: '#0D9488',
+        specular: '#99F6E4',
+        glow: 'rgba(13, 148, 136, 0.4)',
+        orbitSpeed: 0.0011,
+        phase: 4.9,
         pillPosition: 'bottom',
       },
     ]
 
     const links = [
-      { from: 0, to: 1, color: '#FF6B6B' },
-      { from: 0, to: 2, color: '#D6F36B' },
-      { from: 0, to: 3, color: '#2DD4BF' },
-      { from: 3, to: 2, color: 'rgba(45, 212, 191, 0.4)' },
+      { from: 0, to: 1, color: '#FF4FA3' },
+      { from: 0, to: 2, color: '#16A34A' },
+      { from: 0, to: 3, color: '#0D9488' },
+      { from: 3, to: 2, color: 'rgba(107, 60, 255, 0.35)' },
     ]
+
+    const cameraZ = 480
 
     const render = (time) => {
       ctx.clearRect(0, 0, width, height)
 
-      mouse.x += (mouse.targetX - mouse.x) * 0.05
-      mouse.y += (mouse.targetY - mouse.y) * 0.05
+      // Smooth mouse easing for 3D pitch/yaw
+      mouse.x += (mouse.targetX - mouse.x) * 0.06
+      mouse.y += (mouse.targetY - mouse.y) * 0.06
 
-      const cx = width * 0.5 + mouse.x * 16
-      const cy = height * 0.5 + mouse.y * 16
+      const rotY = mouse.x * 0.32
+      const rotX = -mouse.y * 0.28
 
-      // Calculate orb screen positions
-      const projected = orbsConfig.map((orb, i) => {
-        const floatY = Math.sin(time * orb.speed + i * 1.5) * 5
-        const floatX = Math.cos(time * orb.speed * 0.8 + i) * 4
-        const label = currentLabels[orb.labelKey] || orb.labelKey
+      const cosY = Math.cos(rotY)
+      const sinY = Math.sin(rotY)
+      const cosX = Math.cos(rotX)
+      const sinX = Math.sin(rotX)
+
+      const cx = width * 0.5
+      const cy = height * 0.5
+
+      // 1. Calculate projected 3D positions with floating harmonic motion
+      const projected = nodes3D.map((node) => {
+        const floatZ = Math.sin(time * node.orbitSpeed + node.phase) * 16
+        const floatY = Math.cos(time * node.orbitSpeed * 0.8 + node.phase) * 8
+        const floatX = Math.sin(time * node.orbitSpeed * 0.6 + node.phase) * 6
+
+        const curX = node.x + floatX
+        const curY = node.y + floatY
+        const curZ = node.z + floatZ
+
+        // 3D Rotation (Euler Y then X)
+        const x1 = curX * cosY + curZ * sinY
+        const z1 = -curX * sinY + curZ * cosY
+
+        const y2 = curY * cosX - z1 * sinX
+        const z2 = curY * sinX + z1 * cosX
+
+        // Perspective scaling
+        const perspective = cameraZ / (cameraZ + z2)
+        const sx = cx + x1 * perspective
+        const sy = cy + y2 * perspective
+        const sr = Math.max(10, node.r * perspective)
+
+        const label = currentLabels[node.labelKey] || node.labelKey
+
         return {
-          ...orb,
+          ...node,
           label,
-          sx: cx + orb.x + floatX,
-          sy: cy + orb.y + floatY,
+          depth: z2,
+          scale: perspective,
+          sx,
+          sy,
+          sr,
         }
       })
 
-      // Draw subtle connecting threads behind orbs
-      links.forEach((l) => {
-        const p1 = projected[l.from]
-        const p2 = projected[l.to]
+      // 2. Draw 3D curved connecting threads with energy pulse particles
+      links.forEach((link, linkIdx) => {
+        const p1 = projected[link.from]
+        const p2 = projected[link.to]
+
+        // Midpoint with subtle curvature arch in 3D
+        const midX = (p1.sx + p2.sx) * 0.5
+        const midY = (p1.sy + p2.sy) * 0.5 - 12 * Math.sin(linkIdx)
 
         ctx.beginPath()
         ctx.moveTo(p1.sx, p1.sy)
-        ctx.lineTo(p2.sx, p2.sy)
-        ctx.strokeStyle = l.color
-        ctx.lineWidth = 1.5
-        ctx.globalAlpha = 0.32
+        ctx.quadraticCurveTo(midX, midY, p2.sx, p2.sy)
+        ctx.strokeStyle = link.color
+        ctx.lineWidth = 1.6
+        ctx.globalAlpha = 0.35
         ctx.stroke()
         ctx.globalAlpha = 1.0
 
-        // Traveling pulse particle
+        // Traveling energy photon pulse along the 3D curve
         if (!prefersReducedMotion) {
-          const t = (time * 0.0008 + l.to * 0.3) % 1
-          const px = p1.sx + (p2.sx - p1.sx) * t
-          const py = p1.sy + (p2.sy - p1.sy) * t
+          const t = ((time * 0.0006) + linkIdx * 0.28) % 1
+          const qx = (1 - t) * (1 - t) * p1.sx + 2 * (1 - t) * t * midX + t * t * p2.sx
+          const qy = (1 - t) * (1 - t) * p1.sy + 2 * (1 - t) * t * midY + t * t * p2.sy
 
           ctx.beginPath()
-          ctx.arc(px, py, 3, 0, Math.PI * 2)
-          ctx.fillStyle = l.color
-          ctx.shadowColor = l.color
-          ctx.shadowBlur = 6
+          ctx.arc(qx, qy, 3.2, 0, Math.PI * 2)
+          ctx.fillStyle = link.color
+          ctx.shadowColor = link.color
+          ctx.shadowBlur = 8
           ctx.fill()
           ctx.shadowBlur = 0
         }
       })
 
-      // Draw glass-like orbs with readable translated labels
-      projected.forEach((orb) => {
-        // Outer aura glow
+      // 3. Depth-sort orbs so foreground orbs occlude background orbs
+      const sortedOrbs = [...projected].sort((a, b) => a.depth - b.depth)
+
+      // 4. Render 3D Spheres with Specular Lighting & Depth Highlights
+      sortedOrbs.forEach((orb) => {
+        // Outer atmospheric bloom aura
         ctx.beginPath()
-        ctx.arc(orb.sx, orb.sy, orb.r + 6, 0, Math.PI * 2)
+        ctx.arc(orb.sx, orb.sy, orb.sr * 1.45, 0, Math.PI * 2)
         ctx.fillStyle = orb.glow
         ctx.fill()
 
-        // 3D Sphere gradient
-        ctx.beginPath()
-        ctx.arc(orb.sx, orb.sy, orb.r, 0, Math.PI * 2)
-        const grad = ctx.createRadialGradient(
-          orb.sx - orb.r * 0.3,
-          orb.sy - orb.r * 0.3,
-          orb.r * 0.1,
+        // 3D Glass / Ceramic Sphere with dynamic light source
+        const lightOffsetX = orb.sx - orb.sr * 0.32
+        const lightOffsetY = orb.sy - orb.sr * 0.32
+
+        const sphereGrad = ctx.createRadialGradient(
+          lightOffsetX,
+          lightOffsetY,
+          orb.sr * 0.08,
           orb.sx,
           orb.sy,
-          orb.r
+          orb.sr
         )
-        grad.addColorStop(0, '#FFFFFF')
-        grad.addColorStop(0.35, orb.color)
-        grad.addColorStop(1, orb.color)
-        ctx.fillStyle = grad
-        ctx.shadowColor = 'rgba(18, 16, 31, 0.16)'
-        ctx.shadowBlur = 10
+        sphereGrad.addColorStop(0, '#FFFFFF')
+        sphereGrad.addColorStop(0.25, orb.specular)
+        sphereGrad.addColorStop(0.65, orb.color)
+        sphereGrad.addColorStop(1, '#0E0B1E')
+
+        ctx.beginPath()
+        ctx.arc(orb.sx, orb.sy, orb.sr, 0, Math.PI * 2)
+        ctx.fillStyle = sphereGrad
+        ctx.shadowColor = 'rgba(18, 16, 31, 0.22)'
+        ctx.shadowBlur = 12 * orb.scale
+        ctx.shadowOffsetY = 4 * orb.scale
         ctx.fill()
         ctx.shadowBlur = 0
+        ctx.shadowOffsetY = 0
 
-        // Label pill with clear, readable typography
-        const fontFam = lang === 'te' ? '"Noto Sans Telugu", system-ui, sans-serif' : '"Plus Jakarta Sans", system-ui, sans-serif'
-        ctx.font = `600 ${lang === 'te' ? '12.5px' : '12px'} ${fontFam}`
+        // Subtle specular highlight gloss arc
+        ctx.beginPath()
+        ctx.arc(
+          lightOffsetX,
+          lightOffsetY,
+          orb.sr * 0.35,
+          0,
+          Math.PI * 2
+        )
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.65)'
+        ctx.fill()
+
+        // 5. Label pill with high-contrast typography
+        const fontFam =
+          lang === 'te'
+            ? '"Noto Sans Telugu", system-ui, sans-serif'
+            : '"Plus Jakarta Sans", system-ui, sans-serif'
+        ctx.font = `700 ${lang === 'te' ? '12.5px' : '12px'} ${fontFam}`
         const tw = ctx.measureText(orb.label).width
-        const pillW = tw + 20
-        const pillH = 24
-        // White badge with subtle border & shadow (clamped to prevent clipping)
-        const pillX = Math.max(10, Math.min(width - pillW - 10, orb.sx - pillW / 2))
-        const pillY = orb.pillPosition === 'top' ? orb.sy - orb.r - pillH - 6 : orb.sy + orb.r + 6
+        const pillW = tw + 22
+        const pillH = 26
+        const pillX = Math.max(12, Math.min(width - pillW - 12, orb.sx - pillW / 2))
+        const pillY =
+          orb.pillPosition === 'top'
+            ? orb.sy - orb.sr - pillH - 8
+            : orb.sy + orb.sr + 8
         const textCenterX = pillX + pillW / 2
 
-        ctx.shadowColor = 'rgba(18, 16, 31, 0.08)'
-        ctx.shadowBlur = 6
+        // Soft glass pill backing
+        ctx.shadowColor = 'rgba(18, 16, 31, 0.12)'
+        ctx.shadowBlur = 8
         ctx.shadowOffsetY = 2
-        ctx.fillStyle = '#FFFFFF'
-        ctx.strokeStyle = 'rgba(18, 16, 31, 0.14)'
-        ctx.lineWidth = 1
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.96)'
+        ctx.strokeStyle = 'rgba(18, 16, 31, 0.12)'
+        ctx.lineWidth = 1.2
         ctx.beginPath()
-        ctx.roundRect(pillX, pillY, pillW, pillH, 12)
+        ctx.roundRect(pillX, pillY, pillW, pillH, 13)
         ctx.fill()
         ctx.stroke()
         ctx.shadowBlur = 0
         ctx.shadowOffsetY = 0
 
-        // Crisp dark text
+        // Crisp dark ink text
         ctx.fillStyle = '#12101F'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
@@ -279,29 +352,21 @@ export default function FloatingOrbsCanvas() {
       cancelAnimationFrame(rafResizeId)
       clearTimeout(timer1)
       clearTimeout(timer2)
-      clearTimeout(timer3)
       window.removeEventListener('mousemove', handleMouseMove)
       window.removeEventListener('mouseleave', handleMouseLeave)
       window.removeEventListener('resize', handleResize)
-      if (resizeObserver) {
-        resizeObserver.disconnect()
-      }
+      if (resizeObserver) resizeObserver.disconnect()
       motionQuery.removeEventListener('change', handleMotionChange)
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId)
-      }
+      if (animationFrameId) cancelAnimationFrame(animationFrameId)
     }
   }, [lang, currentLabels])
 
   return (
     <canvas
       ref={canvasRef}
-      style={{
-        display: 'block',
-        width: '100%',
-        height: '100%',
-        overflow: 'visible',
-      }}
+      className="block w-full h-full overflow-visible"
+      aria-label="Interactive 3D network of trusted service categories"
     />
   )
 }
+

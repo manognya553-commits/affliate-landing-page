@@ -2,7 +2,7 @@ import React from 'react'
 import { ArrowRight, Sparkles, FileText } from 'lucide-react'
 import { useLanguage } from '../context/useLanguage'
 
-export default function FinalCtaSection({ onBecomeAffiliate }) {
+export default function FinalCtaSection({ onBecomeAffiliate, onOpenTerms }) {
   const { copy } = useLanguage()
   const data = copy.finalCta
 
@@ -10,22 +10,25 @@ export default function FinalCtaSection({ onBecomeAffiliate }) {
 
   const handleTermsClick = (e) => {
     e.preventDefault()
-    // Scroll to the footer terms section or trigger terms view
-    const termsTrigger = document.querySelector('footer a[href*="terms"]') || document.querySelector('footer')
-    if (termsTrigger) {
-      termsTrigger.scrollIntoView({ behavior: 'smooth' })
+    if (onOpenTerms) {
+      onOpenTerms()
+    } else {
+      const termsTrigger = document.querySelector('footer a[href*="terms"]')
+      if (termsTrigger) {
+        termsTrigger.click()
+      }
     }
   }
 
   return (
     <section
       id="final-cta"
-      className="relative py-24 lg:py-32 bg-[#FAF7F2] border-t border-[#12101F]/10 scroll-mt-24"
+      className="relative py-20 lg:py-[112px] bg-[#FAF7F2] scroll-mt-24"
       aria-label={data.headline}
     >
       <div className="site-container">
         {/* Dark Stage Card per Design Plan Section 12 */}
-        <div className="relative rounded-[32px] bg-[#0E0B1E] text-white p-10 sm:p-14 lg:p-20 overflow-hidden shadow-2xl flex flex-col items-center text-center gap-8">
+        <div data-reveal="card" className="relative rounded-[32px] bg-[#0E0B1E] text-white p-10 sm:p-14 lg:p-20 overflow-hidden shadow-2xl flex flex-col items-center text-center gap-8">
           {/* Subtle Ambient Bloom Gradients */}
           <div
             className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#6B3CFF]/30 blur-[120px] pointer-events-none"
@@ -43,7 +46,7 @@ export default function FinalCtaSection({ onBecomeAffiliate }) {
           </div>
 
           {/* Headline */}
-          <h2 className="relative text-3xl sm:text-4xl lg:text-5xl font-bold font-headline tracking-tight text-white m-0 max-w-2xl leading-[1.15]">
+          <h2 className="relative section-heading font-bold font-headline tracking-tight text-white m-0 max-w-3xl leading-[1.15]">
             {data.headline}
           </h2>
 
@@ -74,6 +77,13 @@ export default function FinalCtaSection({ onBecomeAffiliate }) {
               </a>
             )}
           </div>
+
+          {/* Regulatory Disclaimer */}
+          {data.disclaimer && (
+            <p className="relative text-xs sm:text-sm text-white/55 max-w-xl m-0 leading-relaxed italic">
+              {data.disclaimer}
+            </p>
+          )}
         </div>
       </div>
     </section>
