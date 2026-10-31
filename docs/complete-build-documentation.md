@@ -172,15 +172,15 @@ Rather than using static stock graphics or disconnected 3D videos, the hero sect
   * ✓ Earnings under provider terms
 * **Action Anchors:** Direct scroll triggers for `#contact` (Primary CTA) and `#how-it-works` (Secondary outline).
 
-### 5.3 "Why Join" Editorial Storytelling (`SoundFamiliarSection.jsx`)
-* **Layout Structure:** 5:7 desktop split.
-  * **Left Column (Sticky Narrative):** Monospace tag `02 // WHY JOIN`, serif headline *"Sound familiar?"*, and commentary on how everyday community help already creates enormous value.
-  * **Right Column (Tactile Scenario Cards):** Four realistic, relatable situations:
-    1. **Healthcare:** Recommending a knee replacement specialist in Hyderabad for an elderly aunt.
-    2. **Education:** Pointing a colleague's daughter toward a trusted coaching institute for medical entrance tests.
-    3. **Professional Services:** Introducing a local store owner to a verified GST and corporate tax filing consultant.
-    4. **Care Services:** Helping a neighbor find reliable elder care and home nursing assistance.
-* **Foundational Pillars:** Three architectural blocks detailing *Relevant Introductions*, *Provider Terms & Criteria*, and *sBLOOM Platform Clarity*.
+### 5.3 "Why Join" Editorial Storytelling & Video Explainer (`SoundFamiliarSection.jsx` & `WhyJoinVideoExplainer.jsx`)
+* **Layout Structure:** Balanced 2-column editorial grid.
+  * **Left Column (Storytelling & Positioning):** Monospace tag `01 // WHY JOIN`, serif headline *"Your connections could become an earning opportunity."*, core introductory paragraph, trust badge (*Free to join · No sales background required · Earnings are not guaranteed*), and an editorial bridge card highlighting that your word carries weight.
+  * **Right Column (`WhyJoinVideoExplainer.jsx`):** An interactive, award-level 3-scene video explainer player answering exactly *Why join*, *Why an affiliate should join*, and *What will they get*:
+    * **Scene 01 (Why Join? / Everyday Need):** Real-world community moments where friends and family ask you for advice every week (*"Do you know a good doctor?"*, *"Which coaching centre for my son?"*). You answer from the heart, for free.
+    * **Scene 02 (Why Affiliates Should Join / Role):** Introduce without selling—3-step permission pipeline (*Notice genuine need* $\to$ *Ask permission first* $\to$ *You introduce, provider advises*).
+    * **Scene 03 (What Will You Get? / Gains):** Structure, clarity & potential earnings (*Free to join*, *Visible terms upfront*, *Platform referral tracking*, *Compensation when introductions qualify under provider terms*).
+    * **Video Controls:** Play/pause toggle, timecode (`00:04 / 00:18`), 3-segment progress scrubber, quick-jump chapter pills (`01 // WHY`, `02 // ROLE`, `03 // GAIN`), synchronized bilingual closed captions banner (CC), sound simulation toggle, and a fullscreen theater cinema modal.
+* **Foundational Pillars:** Three architectural blocks detailing *Relevant Introductions*, *Opportunity to Earn*, and *Information & Guidance*.
 
 ### 5.4 Three-Sector Conversation Carousel (`ConversationCarouselSection.jsx`)
 * **Desktop 3-Phone Stage:**
