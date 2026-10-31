@@ -99,58 +99,34 @@ export const enCopy = {
     ],
     reply: '“Yes, let me introduce you.”',
     videoExplainer: {
-      badge: 'EXPLAINER // WHY JOIN',
-      duration: '01:15',
-      chapters: [
+      badge: 'STORY // HOW IT WORKS',
+      duration: '00:14',
+      scenes: [
         {
-          id: 'why-join',
+          id: 'speaking',
           number: '01',
-          tag: 'THE EVERYDAY NEED',
-          title: 'You already make recommendations.',
-          subtitle:
-            'Friends, family and people in your community ask you for trusted advice every week. You answer from the heart, for free.',
-          caption:
-            'You already help friends and family find services. sBLOOM gives those trusted moments a structure.',
-          points: [
-            'Neighbour: “Do you know a good doctor for my mother?”',
-            'Parent: “Which coaching centre is good for my son?”',
-            'Relative: “My cousin needs help with business papers. Anyone know someone?”',
-          ],
+          tag: 'PEOPLE SPEAKING',
+          title: 'You already help people find services.',
+          speaker: 'Sujatha R. · Community Connector',
+          quote: '“Neighbours and family ask me for advice every week. With sBLOOM, I make a friendly, permission-first introduction.”',
+          caption: 'People already trust you and ask for advice. You answer from the heart, for free.',
         },
         {
-          id: 'why-affiliate',
+          id: 'analytics',
           number: '02',
-          tag: 'PERMISSION FIRST',
-          title: 'You introduce. The experts advise.',
-          subtitle:
-            'No sales background, no pressure. Notice a genuine need, ask permission, and make the introduction. The verified provider advises.',
-          caption:
-            'No selling. No pressure. You notice a need, ask permission, and introduce the provider.',
-          points: [
-            'Ask first: Share someone’s details only after they clearly say yes.',
-            'Stay in your lane: Don’t give medical, legal or financial advice. The provider advises.',
-            'Tell the truth: No pressure, no quotas, and no exaggerated claims.',
+          tag: 'EARNING ANALYTICS',
+          title: 'How introductions become earnings.',
+          statusLabel: 'Referral Status: Qualified under Provider Terms',
+          metrics: [
+            { label: 'Introduction', value: 'Permission confirmed' },
+            { label: 'Provider terms', value: 'Criteria evaluated' },
+            { label: 'Compensation', value: 'Earn when eligible' },
           ],
-        },
-        {
-          id: 'what-you-get',
-          number: '03',
-          tag: 'AFFILIATE BENEFITS',
-          title: 'Structure, clarity & an earning opportunity.',
-          subtitle:
-            'Free to join. You see provider compensation terms upfront, track referrals on the platform, and earn when your introductions qualify under provider terms.',
-          caption:
-            'Free to join. You see provider terms upfront, track your referrals, and earn when conditions are met.',
-          points: [
-            'Free to join: No registration fees, subscription costs, or hidden charges.',
-            'Transparent terms: Each provider’s compensation terms are visible upfront.',
-            'Platform tracking: Service information and tracking so you refer with confidence.',
-            'Opportunity to earn: Receive payment when your introduction qualifies under provider terms.',
-          ],
+          caption: 'Track your referrals on sBLOOM. When they qualify under provider terms, you earn.',
         },
       ],
       disclaimer:
-        'Earnings depend on each provider’s terms and on referrals qualifying. No income is guaranteed.',
+        'Illustrative scenario · Earnings depend on each provider’s terms · No income is guaranteed.',
     },
   },
 
