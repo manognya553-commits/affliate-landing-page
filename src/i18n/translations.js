@@ -73,6 +73,7 @@ export function getCopy(lang = 'en') {
       questions: teDraft.soundFamiliar?.questions || enCopy.soundFamiliar.questions,
       pillars: teDraft.soundFamiliar?.pillars || enCopy.soundFamiliar.pillars,
       reply: teDraft.soundFamiliar?.reply || enCopy.soundFamiliar.reply,
+      videoExplainer: teDraft.soundFamiliar?.videoExplainer || enCopy.soundFamiliar.videoExplainer,
     },
     conversations: {
       eyebrow: teDraft.conversations?.eyebrow || enCopy.conversations.eyebrow,

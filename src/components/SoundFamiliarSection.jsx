@@ -5,51 +5,9 @@ import {
   Clock,
   Users2,
   ShieldCheck,
-  HeartPulse,
-  GraduationCap,
-  Briefcase,
 } from 'lucide-react'
 import { useLanguage } from '../context/useLanguage'
-
-// Visual styling tokens for the 4 scenario question cards
-const QUESTION_STYLES = [
-  {
-    icon: HeartPulse,
-    badgeBg: 'bg-[#FF6B6B]/15',
-    badgeText: 'text-[#C92A2A]',
-    badgeBorder: 'border-[#FF6B6B]/30',
-    avatarBg: '#FFF5F5',
-    avatarColor: '#E03131',
-    scenarioCode: 'SCENARIO 01 // HEALTHCARE',
-  },
-  {
-    icon: GraduationCap,
-    badgeBg: 'bg-[#16A34A]/15',
-    badgeText: 'text-[#166534]',
-    badgeBorder: 'border-[#16A34A]/30',
-    avatarBg: '#F0FDF4',
-    avatarColor: '#15803D',
-    scenarioCode: 'SCENARIO 02 // EDUCATION',
-  },
-  {
-    icon: Briefcase,
-    badgeBg: 'bg-[#0D9488]/15',
-    badgeText: 'text-[#115E59]',
-    badgeBorder: 'border-[#0D9488]/30',
-    avatarBg: '#F0FDFA',
-    avatarColor: '#0F766E',
-    scenarioCode: 'SCENARIO 03 // ADVISORY',
-  },
-  {
-    icon: GraduationCap,
-    badgeBg: 'bg-[#6B3CFF]/15',
-    badgeText: 'text-[#5025D1]',
-    badgeBorder: 'border-[#6B3CFF]/30',
-    avatarBg: '#F5F3FF',
-    avatarColor: '#6B3CFF',
-    scenarioCode: 'SCENARIO 04 // LEARNING',
-  },
-]
+import WhyJoinVideoExplainer from './WhyJoinVideoExplainer'
 
 // Icons for the 3 Why Join value pillars
 const PILLAR_ICONS = [Clock, Users2, ShieldCheck]
@@ -57,7 +15,6 @@ const PILLAR_ICONS = [Clock, Users2, ShieldCheck]
 export default function SoundFamiliarSection() {
   const { lang, copy } = useLanguage()
   const data = copy.soundFamiliar || {}
-  const questions = data.questions || []
   const pillars = data.pillars || []
 
   return (
@@ -70,21 +27,17 @@ export default function SoundFamiliarSection() {
       <span id="sound-familiar" className="absolute -top-24 pointer-events-none" aria-hidden="true" />
 
       <div className="site-container flex flex-col gap-14 lg:gap-20">
-        {/* Asymmetrical Editorial Narrative Grid (5:7 ratio on desktop) */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.15fr] gap-10 lg:gap-16 items-start">
+        {/* Asymmetrical Editorial Narrative Grid (balanced desktop ratio) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.15fr] gap-10 lg:gap-14 items-center">
           {/* Left Column: Sticky Editorial Storytelling */}
-          <div data-reveal="heading" className="flex flex-col items-start gap-5 lg:sticky lg:top-28">
+          <div data-reveal="heading" className="flex flex-col items-start gap-5">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-white/95 border border-[#12101F]/10 rounded-full shadow-2xs text-xs text-[#827C94]">
               <MessageSquare size={13} className="text-[#6B3CFF]" aria-hidden="true" />
               <span className="font-mono">01 // {data.eyebrow}</span>
             </div>
 
-            <h2 className="section-heading font-bold text-[#12101F] tracking-tight m-0 font-headline">
-              {(data.headline || '').split(' ').map((word, idx) => (
-                <React.Fragment key={`sf-word-${idx}`}>
-                  <span className="inline-block">{word}</span>{' '}
-                </React.Fragment>
-              ))}
+            <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-bold text-[#12101F] tracking-tight m-0 font-headline leading-[1.15]">
+              {data.headline}
             </h2>
 
             <p className="text-base sm:text-lg leading-relaxed text-[#575266] m-0 max-w-[540px]">
@@ -117,49 +70,9 @@ export default function SoundFamiliarSection() {
             </div>
           </div>
 
-          {/* Right Column: 4 Staggered Tactile Scenario Cards */}
-          <div className="flex flex-col gap-4 sm:gap-5 w-full">
-            {questions.map((q, idx) => {
-              const style = QUESTION_STYLES[idx % QUESTION_STYLES.length]
-              const Icon = style.icon
-
-              return (
-                <div
-                  key={`q-${idx}`}
-                  data-reveal="card"
-                  className="corner-mark tilt-card bg-white border border-[#12101F]/10 rounded-2xl p-5 sm:p-6 shadow-xs hover:shadow-md hover:border-[#6B3CFF]/35 transition-all duration-300 flex flex-col justify-between gap-3 group"
-                >
-                  <div className="flex items-center justify-between gap-2 pr-6">
-                    <span className="font-mono text-[10.5px] font-bold tracking-wider text-[#827C94]">
-                      {style.scenarioCode}
-                    </span>
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10.5px] font-mono font-bold border ${style.badgeBg} ${style.badgeText} ${style.badgeBorder}`}
-                    >
-                      <Icon size={11} aria-hidden="true" />
-                      <span>{q.category}</span>
-                    </span>
-                  </div>
-
-                  <div className="flex items-start gap-3.5 pt-1">
-                    <div
-                      className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs border border-white"
-                      style={{ backgroundColor: style.avatarBg, color: style.avatarColor }}
-                      aria-hidden="true"
-                    >
-                      <span className="font-mono">{q.initial || '•'}</span>
-                    </div>
-
-                    <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                      <span className="text-xs font-semibold text-[#827C94]">{q.speaker}</span>
-                      <p className="text-[15.5px] sm:text-[16.5px] font-bold leading-relaxed text-[#12101F] m-0 font-headline">
-                        {q.text}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+          {/* Right Column: Why Join / Affiliate Role & Benefits Interactive Video Explainer */}
+          <div data-reveal="card" className="w-full">
+            <WhyJoinVideoExplainer />
           </div>
         </div>
 
