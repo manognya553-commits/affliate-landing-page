@@ -8,6 +8,7 @@ import {
 } from 'lucide-react'
 import { useLanguage } from '../context/useLanguage'
 import WhyJoinVideoExplainer from './WhyJoinVideoExplainer'
+import WhyJoinNetworkCanvas from './WhyJoinNetworkCanvas'
 
 // Icons for the 3 Why Join value pillars
 const PILLAR_ICONS = [Clock, Users2, ShieldCheck]
@@ -23,10 +24,13 @@ export default function SoundFamiliarSection() {
       className="relative bg-[#FAF7F2] scroll-mt-24 py-18 lg:py-28 overflow-hidden border-b border-[#12101F]/6"
       aria-label={data.headline || 'Why join'}
     >
+      {/* Restrained Network Motif connecting from Hero */}
+      <WhyJoinNetworkCanvas />
+
       {/* Anchor alias so any link to #sound-familiar continues to work */}
       <span id="sound-familiar" className="absolute -top-24 pointer-events-none" aria-hidden="true" />
 
-      <div className="site-container flex flex-col gap-14 lg:gap-20">
+      <div className="site-container relative z-10 flex flex-col gap-14 lg:gap-20">
         {/* Asymmetrical Editorial Narrative Grid (balanced desktop ratio) */}
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_1.15fr] gap-10 lg:gap-14 items-center">
           {/* Left Column: Sticky Editorial Storytelling */}
