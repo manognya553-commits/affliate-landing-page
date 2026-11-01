@@ -16,6 +16,7 @@ import FinalCtaSection from './components/FinalCtaSection'
 import ContactSection from './components/ContactSection'
 import FooterSection from './components/FooterSection'
 import ThreadLine from './components/ThreadLine'
+import AffiliateAuthPage from './components/AffiliateAuthPage'
 import { useLanguage } from './context/useLanguage'
 import { initScrollReveals, initCardTilt } from './utils/motion'
 import { SIGNUP_URL } from './config/links'
@@ -26,8 +27,61 @@ function App() {
   const { lang } = useLanguage()
   const [activeLegalModal, setActiveLegalModal] = useState(null) // 'terms' | 'privacy' | null
 
-  // Initialize Lenis smooth scroll and connect with GSAP ScrollTrigger
+  // Route state initialized from window location
+  const [currentPath, setCurrentPath] = useState(() => window.location.pathname)
+  const [authMode, setAuthMode] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('mode') === 'signin' ? 'signin' : 'signup'
+  })
+
+  const isAuthPage = currentPath === '/affiliate/auth' || currentPath.startsWith('/affiliate/auth')
+
+  // Handle browser back/forward buttons
   useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname)
+      const params = new URLSearchParams(window.location.search)
+      setAuthMode(params.get('mode') === 'signin' ? 'signin' : 'signup')
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  // Client-side router navigation helper
+  const navigate = (to) => {
+    const [pathWithParams, hash] = to.split('#')
+    const [path, search] = pathWithParams.split('?')
+    const targetPath = path || '/'
+    const targetSearch = search ? `?${search}` : ''
+    const targetHash = hash ? `#${hash}` : ''
+    const targetUrl = `${targetPath}${targetSearch}${targetHash}`
+
+    window.history.pushState({}, '', targetUrl)
+    setCurrentPath(targetPath)
+
+    if (search) {
+      const params = new URLSearchParams(targetSearch)
+      setAuthMode(params.get('mode') === 'signin' ? 'signin' : 'signup')
+    } else {
+      setAuthMode('signup')
+    }
+
+    if (hash) {
+      setTimeout(() => {
+        const el = document.getElementById(hash)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 80)
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  // Initialize Lenis smooth scroll and connect with GSAP ScrollTrigger on landing page
+  useEffect(() => {
+    if (isAuthPage) return
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -47,10 +101,12 @@ function App() {
       gsap.ticker.remove(updateLenis)
       lenis.destroy()
     }
-  }, [])
+  }, [isAuthPage])
 
-  // Initialize scroll reveals and card hover 3D tilt
+  // Initialize scroll reveals and card hover 3D tilt on landing page
   useEffect(() => {
+    if (isAuthPage) return
+
     const cleanupReveals = initScrollReveals()
     const cleanupTilt = initCardTilt()
 
@@ -65,28 +121,30 @@ function App() {
       cleanupReveals()
       cleanupTilt()
     }
-  }, [])
+  }, [isAuthPage])
 
   // Refresh ScrollTrigger on language toggle after layout settles
   useEffect(() => {
+    if (isAuthPage) return
+
     const timer = setTimeout(() => {
       ScrollTrigger.refresh()
     }, 250)
 
     return () => clearTimeout(timer)
-  }, [lang])
+  }, [lang, isAuthPage])
 
-  const handleBecomeAffiliate = () => {
+  const handleBecomeAffiliate = (mode = 'signup') => {
     if (SIGNUP_URL && SIGNUP_URL.trim() !== '') {
       window.open(SIGNUP_URL, '_blank', 'noopener,noreferrer')
     } else {
-      const contactEl = document.getElementById('contact')
-      if (contactEl) {
-        contactEl.scrollIntoView({ behavior: 'smooth' })
-      } else {
-        window.location.hash = '#contact'
-      }
+      navigate(`/affiliate/auth?mode=${mode}`)
     }
+  }
+
+  // Render dedicated Affiliate Authentication Page when on /affiliate/auth route
+  if (isAuthPage) {
+    return <AffiliateAuthPage initialMode={authMode} onNavigate={navigate} />
   }
 
   return (

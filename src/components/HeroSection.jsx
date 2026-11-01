@@ -7,9 +7,9 @@ export default function HeroSection({ onBecomeAffiliate }) {
   const { lang, copy } = useLanguage()
 
   const handleCtaClick = (e) => {
+    e.preventDefault()
     if (onBecomeAffiliate) {
-      e.preventDefault()
-      onBecomeAffiliate()
+      onBecomeAffiliate('signup')
     }
   }
 
@@ -54,7 +54,7 @@ export default function HeroSection({ onBecomeAffiliate }) {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto mt-1">
             <a
-              href="#contact"
+              href="/affiliate/auth?mode=signup"
               className="btn btn-primary w-full sm:w-auto px-7 py-3.5 text-sm sm:text-[15px] font-semibold rounded-full shadow-md hover:shadow-violet-glow hover:-translate-y-0.5 transition-all duration-200"
               onClick={handleCtaClick}
             >

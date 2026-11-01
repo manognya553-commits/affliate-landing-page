@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Menu, X, ArrowUpRight } from 'lucide-react'
 import { useLanguage } from '../context/useLanguage'
-import { LOGIN_URL } from '../config/links'
+import { LOGIN_URL, SIGNUP_URL } from '../config/links'
 
 export default function Navigation({ onBecomeAffiliate }) {
   const { lang, setLang, copy } = useLanguage()
@@ -107,9 +107,21 @@ export default function Navigation({ onBecomeAffiliate }) {
   }
 
   const handleCtaClick = (e) => {
-    if (onBecomeAffiliate) {
+    if (!SIGNUP_URL || SIGNUP_URL.trim() === '') {
       e.preventDefault()
-      onBecomeAffiliate()
+    }
+    if (onBecomeAffiliate) {
+      onBecomeAffiliate('signup')
+    }
+    setIsMenuOpen(false)
+  }
+
+  const handleSignInClick = (e) => {
+    if (!LOGIN_URL || LOGIN_URL.trim() === '') {
+      e.preventDefault()
+    }
+    if (onBecomeAffiliate) {
+      onBecomeAffiliate('signin')
     }
     setIsMenuOpen(false)
   }
@@ -191,21 +203,22 @@ export default function Navigation({ onBecomeAffiliate }) {
             </button>
           </div>
 
-          {/* Optional Login Link: rendered before CTA button, hidden when LOGIN_URL is empty */}
-          {LOGIN_URL && LOGIN_URL.trim() !== '' && (
-            <a
-              href={LOGIN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden lg:inline-flex text-[14.5px] font-semibold text-ink-secondary hover:text-brand-violet whitespace-nowrap px-2 py-1.5 transition-colors duration-200"
-            >
-              {lang === 'te' ? 'లాగిన్' : 'Login'}
-            </a>
-          )}
+          {/* Sign In Link: connects to /affiliate/auth?mode=signin or external LOGIN_URL */}
+          <a
+            href={LOGIN_URL && LOGIN_URL.trim() !== '' ? LOGIN_URL : '/affiliate/auth?mode=signin'}
+            target={LOGIN_URL && LOGIN_URL.trim() !== '' ? '_blank' : undefined}
+            rel={LOGIN_URL && LOGIN_URL.trim() !== '' ? 'noopener noreferrer' : undefined}
+            className="hidden lg:inline-flex text-[14.5px] font-semibold text-ink-secondary hover:text-brand-violet whitespace-nowrap px-2.5 py-1.5 transition-colors duration-200"
+            onClick={handleSignInClick}
+          >
+            {copy.nav.signIn || (lang === 'te' ? 'సైన్ ఇన్' : 'Sign in')}
+          </a>
 
           {/* Pinned Primary CTA Button */}
           <a
-            href="#contact"
+            href={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? SIGNUP_URL : '/affiliate/auth?mode=signup'}
+            target={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? '_blank' : undefined}
+            rel={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? 'noopener noreferrer' : undefined}
             className="hidden lg:inline-flex items-center gap-2 bg-brand-violet hover:bg-brand-violet-hover text-white px-5 py-2.5 text-sm font-semibold rounded-full shadow-sm hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap shrink-0"
             onClick={handleCtaClick}
           >
@@ -308,19 +321,19 @@ export default function Navigation({ onBecomeAffiliate }) {
         </nav>
 
         <div className="mt-auto flex flex-col gap-3">
-          {LOGIN_URL && LOGIN_URL.trim() !== '' && (
-            <a
-              href={LOGIN_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full text-center py-2 text-sm font-semibold text-ink-secondary hover:text-brand-violet transition-colors"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {lang === 'te' ? 'లాగిన్' : 'Login'}
-            </a>
-          )}
           <a
-            href="#contact"
+            href={LOGIN_URL && LOGIN_URL.trim() !== '' ? LOGIN_URL : '/affiliate/auth?mode=signin'}
+            target={LOGIN_URL && LOGIN_URL.trim() !== '' ? '_blank' : undefined}
+            rel={LOGIN_URL && LOGIN_URL.trim() !== '' ? 'noopener noreferrer' : undefined}
+            className="w-full text-center py-2.5 text-sm font-semibold text-ink-secondary hover:text-brand-violet transition-colors"
+            onClick={handleSignInClick}
+          >
+            {copy.nav.signIn || (lang === 'te' ? 'సైన్ ఇన్' : 'Sign in')}
+          </a>
+          <a
+            href={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? SIGNUP_URL : '/affiliate/auth?mode=signup'}
+            target={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? '_blank' : undefined}
+            rel={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? 'noopener noreferrer' : undefined}
             className="w-full inline-flex items-center justify-center gap-2 bg-brand-violet hover:bg-brand-violet-hover text-white px-5 py-3 text-sm font-semibold rounded-full shadow-sm transition-all"
             onClick={handleCtaClick}
           >

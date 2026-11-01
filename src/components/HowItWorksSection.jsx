@@ -309,7 +309,7 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
                       <button
                         type="button"
                         className="w-full bg-[#6B3CFF] hover:bg-[#582CD6] text-white py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-[#6B3CFF]/20"
-                        onClick={() => onBecomeAffiliate && onBecomeAffiliate()}
+                        onClick={() => onBecomeAffiliate && onBecomeAffiliate('signup')}
                       >
                         <span>{currentMockup.step1.btn}</span>
                         <ArrowRight size={14} />

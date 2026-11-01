@@ -65,7 +65,7 @@ export default function FinalCtaSection({ onBecomeAffiliate, onOpenTerms }) {
           <div className="relative flex flex-col sm:flex-row items-center gap-4 mt-2">
             <button
               type="button"
-              onClick={onBecomeAffiliate}
+              onClick={() => onBecomeAffiliate && onBecomeAffiliate('signup')}
               className="inline-flex items-center justify-center gap-3 px-8 py-4 rounded-full font-bold text-base sm:text-lg bg-gradient-to-r from-[#6B3CFF] to-[#FF4FA3] text-white shadow-xl shadow-[#6B3CFF]/30 hover:shadow-2xl hover:shadow-[#6B3CFF]/50 hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
             >
               <span>{data.primaryCta}</span>

@@ -13,6 +13,7 @@ export default function ContactSection() {
     message: '',
   })
   const [honeypot, setHoneypot] = useState('')
+  const [hasSubmitted, setHasSubmitted] = useState(false)
   const [emailError, setEmailError] = useState(false)
   const [sendError, setSendError] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -29,23 +30,38 @@ export default function ContactSection() {
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
+
     if (name === 'email' && emailError) {
-      setEmailError(false)
+      if (validateEmail(value) || (!hasSubmitted && value.trim() === '')) {
+        setEmailError(false)
+      }
     }
     if (sendError) {
       setSendError(false)
     }
   }
 
+  const handleEmailBlur = () => {
+    // Only display an email error on blur IF the user entered an address that is invalid.
+    // Never display an error on blur if the user has not entered an address and not submitted yet.
+    if (formData.email.trim() !== '') {
+      setEmailError(!validateEmail(formData.email))
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setHasSubmitted(true)
 
-    if (!validateEmail(formData.email)) {
+    const isEmailValid = validateEmail(formData.email)
+    const isNameValid = Boolean(formData.name.trim())
+    const isMessageValid = Boolean(formData.message.trim())
+
+    if (!isEmailValid) {
       setEmailError(true)
-      return
     }
 
-    if (!formData.name.trim() || !formData.message.trim()) {
+    if (!isNameValid || !isEmailValid || !isMessageValid) {
       return
     }
 
@@ -64,6 +80,8 @@ export default function ContactSection() {
         setIsSuccess(true)
         setFormData({ name: '', email: '', message: '' })
         setHoneypot('')
+        setHasSubmitted(false)
+        setEmailError(false)
       } else {
         setSendError(true)
       }
@@ -78,7 +96,12 @@ export default function ContactSection() {
     setIsSuccess(false)
     setSendError(false)
     setEmailError(false)
+    setHasSubmitted(false)
   }
+
+  const showEmailError = emailError || (hasSubmitted && !validateEmail(formData.email))
+  const showNameError = hasSubmitted && !formData.name.trim()
+  const showMessageError = hasSubmitted && !formData.message.trim()
 
   return (
     <section
@@ -156,7 +179,12 @@ export default function ContactSection() {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder={data.fields?.name}
-                  className="w-full px-4 py-3.5 bg-white border border-[#12101F]/15 rounded-xl text-[#12101F] placeholder:text-[#827C94] focus:outline-none focus:border-[#6B3CFF] focus:ring-2 focus:ring-[#6B3CFF]/20 transition-all text-base"
+                  aria-invalid={showNameError}
+                  className={`w-full px-4 py-3.5 bg-white border rounded-xl text-[#12101F] placeholder:text-[#827C94] focus:outline-none focus:ring-2 transition-all text-base ${
+                    showNameError
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                      : 'border-[#12101F]/15 focus:border-[#6B3CFF] focus:ring-[#6B3CFF]/20'
+                  }`}
                 />
               </div>
 
@@ -172,16 +200,17 @@ export default function ContactSection() {
                   required
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={handleEmailBlur}
                   placeholder={data.fields?.email}
-                  aria-invalid={emailError}
-                  aria-describedby={emailError ? 'email-error-msg' : undefined}
+                  aria-invalid={showEmailError}
+                  aria-describedby={showEmailError ? 'email-error-msg' : undefined}
                   className={`w-full px-4 py-3.5 bg-white border rounded-xl text-[#12101F] placeholder:text-[#827C94] focus:outline-none focus:ring-2 transition-all text-base ${
-                    emailError
+                    showEmailError
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
                       : 'border-[#12101F]/15 focus:border-[#6B3CFF] focus:ring-[#6B3CFF]/20'
                   }`}
                 />
-                {emailError && (
+                {showEmailError && (
                   <p id="email-error-msg" className="flex items-center gap-1.5 text-xs text-red-600 font-medium m-0">
                     <AlertCircle size={14} />
                     <span>{data.errorEmail}</span>
@@ -202,7 +231,12 @@ export default function ContactSection() {
                   value={formData.message}
                   onChange={handleChange}
                   placeholder={data.fields?.message}
-                  className="w-full px-4 py-3.5 bg-white border border-[#12101F]/15 rounded-xl text-[#12101F] placeholder:text-[#827C94] focus:outline-none focus:border-[#6B3CFF] focus:ring-2 focus:ring-[#6B3CFF]/20 transition-all text-base resize-y"
+                  aria-invalid={showMessageError}
+                  className={`w-full px-4 py-3.5 bg-white border rounded-xl text-[#12101F] placeholder:text-[#827C94] focus:outline-none focus:ring-2 transition-all text-base resize-y ${
+                    showMessageError
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
+                      : 'border-[#12101F]/15 focus:border-[#6B3CFF] focus:ring-[#6B3CFF]/20'
+                  }`}
                 />
               </div>
 

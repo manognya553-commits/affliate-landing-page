@@ -53,6 +53,7 @@ export function getCopy(lang = 'en') {
         label: teDraft.nav?.links?.[idx]?.label || link.label,
       })),
       cta: teDraft.nav?.cta || teConfirmed.nav?.cta || enCopy.nav.cta,
+      signIn: teDraft.nav?.signIn || enCopy.nav.signIn,
     },
     hero: {
       eyebrow: teDraft.hero?.eyebrow || enCopy.hero.eyebrow,
@@ -135,5 +136,6 @@ export function getCopy(lang = 'en') {
       legalDrawerTitle: teDraft.footer?.legalDrawerTitle || enCopy.footer.legalDrawerTitle,
       legalPlaceholder: teDraft.footer?.legalPlaceholder || enCopy.footer.legalPlaceholder,
     },
+    auth: teDraft.auth || enCopy.auth,
   }
 }
