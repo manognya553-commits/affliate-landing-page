@@ -20,13 +20,13 @@ export default function LivingNetworkVisualizer() {
     },
     te: {
       affiliate: 'మీరు (అఫిలియేట్)',
-      need: 'అవసరం ఉన్న వ్యక్తి',
+      need: 'నీడ్ ఉన్న వ్యక్తి',
       healthcare: 'డాక్టర్ / హాస్పిటల్',
-      education: 'విద్యా సంస్థ',
-      services: 'బిజినెస్ సేవలు',
-      tagNeed: '“మంచి సేవ కావాలి”',
+      education: 'కాలేజ్ / కోచింగ్',
+      services: 'బిజినెస్ సర్వీసెస్',
+      tagNeed: '“మంచి సర్వీస్ కావాలి”',
       tagAffiliate: '“మంచి పరిచయం”',
-      tagProvider: '“ప్రొవైడర్ నిబంధనలు”',
+      tagProvider: '“ప్రొవైడర్ కండిషన్స్”',
     },
   }
 

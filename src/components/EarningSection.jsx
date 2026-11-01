@@ -29,29 +29,29 @@ export default function EarningSection() {
       title: lang === 'te' ? 'సరైన పరిచయం' : 'Relevant Introduction',
       desc:
         lang === 'te'
-          ? 'అవసరం ఉన్న వాళ్లను వాళ్ల అనుమతితోనే పరిచయం చేయండి.'
+          ? 'అవసరం ఉన్న వాళ్లను వాళ్ల పర్మిషన్‌తోనే పరిచయం చేయండి.'
           : 'Notice a genuine need and connect them with permission.',
-      tag: lang === 'te' ? 'అనుమతితో' : 'Consent Confirmed',
+      tag: lang === 'te' ? 'పర్మిషన్‌తో' : 'Consent Confirmed',
       color: '#6B3CFF',
     },
     {
       step: '02',
-      title: lang === 'te' ? 'ప్రొవైడర్ పరిశీలన' : 'Provider Terms Evaluation',
+      title: lang === 'te' ? 'ప్రొవైడర్ రివ్యూ' : 'Provider Terms Evaluation',
       desc:
         lang === 'te'
-          ? 'సేవా సంస్థ తమ నిబంధనల ప్రకారం చెక్ చేస్తుంది.'
+          ? 'ప్రొవైడర్ తమ కండిషన్స్ ప్రకారం చెక్ చేస్తారు.'
           : 'The applicable service provider evaluates under their specific terms.',
-      tag: lang === 'te' ? 'పరిశీలన' : 'Provider Review',
+      tag: lang === 'te' ? 'రివ్యూ' : 'Provider Review',
       color: '#FF4FA3',
     },
     {
       step: '03',
-      title: lang === 'te' ? 'అర్హత సాధిస్తే సంపాదన' : 'Qualified Opportunity',
+      title: lang === 'te' ? 'రిజల్ట్ వస్తే సంపాదన' : 'Qualified Opportunity',
       desc:
         lang === 'te'
-          ? 'నిబంధనలు సరిపోతే, ప్రొవైడర్ షెడ్యూల్ ప్రకారం సంపాదన.'
+          ? 'కండిషన్స్ సరిపోతే, ప్రొవైడర్ షెడ్యూల్ ప్రకారం పేమెంట్.'
           : 'When conditions are met, potential compensation applies per terms.',
-      tag: lang === 'te' ? 'హామీ లేదు' : 'Terms Apply · No Guarantee',
+      tag: lang === 'te' ? 'గ్యారెంటీ లేదు' : 'Terms Apply · No Guarantee',
       color: '#D6F36B',
     },
   ]
@@ -97,7 +97,7 @@ export default function EarningSection() {
           data-reveal="card"
           className="w-full max-w-5xl bg-[#161226]/90 border border-white/12 rounded-[32px] p-6 sm:p-8 lg:p-10 shadow-2xl relative overflow-hidden"
           role="region"
-          aria-label={lang === 'te' ? 'పరిచయం & సంపాదన విధానం' : 'Referral & Qualification Flow'}
+          aria-label={lang === 'te' ? 'రెఫరల్ & ఎర్నింగ్ ప్రాసెస్' : 'Referral & Qualification Flow'}
         >
           {/* Subtle Ambient Radial Highlight */}
           <div className="absolute -top-24 right-0 w-80 h-80 bg-gradient-to-bl from-[#6B3CFF]/25 via-transparent to-transparent pointer-events-none -z-0" aria-hidden="true" />
@@ -107,11 +107,11 @@ export default function EarningSection() {
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-[#D6F36B]" aria-hidden="true" />
                 <span className="text-xs font-mono font-bold tracking-wider text-white uppercase">
-                  {lang === 'te' ? 'పరిచయం & సంపాదన విధానం' : 'Referral & Qualification Flow'}
+                  {lang === 'te' ? 'రెఫరల్ & ఎర్నింగ్ ప్రాసెస్' : 'Referral & Qualification Flow'}
                 </span>
               </div>
               <span className="text-[11px] font-mono text-[#C4B5FD] bg-white/5 border border-white/10 px-2.5 py-1 rounded-full">
-                {lang === 'te' ? 'ప్రొవైడర్ నిబంధనలు వర్తిస్తాయి' : 'Provider-Specific Terms'}
+                {lang === 'te' ? 'ప్రొవైడర్ కండిషన్స్ వర్తిస్తాయి' : 'Provider-Specific Terms'}
               </span>
             </div>
 

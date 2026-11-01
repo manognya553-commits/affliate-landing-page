@@ -97,25 +97,25 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
     },
     te: {
       step1: {
-        badge: 'చేరడం',
-        title: 'మీ గురించి మాకు చెప్పండి',
-        subtitle: 'కేవలం 2 నిమిషాలు • చేరడం ఫ్రీ',
+        badge: 'జాయిన్ అవ్వడం',
+        title: 'మీ డీటెయిల్స్ చెప్పండి',
+        subtitle: 'జస్ట్ 2 నిమిషాలు • చేరడం ఫ్రీ',
         field1: 'పూర్తి పేరు',
         val1: 'అనన్య శర్మ',
         field2: 'ఈమెయిల్',
         val2: 'ananya@example.com',
-        field3: 'నగరం, రాష్ట్రం',
+        field3: 'సిటీ, స్టేట్',
         val3: 'హైదరాబాద్, తెలంగాణ',
         btn: 'ముందుకు వెళ్లండి',
-        footer: 'చేరడం ఫ్రీ. ఒక్క పైసా కట్టక్కర్లేదు.',
+        footer: 'చేరడం ఫ్రీ. ఒక్క రూపాయి కట్టక్కర్లేదు.',
       },
       step2: {
-        badge: 'సేవా వివరాలు',
-        title: 'సేవా వివరాలు',
-        sector: 'ఆరోగ్యం & సంరక్షణ',
-        subtitle: 'మామూలు మాటల్లో సూచనలు',
+        badge: 'సర్వీస్ డీటెయిల్స్',
+        title: 'సర్వీస్ డీటెయిల్స్',
+        sector: 'హెల్త్‌కేర్ & వెల్‌నెస్',
+        subtitle: 'సింపుల్ మాటల్లో గైడెన్స్',
         col1Header: 'ఏం చెప్పాలి',
-        col1Text: 'సేవ గురించి మామూలు మాటల్లో చెప్పండి.',
+        col1Text: 'సర్వీస్ గురించి మామూలు మాటల్లో చెప్పండి.',
         col2Header: 'ఏం చెప్పకూడదు',
         col2Text: 'సలహాలు ఇవ్వకండి. ప్రొవైడర్ చూసుకుంటారు.',
         tag: 'బట్టీ పట్టక్కర్లేదు',
@@ -123,22 +123,22 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
       step3: {
         badge: 'పరిచయం',
         title: 'కొత్త పరిచయం',
-        contact: 'రాధ కె. • డాక్టర్ సంప్రదింపు',
-        toggleLabel: '“సరే అన్నారు”',
-        toggleStatus: 'అనుమతి తీసుకున్నాం',
-        btn: 'వివరాలు sBLOOM కి పంపండి',
+        contact: 'రాధ కె. • డాక్టర్ కన్సల్టేషన్',
+        toggleLabel: '“వాళ్లు ఓకే అన్నారు”',
+        toggleStatus: 'పర్మిషన్ తీసుకున్నాం',
+        btn: 'డీటెయిల్స్ sBLOOM కి పంపండి',
         note: 'మీరు పరిచయం చేయండి, మిగతాది వాళ్లే చూసుకుంటారు.',
       },
       step4: {
-        badge: 'నిబంధనలు',
-        title: 'ప్రొవైడర్ నిబంధనలు & స్థితి',
-        subtitle: 'నిబంధనల ప్రకారం అర్హత పరిశీలన',
+        badge: 'కండిషన్స్',
+        title: 'ప్రొవైడర్ కండిషన్స్ & స్టేటస్',
+        subtitle: 'కండిషన్స్ ప్రకారం ఎలిజిబిలిటీ చెక్',
         items: [
-          { label: 'పరిచయం పంపించాం', status: 'పంపించారు', time: '10 నిమిషాల క్రితం', color: '#6B3CFF' },
-          { label: 'ప్రొవైడర్ పరిశీలన', status: 'చెక్ చేస్తున్నారు', time: 'ఈరోజు', color: '#FF4FA3' },
-          { label: 'అర్హత నిబంధనలు', status: 'అర్హత సాధించింది', time: 'షరతులు పూర్తయ్యాయి', color: '#10B981' },
+          { label: 'పరిచయం పంపించాం', status: 'సబ్‌మిట్ అయింది', time: '10 నిమిషాల క్రితం', color: '#6B3CFF' },
+          { label: 'ప్రొవైడర్ రివ్యూ', status: 'రివ్యూలో ఉంది', time: 'ఈరోజు', color: '#FF4FA3' },
+          { label: 'ఎలిజిబిలిటీ', status: 'ఎలిజిబుల్ అయింది', time: 'రూల్స్ సరిపోయాయి', color: '#10B981' },
         ],
-        footer: 'ప్రొవైడర్ నిబంధనల ప్రకారం అర్హత సాధిస్తేనే సంపాదన.',
+        footer: 'ప్రొవైడర్ కండిషన్స్ ప్రకారం రిజల్ట్ వస్తేనే సంపాదన.',
       },
     },
   }
@@ -343,7 +343,7 @@ export default function HowItWorksSection({ onBecomeAffiliate }) {
 
                       <div className="flex items-center gap-1.5 bg-[#FAF7F2] border border-[#12101F]/10 p-2 rounded-lg text-[10.5px] text-[#575266] mt-auto">
                         <ShieldCheck size={16} className="text-[#059669] shrink-0" />
-                        <span>{lang === 'te' ? 'పూర్తి వివరాలు వాళ్లే చెబుతారు' : 'The provider explains full details'}</span>
+                        <span>{lang === 'te' ? 'ఫుల్ డీటెయిల్స్ వాళ్లే చెబుతారు' : 'The provider explains full details'}</span>
                       </div>
                     </div>
                   )}

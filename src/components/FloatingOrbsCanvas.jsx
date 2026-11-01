@@ -15,9 +15,9 @@ export default function FloatingOrbsCanvas() {
     },
     te: {
       you: 'మీరు',
-      health: 'ఆరోగ్యం',
-      edu: 'విద్య',
-      prof: 'ప్రొఫెషనల్ సేవలు',
+      health: 'హెల్త్‌కేర్',
+      edu: 'ఎడ్యుకేషన్',
+      prof: 'ప్రొఫెషనల్ సర్వీసెస్',
     },
   }
 

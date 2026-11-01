@@ -43,7 +43,7 @@ export default function FaqSection() {
 
           <p className="text-base sm:text-lg leading-relaxed text-[#575266] m-0 max-w-[420px]">
             {lang === 'te'
-              ? 'చేరడం, పరిచయం చేయడం, సంపాదన — అన్నీ ఇక్కడ తెలుసుకోండి.'
+              ? 'జాయిన్ అవ్వడం, రెఫర్ చేయడం, ఎర్నింగ్స్ — అన్నీ ఇక్కడ తెలుసుకోండి.'
               : 'Clear answers on joining the network, making introductions, and how provider compensation works.'}
           </p>
 
@@ -51,7 +51,7 @@ export default function FaqSection() {
             href="#contact"
             className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#6B3CFF] hover:underline pt-2"
           >
-            <span>{lang === 'te' ? 'ఇంకేమైనా సందేహాలున్నాయా? మమ్మల్ని అడగండి →' : 'Still have questions? Get in touch →'}</span>
+            <span>{lang === 'te' ? 'ఇంకేమైనా డౌట్స్ ఉన్నాయా? మమ్మల్ని అడగండి →' : 'Still have questions? Get in touch →'}</span>
           </a>
         </div>
 
