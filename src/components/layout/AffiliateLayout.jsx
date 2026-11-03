@@ -39,10 +39,20 @@ export default function AffiliateLayout() {
 
   // Global Lead Drawer state accessible by all child pages via useOutletContext
   const [isLeadDrawerOpen, setIsLeadDrawerOpen] = useState(false)
+  const [drawerInitialProvider, setDrawerInitialProvider] = useState(null)
   const [drawerInitialService, setDrawerInitialService] = useState(null)
 
-  const openLeadDrawer = (serviceId = null) => {
-    setDrawerInitialService(serviceId)
+  const openLeadDrawer = (arg1 = null, arg2 = null) => {
+    if (typeof arg1 === 'object' && arg1 !== null) {
+      setDrawerInitialProvider(arg1.providerId || null)
+      setDrawerInitialService(arg1.serviceId || null)
+    } else if (arg2) {
+      setDrawerInitialProvider(arg1)
+      setDrawerInitialService(arg2)
+    } else {
+      setDrawerInitialProvider(null)
+      setDrawerInitialService(arg1)
+    }
     setIsLeadDrawerOpen(true)
   }
 
@@ -470,6 +480,7 @@ export default function AffiliateLayout() {
       <LeadDrawer
         isOpen={isLeadDrawerOpen}
         onClose={() => setIsLeadDrawerOpen(false)}
+        initialProviderId={drawerInitialProvider}
         initialServiceId={drawerInitialService}
       />
     </div>

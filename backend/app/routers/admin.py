@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_current_user, require_permission, AuthenticatedUser, csrf_protect
-from app.models import AffiliateProfile, User, AuditLog, ReferralLead, ServiceProvider
+from app.models import AffiliateProfile, User, AuditLog, ReferralLead, ServiceProvider, ProviderService
 from app.schemas import (
     AdminSummaryResponse,
     AdminApprovalListItem,
@@ -23,6 +23,10 @@ from app.schemas import (
     ServiceProviderCreate,
     ServiceProviderUpdate,
     ServiceProviderResponse,
+    ProviderServiceCreate,
+    ProviderServiceUpdate,
+    ProviderServiceResponse,
+    MessageResponse,
 )
 from app.security import get_client_ip
 
@@ -422,10 +426,11 @@ def list_admin_referrals(
     Supports status filters, sector filters, searching, and server-side pagination with X-Total-Count header.
     """
     query = (
-        db.query(ReferralLead, User, AffiliateProfile, ServiceProvider.name)
+        db.query(ReferralLead, User, AffiliateProfile, ServiceProvider.name, ProviderService.service_name)
         .join(User, User.id == ReferralLead.affiliate_user_id)
         .outerjoin(AffiliateProfile, AffiliateProfile.user_id == ReferralLead.affiliate_user_id)
         .outerjoin(ServiceProvider, ServiceProvider.id == ReferralLead.provider_id)
+        .outerjoin(ProviderService, ProviderService.id == ReferralLead.service_id)
     )
 
     if status_filter and status_filter != "all":
@@ -443,6 +448,7 @@ def list_admin_referrals(
             | (func.lower(User.email).like(s))
             | (func.lower(AffiliateProfile.full_name).like(s))
             | (func.lower(ServiceProvider.name).like(s))
+            | (func.lower(ProviderService.service_name).like(s))
         )
 
     total_count = query.count()
@@ -452,7 +458,7 @@ def list_admin_referrals(
     leads = query.order_by(ReferralLead.created_at.desc()).offset(offset).limit(limit).all()
 
     items = []
-    for lead, user, prof, prov_name in leads:
+    for lead, user, prof, prov_name, srv_name in leads:
         updater_user = db.query(User).filter(User.id == lead.updated_by).first() if lead.updated_by else None
         items.append(
             AdminReferralLeadResponse(
@@ -462,6 +468,7 @@ def list_admin_referrals(
                 affiliate_name=prof.full_name if prof else None,
                 client_name=lead.client_name,
                 client_mobile=lead.client_mobile,
+                client_email=lead.client_email,
                 client_city=lead.client_city,
                 service_category=lead.service_category,
                 context_note=lead.context_note,
@@ -469,6 +476,8 @@ def list_admin_referrals(
                 status=lead.status,
                 provider_id=lead.provider_id,
                 provider_name=prov_name,
+                service_id=lead.service_id,
+                service_name=srv_name,
                 admin_notes=lead.admin_notes,
                 updated_by=lead.updated_by,
                 updater_email=updater_user.email if updater_user else None,
@@ -489,17 +498,18 @@ def get_admin_referral_detail(
     Returns single referral detail for administrative review.
     """
     res = (
-        db.query(ReferralLead, User, AffiliateProfile, ServiceProvider.name)
+        db.query(ReferralLead, User, AffiliateProfile, ServiceProvider.name, ProviderService.service_name)
         .join(User, User.id == ReferralLead.affiliate_user_id)
         .outerjoin(AffiliateProfile, AffiliateProfile.user_id == ReferralLead.affiliate_user_id)
         .outerjoin(ServiceProvider, ServiceProvider.id == ReferralLead.provider_id)
+        .outerjoin(ProviderService, ProviderService.id == ReferralLead.service_id)
         .filter(ReferralLead.id == lead_id)
         .first()
     )
     if not res:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Referral lead not found.")
 
-    lead, user, prof, prov_name = res
+    lead, user, prof, prov_name, srv_name = res
     updater_user = db.query(User).filter(User.id == lead.updated_by).first() if lead.updated_by else None
     return AdminReferralLeadResponse(
         id=lead.id,
@@ -508,6 +518,7 @@ def get_admin_referral_detail(
         affiliate_name=prof.full_name if prof else None,
         client_name=lead.client_name,
         client_mobile=lead.client_mobile,
+        client_email=lead.client_email,
         client_city=lead.client_city,
         service_category=lead.service_category,
         context_note=lead.context_note,
@@ -515,6 +526,8 @@ def get_admin_referral_detail(
         status=lead.status,
         provider_id=lead.provider_id,
         provider_name=prov_name,
+        service_id=lead.service_id,
+        service_name=srv_name,
         admin_notes=lead.admin_notes,
         updated_by=lead.updated_by,
         updater_email=updater_user.email if updater_user else None,
@@ -573,7 +586,7 @@ def update_referral_status(
     db.commit()
     db.refresh(lead)
 
-    # Load affiliate user, profile, and provider
+    # Load affiliate user, profile, provider, and service
     user = db.query(User).filter(User.id == lead.affiliate_user_id).first()
     prof = db.query(AffiliateProfile).filter(AffiliateProfile.user_id == lead.affiliate_user_id).first()
     prov_name = None
@@ -581,6 +594,11 @@ def update_referral_status(
         prov = db.query(ServiceProvider).filter(ServiceProvider.id == lead.provider_id).first()
         if prov:
             prov_name = prov.name
+    srv_name = None
+    if lead.service_id:
+        srv = db.query(ProviderService).filter(ProviderService.id == lead.service_id).first()
+        if srv:
+            srv_name = srv.service_name
 
     return AdminReferralLeadResponse(
         id=lead.id,
@@ -589,6 +607,7 @@ def update_referral_status(
         affiliate_name=prof.full_name if prof else None,
         client_name=lead.client_name,
         client_mobile=lead.client_mobile,
+        client_email=lead.client_email,
         client_city=lead.client_city,
         service_category=lead.service_category,
         context_note=lead.context_note,
@@ -596,6 +615,8 @@ def update_referral_status(
         status=lead.status,
         provider_id=lead.provider_id,
         provider_name=prov_name,
+        service_id=lead.service_id,
+        service_name=srv_name,
         admin_notes=lead.admin_notes,
         updated_by=lead.updated_by,
         updater_email=current_user.email,
@@ -807,4 +828,211 @@ def toggle_provider_active(
     db.refresh(provider)
 
     return ServiceProviderResponse.model_validate(provider)
+
+
+# ==============================================================================
+# PROVIDER SERVICES MANAGEMENT (ADMIN)
+# ==============================================================================
+
+@router.get("/providers/{provider_id}/services", response_model=List[ProviderServiceResponse])
+def list_admin_provider_services(
+    provider_id: UUID,
+    current_user: AuthenticatedUser = Depends(require_permission("catalog.manage")),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns all services configured under a specific provider (active and inactive).
+    """
+    provider = db.query(ServiceProvider).filter(ServiceProvider.id == provider_id).first()
+    if not provider:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service provider not found.")
+    services = (
+        db.query(ProviderService)
+        .filter(ProviderService.provider_id == provider_id)
+        .order_by(ProviderService.created_at.asc())
+        .all()
+    )
+    return [ProviderServiceResponse.model_validate(s) for s in services]
+
+
+@router.post("/providers/{provider_id}/services", response_model=ProviderServiceResponse, dependencies=[Depends(csrf_protect)])
+def create_admin_provider_service(
+    provider_id: UUID,
+    body: ProviderServiceCreate,
+    request: Request,
+    current_user: AuthenticatedUser = Depends(require_permission("catalog.manage")),
+    db: Session = Depends(get_db),
+):
+    """
+    Adds a new service under a provider with audit logging.
+    """
+    provider = db.query(ServiceProvider).filter(ServiceProvider.id == provider_id).first()
+    if not provider:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Service provider not found.")
+
+    client_ip = get_client_ip(request)
+    srv = ProviderService(
+        provider_id=provider_id,
+        service_name=body.service_name.strip(),
+        description=body.description.strip(),
+        requirement_description_required=body.requirement_description_required,
+        instructions=body.instructions.strip() if body.instructions else None,
+        is_active=body.is_active,
+    )
+    db.add(srv)
+    db.flush()
+
+    audit = AuditLog(
+        actor_user_id=current_user.id,
+        action="provider_service.created",
+        entity_type="provider_service",
+        entity_id=str(srv.id),
+        after_state={
+            "service_name": srv.service_name,
+            "provider_id": str(provider_id),
+            "requirement_description_required": srv.requirement_description_required,
+            "is_active": srv.is_active,
+        },
+        ip_address=client_ip,
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(srv)
+    return ProviderServiceResponse.model_validate(srv)
+
+
+@router.put("/providers/{provider_id}/services/{service_id}", response_model=ProviderServiceResponse, dependencies=[Depends(csrf_protect)])
+def update_admin_provider_service(
+    provider_id: UUID,
+    service_id: UUID,
+    body: ProviderServiceUpdate,
+    request: Request,
+    current_user: AuthenticatedUser = Depends(require_permission("catalog.manage")),
+    db: Session = Depends(get_db),
+):
+    """
+    Updates a provider service configuration with audit logging.
+    """
+    srv = (
+        db.query(ProviderService)
+        .filter(ProviderService.id == service_id, ProviderService.provider_id == provider_id)
+        .first()
+    )
+    if not srv:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Provider service not found.")
+
+    client_ip = get_client_ip(request)
+    before_state = {
+        "service_name": srv.service_name,
+        "requirement_description_required": srv.requirement_description_required,
+        "is_active": srv.is_active,
+    }
+
+    if body.service_name is not None:
+        srv.service_name = body.service_name.strip()
+    if body.description is not None:
+        srv.description = body.description.strip()
+    if body.requirement_description_required is not None:
+        srv.requirement_description_required = body.requirement_description_required
+    if body.instructions is not None:
+        srv.instructions = body.instructions.strip() if body.instructions else None
+    if body.is_active is not None:
+        srv.is_active = body.is_active
+
+    srv.updated_at = datetime.now(timezone.utc)
+
+    after_state = {
+        "service_name": srv.service_name,
+        "requirement_description_required": srv.requirement_description_required,
+        "is_active": srv.is_active,
+    }
+
+    audit = AuditLog(
+        actor_user_id=current_user.id,
+        action="provider_service.updated",
+        entity_type="provider_service",
+        entity_id=str(srv.id),
+        before_state=before_state,
+        after_state=after_state,
+        ip_address=client_ip,
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(srv)
+    return ProviderServiceResponse.model_validate(srv)
+
+
+@router.post("/providers/{provider_id}/services/{service_id}/toggle-active", response_model=ProviderServiceResponse, dependencies=[Depends(csrf_protect)])
+def toggle_admin_provider_service_active(
+    provider_id: UUID,
+    service_id: UUID,
+    request: Request,
+    current_user: AuthenticatedUser = Depends(require_permission("catalog.manage")),
+    db: Session = Depends(get_db),
+):
+    """
+    Toggles a provider service's active status.
+    """
+    srv = (
+        db.query(ProviderService)
+        .filter(ProviderService.id == service_id, ProviderService.provider_id == provider_id)
+        .first()
+    )
+    if not srv:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Provider service not found.")
+
+    client_ip = get_client_ip(request)
+    old_status = srv.is_active
+    srv.is_active = not old_status
+    srv.updated_at = datetime.now(timezone.utc)
+
+    audit = AuditLog(
+        actor_user_id=current_user.id,
+        action="provider_service.status_toggled",
+        entity_type="provider_service",
+        entity_id=str(srv.id),
+        before_state={"is_active": old_status},
+        after_state={"is_active": srv.is_active},
+        ip_address=client_ip,
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(srv)
+    return ProviderServiceResponse.model_validate(srv)
+
+
+@router.delete("/providers/{provider_id}/services/{service_id}", response_model=MessageResponse, dependencies=[Depends(csrf_protect)])
+def delete_admin_provider_service(
+    provider_id: UUID,
+    service_id: UUID,
+    request: Request,
+    current_user: AuthenticatedUser = Depends(require_permission("catalog.manage")),
+    db: Session = Depends(get_db),
+):
+    """
+    Deletes a service from a provider with audit logging.
+    """
+    srv = (
+        db.query(ProviderService)
+        .filter(ProviderService.id == service_id, ProviderService.provider_id == provider_id)
+        .first()
+    )
+    if not srv:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Provider service not found.")
+
+    client_ip = get_client_ip(request)
+    service_name = srv.service_name
+    db.delete(srv)
+
+    audit = AuditLog(
+        actor_user_id=current_user.id,
+        action="provider_service.deleted",
+        entity_type="provider_service",
+        entity_id=str(service_id),
+        before_state={"service_name": service_name, "provider_id": str(provider_id)},
+        ip_address=client_ip,
+    )
+    db.add(audit)
+    db.commit()
+    return MessageResponse(message="Service deleted successfully.")
 

@@ -204,8 +204,38 @@ REFERRAL_STATUSES = ("pending", "contacted", "qualified", "converted", "rejected
 
 
 # ==============================================================================
-# SERVICE PROVIDER SCHEMAS
+# SERVICE PROVIDER & SERVICES SCHEMAS
 # ==============================================================================
+
+class ProviderServiceCreate(BaseModel):
+    service_name: str = Field(..., min_length=2, max_length=200)
+    description: str = Field(..., min_length=5)
+    requirement_description_required: bool = False
+    instructions: Optional[str] = None
+    is_active: bool = True
+
+
+class ProviderServiceUpdate(BaseModel):
+    service_name: Optional[str] = None
+    description: Optional[str] = None
+    requirement_description_required: Optional[bool] = None
+    instructions: Optional[str] = None
+    is_active: Optional[bool] = None
+
+
+class ProviderServiceResponse(BaseModel):
+    id: UUID
+    provider_id: UUID
+    service_name: str
+    description: str
+    requirement_description_required: bool
+    instructions: Optional[str] = None
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 class ServiceProviderCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=200)
@@ -268,6 +298,7 @@ class ServiceProviderResponse(BaseModel):
     website: Optional[str] = None
     is_active: bool
     is_sample: bool
+    services: List[ProviderServiceResponse] = []
     created_at: datetime
     updated_at: datetime
 
@@ -279,18 +310,27 @@ class ServiceProviderResponse(BaseModel):
 # ==============================================================================
 
 class ReferralLeadCreate(BaseModel):
+    provider_id: Optional[UUID] = None
+    service_id: Optional[UUID] = None
     client_name: str = Field(..., min_length=2, max_length=120)
     client_mobile: str = Field(..., min_length=7, max_length=20)
+    client_email: Optional[str] = None
     client_city: str = Field(..., min_length=2, max_length=100)
-    service_category: str = Field(...)
-    context_note: str = Field(..., min_length=5, max_length=2000)
+    service_category: Optional[str] = None
+    context_note: Optional[str] = None
     consent_confirmed: bool = Field(...)
-    provider_id: Optional[UUID] = None
+
+    @field_validator("client_email")
+    @classmethod
+    def validate_optional_email(cls, v: Optional[str]) -> Optional[str]:
+        if v is not None and v.strip():
+            return clean_email(v)
+        return None
 
     @field_validator("service_category")
     @classmethod
-    def validate_category(cls, v: str) -> str:
-        if v not in SERVICE_CATEGORIES:
+    def validate_category(cls, v: Optional[str]) -> Optional[str]:
+        if v and v not in SERVICE_CATEGORIES:
             raise ValueError(f"Service category must be one of: {', '.join(SERVICE_CATEGORIES)}")
         return v
 
@@ -306,13 +346,16 @@ class ReferralLeadResponse(BaseModel):
     id: UUID
     client_name: str
     client_mobile: str
+    client_email: Optional[str] = None
     client_city: str
     service_category: str
-    context_note: str
+    context_note: Optional[str] = None
     consent_confirmed: bool
     status: str
     provider_id: Optional[UUID] = None
     provider_name: Optional[str] = None
+    service_id: Optional[UUID] = None
+    service_name: Optional[str] = None
     admin_notes: Optional[str] = None
     created_at: datetime
     updated_at: datetime
@@ -363,13 +406,16 @@ class AdminReferralLeadResponse(BaseModel):
     affiliate_name: Optional[str] = None
     client_name: str
     client_mobile: str
+    client_email: Optional[str] = None
     client_city: str
     service_category: str
-    context_note: str
+    context_note: Optional[str] = None
     consent_confirmed: bool
     status: str
     provider_id: Optional[UUID] = None
     provider_name: Optional[str] = None
+    service_id: Optional[UUID] = None
+    service_name: Optional[str] = None
     admin_notes: Optional[str] = None
     updated_by: Optional[UUID] = None
     updater_email: Optional[str] = None

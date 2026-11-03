@@ -116,12 +116,17 @@ export default function AffiliateDashboardPage() {
       ),
     },
     {
-      header: 'Sector',
-      key: 'service_category',
+      header: 'Provider & Service',
+      key: 'service_name',
       render: (item) => (
-        <span className="text-xs capitalize font-medium text-[#575266]">
-          {item.service_category || 'Healthcare'}
-        </span>
+        <div>
+          <span className="font-semibold text-xs text-[#0E0B1E] block truncate max-w-[170px]">
+            {item.provider_name || 'Verified Provider'}
+          </span>
+          <span className="text-[11px] text-[#6B3CFF] truncate max-w-[170px] block">
+            {item.service_name || item.service_category || 'Service Consultation'}
+          </span>
+        </div>
       ),
     },
     {

@@ -207,6 +207,24 @@ class ServiceProvider(Base):
     updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
 
     referrals = relationship("ReferralLead", back_populates="provider")
+    services = relationship("ProviderService", back_populates="provider", cascade="all, delete-orphan", order_by="ProviderService.created_at.asc()")
+
+
+class ProviderService(Base):
+    __tablename__ = "provider_services"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    provider_id = Column(UUID(as_uuid=True), ForeignKey("service_providers.id", ondelete="CASCADE"), nullable=False, index=True)
+    service_name = Column(Text, nullable=False)
+    description = Column(Text, nullable=False)
+    requirement_description_required = Column(Boolean, nullable=False, default=False)
+    instructions = Column(Text, nullable=True)
+    is_active = Column(Boolean, nullable=False, default=True)
+    created_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), nullable=False, server_default=func.now(), onupdate=func.now())
+
+    provider = relationship("ServiceProvider", back_populates="services", foreign_keys=[provider_id])
+    referrals = relationship("ReferralLead", back_populates="service")
 
 
 class ReferralLead(Base):
@@ -215,11 +233,13 @@ class ReferralLead(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     affiliate_user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
     provider_id = Column(UUID(as_uuid=True), ForeignKey("service_providers.id", ondelete="SET NULL"), nullable=True, index=True)
+    service_id = Column(UUID(as_uuid=True), ForeignKey("provider_services.id", ondelete="SET NULL"), nullable=True, index=True)
     client_name = Column(Text, nullable=False)
     client_mobile = Column(Text, nullable=False)
+    client_email = Column(Text, nullable=True)
     client_city = Column(Text, nullable=False)
     service_category = Column(Text, nullable=False)  # 'healthcare', 'education', 'professional'
-    context_note = Column(Text, nullable=False)
+    context_note = Column(Text, nullable=True)
     consent_confirmed = Column(Boolean, nullable=False)
     status = Column(Text, nullable=False, default="pending", index=True)  # 'pending', 'contacted', 'qualified', 'converted', 'rejected'
     admin_notes = Column(Text, nullable=True)
@@ -230,6 +250,7 @@ class ReferralLead(Base):
     # Relationships
     affiliate_user = relationship("User", back_populates="referral_leads", foreign_keys=[affiliate_user_id])
     provider = relationship("ServiceProvider", back_populates="referrals", foreign_keys=[provider_id])
+    service = relationship("ProviderService", back_populates="referrals", foreign_keys=[service_id])
     updater = relationship("User", foreign_keys=[updated_by])
 
 

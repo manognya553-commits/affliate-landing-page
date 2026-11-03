@@ -104,14 +104,16 @@ export default function AdminLeadsPage() {
 
   const exportCSV = () => {
     if (referrals.length === 0) return
-    const headers = ['Ref ID', 'Client Name', 'City', 'Mobile', 'Sector', 'Target Provider', 'Affiliate', 'Status', 'Date']
+    const headers = ['Ref ID', 'Client Name', 'Mobile', 'Email', 'Location', 'Provider', 'Service', 'Sector', 'Affiliate', 'Status', 'Date']
     const rows = referrals.map((r) => [
       `SBL-REF-${r.id.slice(0, 8)}`,
       `"${(r.client_name || '').replace(/"/g, '""')}"`,
-      `"${(r.client_city || '').replace(/"/g, '""')}"`,
       r.client_mobile || '',
-      r.service_category || '',
+      r.client_email || '',
+      `"${(r.client_city || '').replace(/"/g, '""')}"`,
       `"${(r.provider_name || '').replace(/"/g, '""')}"`,
+      `"${(r.service_name || '').replace(/"/g, '""')}"`,
+      r.service_category || '',
       r.affiliate_email || '',
       r.status || '',
       new Date(r.created_at).toISOString().split('T')[0],
@@ -354,9 +356,9 @@ export default function AdminLeadsPage() {
               <thead>
                 <tr className="bg-[#FAF7F2]/80 border-b border-[#12101F]/10 text-[#575266] uppercase tracking-wider font-semibold">
                   <th className="py-3.5 px-6">{t('admin.leads.refId')}</th>
-                  <th className="py-3.5 px-6">{t('admin.leads.client')}</th>
-                  <th className="py-3.5 px-6">{t('admin.leads.contact')}</th>
-                  <th className="py-3.5 px-6">{t('admin.leads.sector')}</th>
+                  <th className="py-3.5 px-6">{lang === 'te' ? 'కస్టమర్ & లొకేషన్' : 'Customer & Location'}</th>
+                  <th className="py-3.5 px-6">{lang === 'te' ? 'సంప్రదింపు వివరాలు' : 'Contact Details'}</th>
+                  <th className="py-3.5 px-6">{lang === 'te' ? 'ప్రొవైడర్ & సర్వీస్' : 'Provider & Service'}</th>
                   <th className="py-3.5 px-6">{t('admin.leads.affiliate')}</th>
                   <th className="py-3.5 px-6">{t('admin.leads.date')}</th>
                   <th className="py-3.5 px-6">{t('admin.leads.status')}</th>
@@ -371,7 +373,7 @@ export default function AdminLeadsPage() {
                       SBL-REF-{lead.id.slice(0, 6).toUpperCase()}
                     </td>
 
-                    {/* Client Details */}
+                    {/* Customer Details & Location */}
                     <td className="py-4 px-6">
                       <div className="font-semibold text-sm text-[#0E0B1E] flex items-center gap-1.5">
                         <span>{lead.client_name}</span>
@@ -390,29 +392,33 @@ export default function AdminLeadsPage() {
                       </div>
                     </td>
 
-                    {/* Contact Info */}
-                    <td className="py-4 px-6 font-mono text-[11px]">
-                      <div className="flex items-center gap-1.5 text-[#0E0B1E]">
+                    {/* Contact Info (Mobile + Optional Email) */}
+                    <td className="py-4 px-6 text-[11px]">
+                      <div className="flex items-center gap-1.5 text-[#0E0B1E] font-mono">
                         <Phone size={12} className="text-[#575266]" />
                         <span>{lead.client_mobile}</span>
                       </div>
-                    </td>
-
-                    {/* Sector & Provider */}
-                    <td className="py-4 px-6">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-purple-50 text-[#6B3CFF] text-[11px] font-semibold capitalize mb-1">
-                        {getSectorIcon(lead.service_category)}
-                        <span>{lead.service_category}</span>
-                      </div>
-                      {lead.provider_name && (
-                        <div className="text-[11px] font-semibold text-[#0E0B1E] flex items-center gap-1">
-                          <Building2 size={11} className="text-[#6B3CFF]" />
-                          <span>{lead.provider_name}</span>
+                      {lead.client_email && (
+                        <div className="flex items-center gap-1.5 text-[#575266] mt-0.5 font-sans">
+                          <Mail size={11} className="text-[#575266]" />
+                          <span className="truncate max-w-[150px]">{lead.client_email}</span>
                         </div>
                       )}
-                      <div className="text-[10px] text-[#575266] max-w-[200px] truncate" title={SECTOR_TERMS[lead.service_category]?.[lang]}>
-                        {SECTOR_TERMS[lead.service_category]?.[lang]}
+                    </td>
+
+                    {/* Provider & Selected Service */}
+                    <td className="py-4 px-6">
+                      <div className="font-semibold text-xs text-[#0E0B1E] flex items-center gap-1">
+                        <Building2 size={12} className="text-[#6B3CFF] shrink-0" />
+                        <span className="truncate max-w-[170px]">{lead.provider_name || 'Verified Provider'}</span>
                       </div>
+                      {lead.service_name && (
+                        <div className="mt-1">
+                          <span className="inline-block text-[11px] font-medium text-[#6B3CFF] bg-[#6B3CFF]/5 border border-[#6B3CFF]/15 px-2 py-0.5 rounded truncate max-w-[180px]">
+                            {lead.service_name}
+                          </span>
+                        </div>
+                      )}
                     </td>
 
                     {/* Affiliate */}
@@ -563,32 +569,91 @@ export default function AdminLeadsPage() {
             </div>
 
             {/* Client Context Information Card */}
-            <div className="bg-[#FAF7F2] rounded-2xl p-5 border border-[#12101F]/10 space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="bg-[#FAF7F2] rounded-2xl p-5 border border-[#12101F]/10 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-xs text-[#575266]">{t('admin.leads.client')}</div>
-                  <div className="font-bold text-base text-[#0E0B1E]">{selectedLead.client_name}</div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#575266]">
+                    {lang === 'te' ? 'కస్టమర్ పేరు & లొకేషన్' : 'Customer & Location'}
+                  </div>
+                  <div className="font-bold text-base text-[#0E0B1E] mt-0.5">{selectedLead.client_name}</div>
+                  <div className="text-xs text-[#575266] flex items-center gap-1 mt-0.5">
+                    <MapPin size={12} className="text-[#6B3CFF]" />
+                    <span>{selectedLead.client_city}</span>
+                  </div>
                 </div>
+
                 <div>
-                  <div className="text-xs text-[#575266]">{t('admin.leads.contact')}</div>
-                  <div className="font-mono text-sm font-semibold text-[#0E0B1E]">{selectedLead.client_mobile}</div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#575266]">
+                    {lang === 'te' ? 'సంప్రదింపు వివరాలు' : 'Contact Details'}
+                  </div>
+                  <div className="font-mono text-xs font-semibold text-[#0E0B1E] flex items-center gap-1.5 mt-0.5">
+                    <Phone size={12} className="text-[#6B3CFF]" />
+                    <span>{selectedLead.client_mobile}</span>
+                  </div>
+                  {selectedLead.client_email ? (
+                    <div className="text-xs text-[#575266] flex items-center gap-1.5 mt-0.5">
+                      <Mail size={12} className="text-[#6B3CFF]" />
+                      <span>{selectedLead.client_email}</span>
+                    </div>
+                  ) : (
+                    <div className="text-[11px] text-[#575266]/70 mt-0.5 italic">No email provided</div>
+                  )}
                 </div>
+              </div>
+
+              {/* Provider & Selected Service */}
+              <div className="pt-3 border-t border-[#12101F]/10 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-xs text-[#575266]">{t('admin.leads.sector')}</div>
-                  <div className="font-semibold text-xs text-[#6B3CFF] capitalize">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#575266]">
+                    {lang === 'te' ? 'సర్వీస్ ప్రొవైడర్' : 'Target Provider'}
+                  </div>
+                  <div className="font-semibold text-xs text-[#0E0B1E] flex items-center gap-1.5 mt-0.5">
+                    <Building2 size={13} className="text-[#6B3CFF]" />
+                    <span>{selectedLead.provider_name || 'Verified Provider'}</span>
+                  </div>
+                  <div className="text-[10px] uppercase font-bold text-[#6B3CFF] mt-0.5">
                     {selectedLead.service_category}
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-[#575266]">
+                    {lang === 'te' ? 'ఎంపికైన సర్వీస్' : 'Selected Service'}
+                  </div>
+                  <div className="font-semibold text-xs text-[#0E0B1E] mt-0.5">
+                    <span className="inline-block px-2.5 py-1 rounded-lg bg-[#6B3CFF]/5 border border-[#6B3CFF]/15 text-[#6B3CFF]">
+                      {selectedLead.service_name || 'General Consultation'}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Context Note from Affiliate */}
-              <div>
+              {/* Referring Affiliate & Date */}
+              <div className="pt-3 border-t border-[#12101F]/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div>
+                  <span className="text-[#575266]">{lang === 'te' ? 'రిఫర్ చేసిన అఫిలియేట్: ' : 'Referring Affiliate: '}</span>
+                  <span className="font-semibold text-[#0E0B1E]">{selectedLead.affiliate_name || selectedLead.affiliate_email}</span>
+                </div>
+                <div>
+                  <span className="text-[#575266]">{lang === 'te' ? 'తేదీ: ' : 'Submitted: '}</span>
+                  <span className="font-semibold text-[#0E0B1E]">{new Date(selectedLead.created_at).toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Context Note / Requirement from Affiliate */}
+              <div className="pt-3 border-t border-[#12101F]/10">
                 <div className="text-xs font-bold text-[#575266] mb-1">
-                  {t('admin.leads.viewNote')}
+                  {lang === 'te' ? 'కస్టమర్ అవసరం / సమస్య వివరాలు' : 'Customer Requirement Description'}
                 </div>
-                <div className="p-3 rounded-xl bg-white border border-[#12101F]/10 text-xs text-[#0E0B1E] leading-relaxed">
-                  "{selectedLead.context_note}"
-                </div>
+                {selectedLead.context_note ? (
+                  <div className="p-3 rounded-xl bg-white border border-[#12101F]/10 text-xs text-[#0E0B1E] leading-relaxed">
+                    "{selectedLead.context_note}"
+                  </div>
+                ) : (
+                  <div className="p-2.5 rounded-xl bg-white border border-[#12101F]/10 text-xs text-[#575266] italic">
+                    {lang === 'te' ? 'వివరణ అందించబడలేదు (ఈ సర్వీస్‌కు ఐచ్ఛికం).' : 'No requirement description provided (optional for this service).'}
+                  </div>
+                )}
               </div>
 
               {/* Explicit Permission Indicator */}
@@ -596,8 +661,8 @@ export default function AdminLeadsPage() {
                 <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
                 <span>
                   {lang === 'te'
-                    ? 'క్లయింట్ స్పష్టమైన అనుమతి నిర్ధారించబడింది (పరిచయం చేయడానికి ముందస్తు సమ్మతి).'
-                    : 'Explicit client permission verified: Client agreed to this service introduction.'}
+                    ? 'కస్టమర్ అనుమతి ధృవీకరించబడింది: వివరాలను పంచుకోవడానికి కస్టమర్ స్పష్టమైన సమ్మతి ఇచ్చారు.'
+                    : 'Explicit customer consent confirmed: Customer agreed to share contact details and requirements for this follow-up.'}
                 </span>
               </div>
             </div>

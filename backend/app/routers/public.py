@@ -72,7 +72,12 @@ def list_public_providers(
         )
 
     providers = query.order_by(ServiceProvider.is_sample.asc(), ServiceProvider.name.asc()).all()
-    return [ServiceProviderResponse.model_validate(p) for p in providers]
+    results = []
+    for p in providers:
+        resp = ServiceProviderResponse.model_validate(p)
+        resp.services = [s for s in resp.services if s.is_active]
+        results.append(resp)
+    return results
 
 
 @router.get("/providers/{provider_id}", response_model=ServiceProviderResponse)
@@ -80,5 +85,7 @@ def get_public_provider_detail(provider_id: UUID, db: Session = Depends(get_db))
     provider = db.query(ServiceProvider).filter(ServiceProvider.id == provider_id, ServiceProvider.is_active == True).first()
     if not provider:
         raise HTTPException(status_code=404, detail="Service provider not found or inactive.")
-    return ServiceProviderResponse.model_validate(provider)
+    resp = ServiceProviderResponse.model_validate(provider)
+    resp.services = [s for s in resp.services if s.is_active]
+    return resp
 

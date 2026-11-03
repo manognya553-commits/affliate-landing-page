@@ -175,6 +175,13 @@ export const api = {
   updateAdminProvider: (id, data) => api.put(`/api/admin/providers/${id}`, data),
   toggleAdminProviderActive: (id) => api.post(`/api/admin/providers/${id}/toggle-active`),
 
+  // Provider Services Sub-Resource APIs (Admin)
+  getAdminProviderServices: (providerId) => api.get(`/api/admin/providers/${providerId}/services`),
+  createAdminProviderService: (providerId, data) => api.post(`/api/admin/providers/${providerId}/services`, data),
+  updateAdminProviderService: (providerId, serviceId, data) => api.put(`/api/admin/providers/${providerId}/services/${serviceId}`, data),
+  toggleAdminProviderServiceActive: (providerId, serviceId) => api.post(`/api/admin/providers/${providerId}/services/${serviceId}/toggle-active`),
+  deleteAdminProviderService: (providerId, serviceId) => api.delete(`/api/admin/providers/${providerId}/services/${serviceId}`),
+
   // ---------------------------------------------------------------------------
   // Admin Affiliate Governance APIs
   // ---------------------------------------------------------------------------

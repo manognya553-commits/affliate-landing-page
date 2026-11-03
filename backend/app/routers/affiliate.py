@@ -5,7 +5,15 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.dependencies import get_current_user, AuthenticatedUser, csrf_protect
-from app.models import AffiliateProfile, ConsentRecord, TermsVersion, AuditLog, ReferralLead, ServiceProvider
+from app.models import (
+    AffiliateProfile,
+    ConsentRecord,
+    TermsVersion,
+    AuditLog,
+    ReferralLead,
+    ServiceProvider,
+    ProviderService,
+)
 from app.schemas import (
     AffiliateProfileUpdate,
     AffiliateProfileSubmit,
@@ -226,39 +234,84 @@ def submit_referral_lead(
 
     # 4. Prevent accidental duplicate submissions within 24 hours
     twenty_four_hours_ago = now - timedelta(hours=24)
-    dup = (
+    dup_query = (
         db.query(ReferralLead)
         .filter(
             ReferralLead.affiliate_user_id == current_user.id,
             ReferralLead.client_mobile == body.client_mobile.strip(),
-            ReferralLead.service_category == body.service_category,
             ReferralLead.created_at >= twenty_four_hours_ago,
         )
-        .first()
     )
-    if dup:
+    if body.service_id:
+        dup_query = dup_query.filter(ReferralLead.service_id == body.service_id)
+    elif body.service_category:
+        dup_query = dup_query.filter(ReferralLead.service_category == body.service_category)
+    if dup_query.first():
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="A referral for this client in this sector was recently submitted and is currently being processed.",
+            detail="A referral for this client was recently submitted and is currently being processed.",
         )
 
-    # 5. Resolve provider if provided
+    # 5. Resolve provider and service
     resolved_provider_id = None
+    resolved_service_id = None
     provider_name = None
+    service_name = None
+    service_category = body.service_category
+
     if body.provider_id:
-        prov = db.query(ServiceProvider).filter(ServiceProvider.id == body.provider_id, ServiceProvider.is_active == True).first()
-        if prov:
-            resolved_provider_id = prov.id
-            provider_name = prov.name
+        prov = db.query(ServiceProvider).filter(ServiceProvider.id == body.provider_id).first()
+        if not prov or not prov.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The selected service provider is inactive or does not exist.",
+            )
+        resolved_provider_id = prov.id
+        provider_name = prov.name
+        if not service_category:
+            service_category = prov.sector
+
+    if body.service_id:
+        if not resolved_provider_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="A service provider must be selected.",
+            )
+        srv = db.query(ProviderService).filter(ProviderService.id == body.service_id).first()
+        if not srv or not srv.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The selected service is inactive or does not exist.",
+            )
+        if srv.provider_id != resolved_provider_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="The selected service does not belong to the selected service provider.",
+            )
+        resolved_service_id = srv.id
+        service_name = srv.service_name
+
+        # Enforce requirement description if mandatory for this service
+        if srv.requirement_description_required:
+            if not body.context_note or len(body.context_note.strip()) < 10:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="A customer requirement description (at least 10 characters) is required by this service.",
+                )
+
+    if not service_category:
+        service_category = "healthcare"
 
     lead = ReferralLead(
         affiliate_user_id=current_user.id,
         provider_id=resolved_provider_id,
+        service_id=resolved_service_id,
         client_name=body.client_name.strip(),
         client_mobile=body.client_mobile.strip(),
+        client_email=body.client_email.strip().lower() if body.client_email else None,
         client_city=body.client_city.strip(),
-        service_category=body.service_category,
-        context_note=body.context_note.strip(),
+        service_category=service_category,
+        context_note=body.context_note.strip() if body.context_note else None,
         consent_confirmed=True,
         status="pending",
     )
@@ -277,6 +330,7 @@ def submit_referral_lead(
             "client_city": lead.client_city,
             "status": lead.status,
             "provider_id": str(resolved_provider_id) if resolved_provider_id else None,
+            "service_id": str(resolved_service_id) if resolved_service_id else None,
         },
         ip_address=client_ip,
     )
@@ -286,6 +340,7 @@ def submit_referral_lead(
 
     resp = ReferralLeadResponse.model_validate(lead)
     resp.provider_name = provider_name
+    resp.service_name = service_name
     return resp
 
 
@@ -297,11 +352,12 @@ def list_affiliate_referrals(
 ):
     """
     Returns only the referrals submitted by the authenticated affiliate.
-    Enforces strict ownership isolation and associates provider details.
+    Enforces strict ownership isolation and associates provider and service details.
     """
     query = (
-        db.query(ReferralLead, ServiceProvider.name)
+        db.query(ReferralLead, ServiceProvider.name, ProviderService.service_name)
         .outerjoin(ServiceProvider, ServiceProvider.id == ReferralLead.provider_id)
+        .outerjoin(ProviderService, ProviderService.id == ReferralLead.service_id)
         .filter(ReferralLead.affiliate_user_id == current_user.id)
     )
 
@@ -310,9 +366,10 @@ def list_affiliate_referrals(
 
     results = query.order_by(ReferralLead.created_at.desc()).all()
     items = []
-    for lead, prov_name in results:
+    for lead, prov_name, srv_name in results:
         lead_resp = ReferralLeadResponse.model_validate(lead)
         lead_resp.provider_name = prov_name
+        lead_resp.service_name = srv_name
         items.append(lead_resp)
     return items
 
