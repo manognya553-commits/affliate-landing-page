@@ -104,9 +104,12 @@ export function RequireStatusGate({ children }) {
 export function RequireAdmin({ children }) {
   const { session, loading, role } = useAuth()
   const { lang } = useLanguage()
+  const location = useLocation()
 
   if (loading) return <LoadingSpinner />
-  if (!session) return <Navigate to="/app/login" replace />
+  if (!session) {
+    return <Navigate to="/app/login" state={{ from: location }} replace />
+  }
 
   if (role !== 'admin') {
     return (
@@ -142,11 +145,18 @@ export function RequireAdmin({ children }) {
  */
 export function RedirectIfAuthenticated({ children }) {
   const { session, loading, role, status } = useAuth()
+  const location = useLocation()
   if (loading) return <LoadingSpinner />
   if (!session) return children
 
+  const target = location.state?.from?.pathname
+
   if (role === 'admin') {
-    return <Navigate to="/admin" replace />
+    return <Navigate to={target || '/admin'} replace />
+  }
+
+  if (target && target !== '/admin') {
+    return <Navigate to={target} replace />
   }
 
   if (status === 'suspended' || status === 'rejected') {

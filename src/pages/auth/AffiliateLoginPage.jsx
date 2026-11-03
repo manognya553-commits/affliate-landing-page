@@ -34,12 +34,19 @@ export default function AffiliateLoginPage() {
 
     setLoading(true)
     try {
-      await signIn({
+      const res = await signIn({
         email: email.trim(),
         password,
       })
-      const from = location.state?.from?.pathname || '/app'
-      navigate(from, { replace: true })
+      const isAdmin = res?.roles?.includes('admin')
+      const target = location.state?.from?.pathname
+      if (target) {
+        navigate(target, { replace: true })
+      } else if (isAdmin) {
+        navigate('/admin', { replace: true })
+      } else {
+        navigate('/app', { replace: true })
+      }
     } catch (err) {
       console.error('Sign in error:', err)
       setError(err.message || 'Invalid email or password.')
@@ -101,13 +108,23 @@ export default function AffiliateLoginPage() {
           <div className="flex flex-col gap-2 mb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FAF7F2] border border-[#12101F]/10 rounded-full w-fit text-[11px] font-mono text-[#827C94]">
               <Sparkles size={12} className="text-[#6B3CFF]" />
-              <span>{copy.shell.brandSubtitle}</span>
+              <span>
+                {location.state?.from?.pathname?.startsWith('/admin')
+                  ? (lang === 'te' ? 'అడ్మినిస్ట్రేటర్ పోర్టల్' : 'Administrator Portal')
+                  : copy.shell.brandSubtitle}
+              </span>
             </div>
             <h1 className="text-2xl sm:text-[28px] font-bold font-headline text-[#12101F] tracking-tight m-0">
-              {copy.auth.loginTitle}
+              {location.state?.from?.pathname?.startsWith('/admin')
+                ? (lang === 'te' ? 'అడ్మిన్ సైన్ ఇన్' : 'Administrator Sign In')
+                : copy.auth.loginTitle}
             </h1>
             <p className="text-sm text-[#575266] m-0 leading-relaxed">
-              {copy.auth.loginSubtitle}
+              {location.state?.from?.pathname?.startsWith('/admin')
+                ? (lang === 'te'
+                    ? 'అడ్మిన్ డాష్‌బోర్డ్ నిర్వహణకు మీ సూపర్ అడ్మిన్ ఖాతాతో లాగిన్ చేయండి.'
+                    : 'Sign in with your administrator credentials to access the Admin Console.')
+                : copy.auth.loginSubtitle}
             </p>
           </div>
 
