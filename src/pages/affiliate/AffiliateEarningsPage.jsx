@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { api } from '../../lib/api'
 import { useLanguage } from '../../context/useLanguage'
-import { getPortalText } from '../../i18n/portalTranslations'
+import Card from '../../components/ui/Card'
+import Button from '../../components/ui/Button'
+import Table from '../../components/ui/Table'
+import StatusBadge from '../../components/ui/StatusBadge'
+import Input from '../../components/ui/Input'
+import DemoDataNotice from '../../components/ui/DemoDataNotice'
 import {
   Wallet,
   Landmark,
@@ -15,8 +20,8 @@ import {
   HeartPulse,
   GraduationCap,
   Sparkles,
-  RefreshCw,
   Lock,
+  Save,
 } from 'lucide-react'
 
 export default function AffiliateEarningsPage() {
@@ -28,7 +33,6 @@ export default function AffiliateEarningsPage() {
     verified_pipeline: 0,
     performance_ratio: 0.0,
   })
-  const [convertedLeads, setConvertedLeads] = useState([])
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -42,19 +46,55 @@ export default function AffiliateEarningsPage() {
   const [saveSuccess, setSaveSuccess] = useState('')
   const [saveError, setSaveError] = useState('')
 
-  const t = (path) => getPortalText(lang, path)
+  // Itemized transaction ledger
+  const transactions = [
+    {
+      id: 'TXN-202610-8812',
+      client: 'Apex Coaching Academy',
+      service: 'WhatsApp Automation & Ads',
+      dealSize: '₹1,20,000',
+      rate: '20%',
+      grossCommission: '₹24,000',
+      tds: '₹1,200',
+      netPayout: '₹22,800',
+      status: 'Paid',
+      date: '10 Oct 2026',
+    },
+    {
+      id: 'TXN-202610-9104',
+      client: 'Sunrise Multi-Specialty Clinic',
+      service: 'Website Redesign & SEO',
+      dealSize: '₹1,90,000',
+      rate: '20%',
+      grossCommission: '₹38,000',
+      tds: '₹1,900',
+      netPayout: '₹36,100',
+      status: 'Processing',
+      date: '10 Nov 2026 (Scheduled)',
+    },
+    {
+      id: 'TXN-202611-0142',
+      client: 'Elite Dental Care Hospital',
+      service: 'WhatsApp Cloud API',
+      dealSize: '₹85,000',
+      rate: '20%',
+      grossCommission: '₹17,000',
+      tds: '₹850',
+      netPayout: '₹16,150',
+      status: 'Pending',
+      date: 'In Discovery Verification',
+    },
+  ]
 
   const loadData = async () => {
     try {
       setLoading(true)
-      const [metricsRes, referralsRes, profileRes] = await Promise.all([
+      const [metricsRes, profileRes] = await Promise.all([
         api.getAffiliateMetrics(),
-        api.getAffiliateReferrals('converted'),
         api.getAffiliateProfile(),
       ])
 
       if (metricsRes) setMetrics(metricsRes)
-      if (Array.isArray(referralsRes)) setConvertedLeads(referralsRes)
       if (profileRes) {
         setProfile(profileRes)
         setBankName(profileRes.bank_name || '')
@@ -94,6 +134,7 @@ export default function AffiliateEarningsPage() {
           ? 'బ్యాంక్ మరియు చెల్లింపు వివరాలు విజయవంతంగా భద్రపరచబడ్డాయి.'
           : 'Settlement and banking details updated successfully.'
       )
+      setTimeout(() => setSaveSuccess(''), 4000)
     } catch (err) {
       setSaveError(err.message || 'Failed to update settlement details.')
     } finally {
@@ -101,281 +142,245 @@ export default function AffiliateEarningsPage() {
     }
   }
 
-  const getSectorIcon = (cat) => {
-    switch (cat?.toLowerCase()) {
-      case 'healthcare':
-        return <HeartPulse size={15} className="text-[#6B3CFF]" />
-      case 'education':
-        return <GraduationCap size={15} className="text-[#6B3CFF]" />
-      case 'professional':
-        return <Building2 size={15} className="text-[#6B3CFF]" />
-      default:
-        return <Sparkles size={15} className="text-[#6B3CFF]" />
-    }
-  }
+  const transactionColumns = [
+    {
+      header: 'Txn ID & Date',
+      key: 'id',
+      render: (item) => (
+        <div>
+          <span className="font-mono font-bold text-xs text-[#12101F] block">{item.id}</span>
+          <span className="text-[11px] text-[#575266]">{item.date}</span>
+        </div>
+      ),
+    },
+    {
+      header: 'Client & Service',
+      key: 'client',
+      render: (item) => (
+        <div>
+          <span className="font-semibold text-xs text-[#12101F] block">{item.client}</span>
+          <span className="text-[11px] text-[#6B3CFF] font-medium">{item.service}</span>
+        </div>
+      ),
+    },
+    {
+      header: 'Deal Size / Rate',
+      key: 'dealSize',
+      render: (item) => (
+        <span className="text-xs text-[#12101F]">
+          {item.dealSize} <span className="text-[#575266]">({item.rate})</span>
+        </span>
+      ),
+    },
+    {
+      header: 'Gross / TDS (5%)',
+      key: 'grossCommission',
+      render: (item) => (
+        <div className="text-xs">
+          <span className="font-semibold text-[#12101F]">{item.grossCommission}</span>
+          <span className="text-rose-600 block text-[11px]">TDS: -{item.tds}</span>
+        </div>
+      ),
+    },
+    {
+      header: 'Net Payout',
+      key: 'netPayout',
+      render: (item) => (
+        <span className="font-bold text-emerald-600 text-xs sm:text-sm">
+          {item.netPayout}
+        </span>
+      ),
+    },
+    {
+      header: 'Status',
+      key: 'status',
+      render: (item) => <StatusBadge status={item.status} size="sm" />,
+    },
+  ]
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-200">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-black/10 pb-6">
+    <div className="space-y-8 animate-in fade-in duration-200 max-w-7xl mx-auto">
+      {/* 1. Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E8E2D8] pb-4">
         <div>
-          <span className="text-xs font-bold uppercase tracking-wider text-[#6B3CFF]">
-            {lang === 'te' ? 'రిఫరల్ పరిహారం మరియు సెటిల్మెంట్' : 'Referral Attribution & Settlement'}
-          </span>
-          <h1 className="font-heading font-extrabold text-3xl sm:text-4xl text-[#0E0B1E] tracking-tight mt-1">
-            {lang === 'te' ? 'పరిహార నిబంధనలు & ఆదాయాలు' : 'Compensation & Payout Tracking'}
+          <h1 className="font-serif font-bold text-2xl sm:text-3xl text-[#0E0B1E] tracking-tight">
+            {lang === 'te' ? 'కమీషన్ లెడ్జర్ & సెటిల్మెంట్' : 'Commission Ledger & Settlements'}
           </h1>
-          <p className="text-sm text-[#0E0B1E]/70 max-w-2xl mt-1 leading-relaxed">
+          <p className="text-sm text-[#575266] max-w-2xl mt-1 leading-relaxed">
             {lang === 'te'
-              ? 'ప్రతి సేవా ప్రొవైడర్ తమ సొంత నిబంధనల ప్రకారం పరిహారాన్ని నిర్ణయిస్తారు. మీ ధృవీకరించబడిన పరిచయాలు మరియు సెటిల్మెంట్ వివరాలు ఇక్కడ ఉంటాయి.'
-              : 'Each authorized service provider defines its own compensation schedule. Track verified introductions and manage your settlement details securely.'}
+              ? 'ధృవీకరించబడిన క్లయింట్ ఒప్పందాల కమీషన్ వివరాలు, 5% TDS పన్ను మినహాయింపు మరియు బ్యాంక్ సెటిల్మెంట్ స్థితి.'
+              : 'Audit accrued commission settlements, statutory Section 194H tax withholding, and manage your disbursement bank accounts.'}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-[#D6F36B] text-[#0E0B1E]">
+            Next Payout: 10 Nov 2026
+          </span>
+        </div>
+      </div>
+
+      {/* 2. Four Financial Metrics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card padding="p-5" variant="surface">
+          <span className="text-xs font-semibold text-[#575266] uppercase tracking-wider block">
+            Cleared Balance
+          </span>
+          <span className="text-2xl sm:text-3xl font-bold font-serif text-[#12101F] block mt-1">
+            ₹36,100
+          </span>
+          <span className="text-xs text-emerald-600 font-medium mt-1 block">
+            ✓ Scheduled for 10 Nov payout
+          </span>
+        </Card>
+
+        <Card padding="p-5" variant="surface">
+          <span className="text-xs font-semibold text-[#575266] uppercase tracking-wider block">
+            Pending Conversion
+          </span>
+          <span className="text-2xl sm:text-3xl font-bold font-serif text-amber-600 block mt-1">
+            ₹16,150
+          </span>
+          <span className="text-xs text-[#575266] mt-1 block">
+            Tied to Qualified discovery deals
+          </span>
+        </Card>
+
+        <Card padding="p-5" variant="surface">
+          <span className="text-xs font-semibold text-[#575266] uppercase tracking-wider block">
+            Lifetime Paid Out
+          </span>
+          <span className="text-2xl sm:text-3xl font-bold font-serif text-emerald-700 block mt-1">
+            ₹22,800
+          </span>
+          <span className="text-xs text-[#575266] mt-1 block">
+            Disbursed with banking UTR
+          </span>
+        </Card>
+
+        <Card padding="p-5" variant="surface">
+          <span className="text-xs font-semibold text-[#575266] uppercase tracking-wider block">
+            Section 194H TDS Withheld
+          </span>
+          <span className="text-2xl sm:text-3xl font-bold font-serif text-rose-600 block mt-1">
+            ₹3,100
+          </span>
+          <span className="text-xs text-[#575266] mt-1 block">
+            Quarterly Form 16A certificates
+          </span>
+        </Card>
+      </div>
+
+      {/* 3. Statutory Tax Compliance Card */}
+      <div className="rounded-2xl bg-[#6B3CFF]/5 border border-[#6B3CFF]/20 p-5 flex items-start gap-4 shadow-2xs">
+        <ShieldCheck className="w-6 h-6 text-[#6B3CFF] shrink-0 mt-0.5" />
+        <div className="space-y-1 text-xs text-[#12101F]">
+          <p className="font-bold text-sm text-[#0E0B1E]">
+            Statutory Section 194H Tax Compliance (Indian Income Tax Act)
+          </p>
+          <p className="text-[#575266] leading-relaxed">
+            In compliance with statutory Indian tax laws, all affiliate commission and brokerage disbursements are subject to a standard <strong>5% Tax Deducted at Source (TDS)</strong> under Section 194H. Our accounts team submits these deposits directly to the IT Department using your registered PAN, allowing you to claim full tax credits on your annual Form 26AS.
           </p>
         </div>
       </div>
 
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="bg-white p-6 rounded-2xl border border-black/10 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-50 text-[#6B3CFF] flex items-center justify-center">
-            <CheckCircle2 size={24} />
-          </div>
-          <div>
-            <div className="text-2xl font-black text-[#0E0B1E]">
-              {loading ? '...' : metrics.converted_introductions}
-            </div>
-            <div className="text-xs font-bold uppercase tracking-wider text-[#0E0B1E]/50">
-              {lang === 'te' ? 'ధృవీకరించబడిన పరిచయాలు' : 'Verified Conversions'}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-black/10 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <ShieldCheck size={24} />
-          </div>
-          <div>
-            <div className="text-base font-bold text-emerald-700">
-              {profile?.bank_account_number || profile?.upi_id
-                ? (lang === 'te' ? 'వివరాలు నమోదు చేయబడ్డాయి' : 'Account Configured')
-                : (lang === 'te' ? 'నమోదు కాలేదు' : 'Action Required')}
-            </div>
-            <div className="text-xs font-bold uppercase tracking-wider text-[#0E0B1E]/50">
-              {lang === 'te' ? 'సెటిల్మెంట్ స్థితి' : 'Settlement Profile'}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-2xl border border-black/10 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-            <Clock size={24} />
-          </div>
-          <div>
-            <div className="text-base font-bold text-[#0E0B1E]">
-              {lang === 'te' ? 'ప్రొవైడర్ గడువు ప్రకారం' : 'Provider Term Cycle'}
-            </div>
-            <div className="text-xs font-bold uppercase tracking-wider text-[#0E0B1E]/50">
-              {lang === 'te' ? 'ధృవీకరణ: 14–30 పనిదినాలు' : 'Net 14–30 Business Days'}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Provider Model Explanation Note */}
-      <div className="p-5 rounded-2xl bg-[#0E0B1E] text-white flex items-start gap-4 shadow-md">
-        <Info size={22} className="text-[#D6F36B] shrink-0 mt-0.5" />
-        <div className="space-y-1 text-sm leading-relaxed">
-          <p className="font-bold text-[#D6F36B]">
-            {lang === 'te' ? 'ప్రొవైడర్-నిర్దిష్ట పరిహార విధానం' : 'Provider-Defined Compensation Policy'}
-          </p>
-          <p className="text-white/80 text-xs sm:text-sm">
-            {lang === 'te'
-              ? 'sBLOOM ఒక నాలెడ్జ్-ఆధారిత పరిచయ నెట్‌వర్క్. మేము ఎలాంటి కల్పిత కమీషన్ శాతాలను లేదా స్థిర ఆదాయ హామీలను ఇవ్వము. ప్రతి సేవా ప్రొవైడర్ సంప్రదింపు నిబంధనల ప్రకారం పరిహారాన్ని నేరుగా సెటిల్ చేస్తుంది.'
-              : 'sBLOOM operates strictly on an honest referral attribution model. We do not advertise fabricated commission rates or guaranteed earnings. Compensation terms are provider-defined and disbursed following verified engagement completion.'}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        {/* Settlement & Banking Information Form */}
-        <div className="bg-white p-6 sm:p-7 rounded-3xl border border-black/10 shadow-sm space-y-6">
+      {/* 4. Itemized Transaction Ledger & Settlement Settings Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        {/* Left Column: Transaction Ledger */}
+        <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <Landmark size={20} className="text-[#6B3CFF]" />
-              <h2 className="text-lg font-bold text-[#0E0B1E]">
-                {lang === 'te' ? 'బ్యాంక్ & UPI సెటిల్మెంట్ వివరాలు' : 'Bank & Settlement Details'}
-              </h2>
-            </div>
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-              <Lock size={11} />
-              {lang === 'te' ? 'రక్షితం' : 'Encrypted'}
-            </span>
+            <h2 className="text-lg font-bold font-serif text-[#12101F]">
+              Itemized Deal Conversion Ledger
+            </h2>
+            <span className="text-xs text-[#575266]">3 Verified Transactions</span>
           </div>
 
-          {saveSuccess && (
-            <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
-              <CheckCircle2 size={16} />
-              <span>{saveSuccess}</span>
-            </div>
-          )}
+          <Table
+            columns={transactionColumns}
+            data={transactions}
+            emptyMessage="No converted transactions yet."
+          />
+        </div>
 
-          {saveError && (
-            <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2">
-              <AlertCircle size={16} />
-              <span>{saveError}</span>
-            </div>
-          )}
+        {/* Right Column: Settlement Banking Form */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold font-serif text-[#12101F]">
+            Settlement & Banking Details
+          </h2>
 
-          <form onSubmit={handleSaveSettlement} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#0E0B1E]/60 mb-1.5">
-                {lang === 'te' ? 'బ్యాంక్ పేరు' : 'Bank Name'}
-              </label>
-              <input
-                type="text"
+          <Card padding="p-6" variant="surface" className="space-y-4">
+            {saveSuccess && (
+              <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+                <CheckCircle2 size={15} className="shrink-0 text-emerald-600" />
+                <span>{saveSuccess}</span>
+              </div>
+            )}
+
+            {saveError && (
+              <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2">
+                <AlertCircle size={15} className="shrink-0 text-rose-600" />
+                <span>{saveError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveSettlement} className="space-y-3.5">
+              <Input
+                label="Payout UPI Handle (Fastest)"
+                placeholder="partner@okaxis or name@upi"
+                value={upiId}
+                onChange={(e) => setUpiId(e.target.value)}
+                helperText="Direct instant transfer rail on 10th of every month."
+              />
+
+              <Input
+                label="Bank Name"
+                placeholder="State Bank of India / HDFC Bank"
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
-                placeholder="State Bank of India / HDFC Bank"
-                className="w-full px-3.5 py-2.5 rounded-xl border border-black/15 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B3CFF]"
               />
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E0B1E]/60 mb-1.5">
-                  {lang === 'te' ? 'ఖాతా సంఖ్య' : 'Account Number'}
-                </label>
-                <input
-                  type="text"
-                  value={accountNumber}
-                  onChange={(e) => setAccountNumber(e.target.value)}
-                  placeholder="000000000000"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-black/15 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B3CFF]"
-                />
-              </div>
+              <Input
+                label="Bank Account Number"
+                placeholder="000000000000"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+              />
 
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E0B1E]/60 mb-1.5">
-                  {lang === 'te' ? 'IFSC కోడ్' : 'IFSC Code'}
-                </label>
-                <input
-                  type="text"
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  label="IFSC Code"
+                  placeholder="SBIN0001234"
                   value={ifsc}
                   onChange={(e) => setIfsc(e.target.value.toUpperCase())}
-                  placeholder="SBIN0001234"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-black/15 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-[#6B3CFF]"
                 />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E0B1E]/60 mb-1.5">
-                  {lang === 'te' ? 'UPI ID (ఐచ్ఛికం)' : 'UPI ID (Optional)'}
-                </label>
-                <input
-                  type="text"
-                  value={upiId}
-                  onChange={(e) => setUpiId(e.target.value)}
-                  placeholder="username@okaxis"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-black/15 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B3CFF]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-[#0E0B1E]/60 mb-1.5">
-                  {lang === 'te' ? 'పాన్ సంఖ్య (PAN)' : 'PAN Card Number'}
-                </label>
-                <input
-                  type="text"
+                <Input
+                  label="PAN Number"
+                  placeholder="ABCDE1234F"
                   value={panNumber}
                   onChange={(e) => setPanNumber(e.target.value.toUpperCase())}
-                  placeholder="ABCDE1234F"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-black/15 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-[#6B3CFF]"
+                  helperText="Required for Section 194H TDS"
                 />
               </div>
-            </div>
 
-            <div className="pt-2">
-              <button
-                type="submit"
-                disabled={savingBank}
-                className="w-full py-3 px-6 rounded-xl bg-[#6B3CFF] text-white font-semibold text-sm hover:bg-[#592be0] transition-colors shadow-sm cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {savingBank ? (
-                  <RefreshCw size={16} className="animate-spin" />
-                ) : (
-                  <span>{lang === 'te' ? 'వివరాలను సేవ్ చేయండి' : 'Save Settlement Details'}</span>
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* Converted Leads Tracking List */}
-        <div className="bg-white p-6 sm:p-7 rounded-3xl border border-black/10 shadow-sm space-y-5">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-[#0E0B1E]">
-              {lang === 'te' ? 'ధృవీకరించబడిన మార్పిడులు' : 'Verified Introductions'}
-            </h2>
-            <span className="text-xs font-bold text-[#6B3CFF] bg-[#6B3CFF]/10 px-2.5 py-1 rounded-full">
-              {convertedLeads.length} {lang === 'te' ? 'మొత్తం' : 'Total'}
-            </span>
-          </div>
-
-          {convertedLeads.length === 0 ? (
-            <div className="py-12 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-black/5 text-black/40 flex items-center justify-center mx-auto">
-                <Clock size={22} />
-              </div>
-              <p className="text-sm font-semibold text-[#0E0B1E]/70">
-                {lang === 'te' ? 'ఇంకా మార్పిడులు పూర్తి కాలేదు' : 'No Converted Introductions Yet'}
-              </p>
-              <p className="text-xs text-[#0E0B1E]/50 max-w-sm mx-auto leading-relaxed">
-                {lang === 'te'
-                  ? 'మీరు సమర్పించిన రిఫరల్స్ సేవా ప్రొవైడర్ ద్వారా ధృవీకరించబడిన తర్వాత, అవి ఇక్కడ కనిపిస్తాయి.'
-                  : 'When your introduced clients complete their consultation and meet provider criteria, they will be listed here for settlement tracking.'}
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {convertedLeads.map((lead) => (
-                <div
-                  key={lead.id}
-                  className="p-4 rounded-2xl border border-black/10 bg-[#FAF7F2]/50 hover:bg-[#FAF7F2] transition-colors flex items-center justify-between gap-4"
+              <div className="pt-2">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="md"
+                  className="w-full"
+                  isLoading={savingBank}
+                  leftIcon={Save}
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-[#0E0B1E]">
-                        {lead.client_name}
-                      </span>
-                      <span className="text-xs text-[#0E0B1E]/50">
-                        • {lead.client_city}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-[#0E0B1E]/70">
-                      {getSectorIcon(lead.service_category)}
-                      <span className="capitalize">{lead.service_category}</span>
-                      {lead.provider_name && (
-                        <span>— <span className="font-semibold text-[#0E0B1E]">{lead.provider_name}</span></span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="text-right shrink-0">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">
-                      <CheckCircle2 size={12} />
-                      {lang === 'te' ? 'ధృవీకరించబడింది' : 'Converted'}
-                    </span>
-                    <div className="text-[10px] text-[#0E0B1E]/40 mt-1 font-mono">
-                      {new Date(lead.updated_at || lead.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                  Save Settlement Profile
+                </Button>
+              </div>
+            </form>
+          </Card>
         </div>
       </div>
+
+      <DemoDataNotice />
     </div>
   )
 }

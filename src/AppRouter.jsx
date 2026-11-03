@@ -20,6 +20,9 @@ import AffiliateProfilePage from './pages/affiliate/AffiliateProfilePage';
 import AffiliateServicesPage from './pages/affiliate/AffiliateServicesPage';
 import AffiliateLeadsPage from './pages/affiliate/AffiliateLeadsPage';
 import AffiliateEarningsPage from './pages/affiliate/AffiliateEarningsPage';
+import AffiliateInvoicesPage from './pages/affiliate/AffiliateInvoicesPage';
+import AffiliateLearnPage from './pages/affiliate/AffiliateLearnPage';
+import AffiliateSupportPage from './pages/affiliate/AffiliateSupportPage';
 import ComingSoonPage from './pages/affiliate/ComingSoonPage';
 
 // Admin Pages
@@ -108,11 +111,11 @@ export default function AppRouter() {
         <Route index element={<AffiliateDashboardPage />} />
         <Route path="profile" element={<AffiliateProfilePage />} />
         <Route path="services" element={<AffiliateServicesPage />} />
-        <Route path="learn" element={<ComingSoonPage />} />
+        <Route path="learn" element={<AffiliateLearnPage />} />
         <Route path="leads" element={<AffiliateLeadsPage />} />
         <Route path="earnings" element={<AffiliateEarningsPage />} />
-        <Route path="invoices" element={<ComingSoonPage />} />
-        <Route path="support" element={<ComingSoonPage />} />
+        <Route path="invoices" element={<AffiliateInvoicesPage />} />
+        <Route path="support" element={<AffiliateSupportPage />} />
       </Route>
 
       {/* Admin Portal: requires role === 'admin' */}
