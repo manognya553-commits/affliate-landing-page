@@ -44,10 +44,12 @@ export function LanguageProvider({ children }) {
   const t = (path) => getTranslation(path, lang)
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, toggleLang, copy, t, isCrossfading }}>
+    <LanguageContext.Provider value={{ lang, setLang, language: lang, setLanguage: setLang, toggleLang, copy, t, isCrossfading }}>
       <div className={`lang-wrapper ${isCrossfading ? 'lang-crossfading' : ''}`}>
         {children}
       </div>
     </LanguageContext.Provider>
   )
 }
+
+export { useLanguage } from './useLanguage'

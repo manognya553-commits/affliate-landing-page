@@ -16,23 +16,22 @@ export const enCopy = {
       { id: 'earning', label: 'Earning', href: '#earning' },
       { id: 'faq', label: 'FAQ', href: '#faq' },
     ],
-    signIn: 'Sign in',
     cta: 'Become an affiliate',
   },
 
   // Hero Section
   hero: {
     eyebrow: 'sBLOOM Affiliate Programme · A network of service advisers',
-    headlineLead: 'Help someone find the right service.',
-    headlineAccent: 'Earn when it works out.',
+    headlineLead: 'Know someone who needs a service?',
+    headlineAccent: 'Make the connection count.',
     subheading:
-      'You already help friends, family and people in your community find the right services. sBLOOM gives you a way to turn relevant introductions into an earning opportunity when those introductions qualify under each provider’s terms.',
-    primaryCta: 'Become an affiliate — it’s free',
-    secondaryCta: 'See how it works',
+      'You know people. People trust you. And often, you know someone who can help when a friend, family member, neighbour, or customer needs a service. sBLOOM helps you turn those connections into referral opportunities. Introduce people to relevant service providers and earn when your referrals qualify under the provider’s terms.',
+    primaryCta: 'Become an affiliate →',
+    secondaryCta: 'How it works',
     trustRow: [
       'Free to join',
-      'Open to anyone in India',
-      'You see each provider’s terms first',
+      'No sales background needed',
+      'Open to people with a relevant network',
       'Earnings under provider terms',
     ],
     bubbles: {
@@ -46,12 +45,61 @@ export const enCopy = {
   // Sound familiar? (Why Join Section)
   soundFamiliar: {
     eyebrow: 'Why join',
-    headline: 'Your connections could become an earning opportunity.',
+    headline: 'You don’t need to be a salesperson. Start with the people you already know.',
     subheading:
-      'You already help friends, family and people in your community find the right services. With sBLOOM, you can make relevant introductions to service providers and explore an opportunity to earn when those introductions qualify under the provider’s terms.',
-    trustLine: 'Free to join. No sales background required. Earnings are not guaranteed.',
+      'You could be a homemaker, a student, a shop owner, a working professional, or someone active in your community. If people know you and you can connect them with the right services, you could explore becoming an sBLOOM affiliate.',
+    positioning: {
+      tag: 'Core positioning',
+      title: 'Your network has value. Now, it could help you earn.',
+      body:
+        'You already connect people with the right people. With sBLOOM, you can introduce someone who needs a service to a relevant service provider and explore earning opportunities when the referral qualifies under that provider’s terms.',
+      steps: ['Your network', 'Useful introductions', 'Potential earnings'],
+      footnote:
+        'Free to join. No sales background required. Earnings depend on the service provider’s terms and referral eligibility.',
+    },
+    trustLine: 'Free to join · No sales background needed · Open to people with a relevant network',
     conclusion:
       'You answer from the heart, for free, every week. sBLOOM gives those moments a structure, and a reward when your introduction leads somewhere.',
+    personas: [
+      {
+        id: 'homemaker',
+        title: 'Homemakers',
+        description:
+          'Your neighbours and family often ask you for recommendations. A useful introduction could become a referral opportunity.',
+        image: '/assets/persona-homemaker-v2.jpg',
+        alt: 'Homemaker in a warm community setting',
+        tag: 'Family & Neighbours',
+      },
+      {
+        id: 'shopowner',
+        title: 'Shop owners',
+        description:
+          'You meet people every day. When a customer needs a relevant service, you may be able to connect them with a provider.',
+        image: '/assets/persona-shopowner-v2.jpg',
+        alt: 'Local shop owner engaging with customers',
+        tag: 'Daily Customers',
+      },
+      {
+        id: 'student',
+        title: 'Students',
+        description:
+          'Your classmates, friends, and wider circle can be a starting point for relevant introductions.',
+        image: '/assets/persona-student-v2.jpg',
+        alt: 'College students on campus',
+        tag: 'Campus & Friends',
+      },
+      {
+        id: 'professional',
+        title: 'Working professionals',
+        description:
+          'Your professional and personal connections can help you identify people who need particular services.',
+        image: '/assets/persona-professional-v2.jpg',
+        alt: 'Professional in an office setting',
+        tag: 'Colleagues & Peers',
+      },
+    ],
+    disclaimer:
+      'These are examples, not eligibility restrictions. Anyone with a relevant network and an interest in making useful introductions can apply.',
     questions: [
       {
         speaker: 'Neighbour',
@@ -188,31 +236,32 @@ export const enCopy = {
   // How it works (Section 2 · How Earning Works)
   howItWorks: {
     eyebrow: 'How it works',
-    headline: 'Make a connection. Understand the terms. Earn when eligible.',
-    subheading: 'Four steps from finding a genuine need to an eligible referral:',
+    headline: 'Make the connection. Understand the terms. Earn when eligible.',
+    subheading: 'Four simple steps from finding a genuine need to an eligible referral:',
     steps: [
       {
         number: '1',
-        title: 'Find a genuine need.',
-        description: 'Someone in your network is looking for a service.',
+        title: 'Know someone who needs a service',
+        description:
+          'A parent needs a coaching centre, a family needs a doctor, or a business owner needs professional help.',
       },
       {
         number: '2',
-        title: 'Make an introduction.',
+        title: 'Make the connection',
         description:
-          'With their permission, connect them with a relevant provider.',
+          'With the person’s permission, introduce them to a relevant service provider through the programme’s approved referral process.',
       },
       {
         number: '3',
-        title: 'Understand the provider’s terms.',
+        title: 'The referral is evaluated',
         description:
-          'Check what qualifies for compensation before making the referral.',
+          'The provider’s terms determine which introductions qualify for compensation.',
       },
       {
         number: '4',
-        title: 'Earn when the conditions are met.',
+        title: 'Earn if the conditions are met',
         description:
-          'Compensation depends on the specific provider’s terms and whether the referral qualifies.',
+          'If the referral qualifies, you may receive compensation according to that provider’s payment terms.',
       },
     ],
   },
@@ -485,50 +534,6 @@ export const enCopy = {
     legalDrawerTitle: 'sBLOOM Affiliate Programme Terms',
     legalPlaceholder: 'Programme terms will be provided to all affiliates prior to service activation. You will always see each provider’s terms before introducing anyone.',
   },
-  auth: {
-    backToHome: 'Back to landing page',
-    portalTitle: 'sBLOOM Affiliate Portal',
-    portalSubtitle: 'Knowledge-led affiliate referral management',
-    devNoticeBadge: 'Portal in Development',
-    devNoticeTitle: 'Affiliate Portal Coming Soon',
-    devNoticeDesc:
-      'Account sign-in and direct registration are currently being prepared for launch. Authentication and the affiliate dashboard will open soon.',
-    devNoticeHelp: 'Have a question before we launch? Feel free to contact our team.',
-    contactLink: 'Ask a question',
-    signInTab: 'Sign in',
-    signUpTab: 'Become an affiliate',
-    signInHeading: 'Sign in to your account',
-    signInSubheading: 'Enter your credentials to access your affiliate dashboard',
-    signUpHeading: 'Create your affiliate account',
-    signUpSubheading: 'Join our trusted service advisory network — it’s free to join',
-    fields: {
-      identifier: 'Email or Mobile number',
-      identifierPlaceholder: 'name@example.com or 98765 43210',
-      password: 'Password',
-      passwordPlaceholder: 'Enter your password',
-      name: 'Full name',
-      namePlaceholder: 'Your full name',
-      mobile: 'Mobile number (WhatsApp preferred)',
-      mobilePlaceholder: '10-digit mobile number',
-      email: 'Email address',
-      emailPlaceholder: 'name@example.com',
-      location: 'City and state',
-      locationPlaceholder: 'e.g., Hyderabad, Telangana',
-      sectors: 'Which areas do your people ask you about?',
-      sectorsOptions: ['Healthcare', 'Education', 'Professional services', 'Not sure yet'],
-      consent:
-        'I agree to be contacted by sBLOOM about the affiliate programme, and to my details being used for this purpose.',
-    },
-    signInBtn: 'Sign in',
-    signUpBtn: 'Create affiliate account',
-    noPaymentNote: 'Free. No payment is asked at this stage.',
-    switchToSignUpPrompt: 'Don’t have an affiliate account?',
-    switchToSignUpAction: 'Become an affiliate',
-    switchToSignInPrompt: 'Already an affiliate?',
-    switchToSignInAction: 'Sign in',
-    mockAttemptNotice:
-      'The affiliate portal backend is currently in development. Account access will open with the full portal release.',
-  },
   ...copyAdditionsEn,
 }
 
@@ -537,8 +542,8 @@ export const enCopy = {
  */
 export const teConfirmed = {
   hero: {
-    headlineLead: 'మీకు తెలిసిన వాళ్లకు మంచి సర్వీసెస్ చూపించండి.',
-    headlineAccent: 'రిజల్ట్ వస్తే మీకూ సంపాదన.',
+    headlineLead: 'మీ నెట్‌వర్క్ ఇంకేదైనా చేయగలదు.',
+    headlineAccent: 'ఇది మీరు ఎర్న్ చేయడానికి హెల్ప్ చేస్తుంది.',
     trustRow: {
       freeToJoin: 'చేరడం ఫ్రీ',
       earningsUnderTerms: 'కండిషన్స్ ప్రకారం సంపాదన',
@@ -552,7 +557,7 @@ export const teConfirmed = {
     eyebrow: 'ఎలా పనిచేస్తుంది',
   },
   soundFamiliar: {
-    headline: 'మీ పరిచయాలే మీకు సంపాదన అవకాశం.',
+    headline: 'సేల్స్ పర్సన్ కావాల్సిన పనిలేదు. మీకు తెలిసిన వాళ్లతోనే స్టార్ట్ చేయండి.',
   },
   promises: {
     headline: 'మీరు పరిచయం చేయండి. సలహాలు ఎక్స్‌పర్ట్స్ ఇస్తారు.',

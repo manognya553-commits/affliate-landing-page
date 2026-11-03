@@ -1,50 +1,52 @@
-import React from 'react'
-import { Users, CheckCircle2, Store, Briefcase, Sparkles, HeartHandshake, GraduationCap } from 'lucide-react'
+﻿import React from 'react'
+import { Users, CheckCircle2, ArrowRight, Store, Briefcase, Sparkles, HeartHandshake, GraduationCap } from 'lucide-react'
 import { useLanguage } from '../context/useLanguage'
 
 // Visual configuration for each persona profile (combining human-centred photography & restrained network graphics)
 const PERSONA_CONFIGS = [
   {
     type: 'photo',
-    image: '/assets/persona-homemaker.jpg',
-    alt: 'Friendly South Indian homemaker in a bright home living room',
+    image: '/assets/persona-homemaker-v2.jpg',
+    alt: 'Friendly South Indian homemaker',
     fallbackIcon: HeartHandshake,
     accentBg: 'bg-[#6B3CFF]/10',
     accentBorder: 'border-[#6B3CFF]/20',
     accentText: 'text-[#6B3CFF]',
     glowColor: 'from-[#6B3CFF]/15 to-transparent',
-    tag: 'Community & Family',
+    tag: 'కుటుంబం & కమ్యూనిటీ',
   },
   {
     type: 'photo',
-    image: '/assets/persona-student.jpg',
-    alt: 'Energetic South Indian college student on a university campus',
+    image: '/assets/persona-shopowner-v2.jpg',
+    alt: 'Local shop owner engaging with customers',
+    fallbackIcon: Store,
+    accentBg: 'bg-[#FF4FA3]/10',
+    accentBorder: 'border-[#FF4FA3]/20',
+    accentText: 'text-[#FF4FA3]',
+    glowColor: 'from-[#FF4FA3]/15 to-transparent',
+    tag: 'రోజూ కస్టమర్లు',
+  },
+  {
+    type: 'photo',
+    image: '/assets/persona-student-v2.jpg',
+    alt: 'College student with campus peers',
     fallbackIcon: GraduationCap,
     accentBg: 'bg-[#16A34A]/10',
     accentBorder: 'border-[#16A34A]/20',
     accentText: 'text-[#16A34A]',
     glowColor: 'from-[#16A34A]/15 to-transparent',
-    tag: 'Campus & Peers',
+    tag: 'క్లాస్మేట్స్ & ఫ్రెండ్స్',
   },
   {
-    type: 'avatar',
-    fallbackIcon: Store,
-    accentBg: 'bg-[#FF4FA3]/10',
-    accentBorder: 'border-[#FF4FA3]/20',
-    accentText: 'text-[#FF4FA3]',
-    avatarGradient: 'from-[#FF4FA3] to-[#E11D48]',
-    glowColor: 'from-[#FF4FA3]/15 to-transparent',
-    tag: 'Daily Customers',
-  },
-  {
-    type: 'avatar',
+    type: 'photo',
+    image: '/assets/persona-professional-v2.jpg',
+    alt: 'Working professional in an office setting',
     fallbackIcon: Briefcase,
     accentBg: 'bg-[#0D9488]/10',
     accentBorder: 'border-[#0D9488]/20',
     accentText: 'text-[#0D9488]',
-    avatarGradient: 'from-[#0D9488] to-[#059669]',
     glowColor: 'from-[#0D9488]/15 to-transparent',
-    tag: 'Workplace & Alumni',
+    tag: 'ఆఫీస్ & వ్యక్తిగత పరిచయాలు',
   },
   {
     type: 'avatar',
@@ -52,14 +54,13 @@ const PERSONA_CONFIGS = [
     accentBg: 'bg-[#8B5CF6]/10',
     accentBorder: 'border-[#8B5CF6]/20',
     accentText: 'text-[#8B5CF6]',
-    avatarGradient: 'from-[#6B3CFF] via-[#FF4FA3] to-[#D6F36B]',
     glowColor: 'from-[#6B3CFF]/15 to-transparent',
-    tag: 'Trusted Circles',
+    tag: 'నమ్మకమైన పరిచయాలు',
   },
 ]
 
-export default function WhoCanJoinSection() {
-  const { copy } = useLanguage()
+export default function WhoCanJoinSection({ onBecomeAffiliate }) {
+  const { lang, copy } = useLanguage()
   const data = copy.whoCanJoin
 
   if (!data) return null
@@ -98,7 +99,7 @@ export default function WhoCanJoinSection() {
           </h2>
 
           <p className="text-lg sm:text-xl leading-relaxed text-[#575266] max-w-[780px] m-0">
-            {data.subheading}
+            {data.subheading || data.intro}
           </p>
         </div>
 
@@ -128,7 +129,7 @@ export default function WhoCanJoinSection() {
                   aria-hidden="true"
                 />
 
-                {/* Card Top: Portrait / Avatar & Restrained Network Indicator */}
+                {/* Card Top: Portrait / Avatar */}
                 <div className="relative z-10 flex items-center justify-between gap-3 mb-5 pr-5">
                   {config.type === 'photo' && config.image ? (
                     <div className="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-white shadow-md shadow-[#12101F]/10 shrink-0 group-hover:scale-105 transition-transform duration-300">
@@ -170,15 +171,25 @@ export default function WhoCanJoinSection() {
           })}
         </div>
 
-        {/* Closing Line Banner */}
-        {data.closing && (
-          <div data-reveal="extra" className="inline-flex items-center gap-3 px-5 py-3.5 sm:px-6 sm:py-4 bg-[#FAF7F2] border border-[#6B3CFF]/20 rounded-2xl sm:rounded-full shadow-md text-sm sm:text-base font-medium text-[#12101F] text-center max-w-3xl">
-            <CheckCircle2 size={20} className="text-[#6B3CFF] shrink-0" aria-hidden="true" />
-            <span>{data.closing}</span>
-          </div>
-        )}
+        {/* Primary CTA Button & Note */}
+        <div data-reveal="extra" className="flex flex-col items-center gap-4 text-center mt-2">
+          <button
+            type="button"
+            className="btn btn-primary px-8 py-4 text-base font-semibold rounded-full shadow-md hover:shadow-violet-glow hover:-translate-y-0.5 transition-all duration-200 border-none cursor-pointer flex items-center gap-2"
+            onClick={onBecomeAffiliate}
+          >
+            <span>{data.cta || (lang === 'te' ? 'అఫిలియేట్గా చేరండి' : 'Become an affiliate')}</span>
+            <ArrowRight size={17} aria-hidden="true" />
+          </button>
+
+          {data.note && (
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#FAF7F2] border border-[#6B3CFF]/20 rounded-full text-xs sm:text-sm font-medium text-[#12101F] shadow-xs">
+              <CheckCircle2 size={16} className="text-[#6B3CFF] shrink-0" aria-hidden="true" />
+              <span>{data.note}</span>
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )
 }
-

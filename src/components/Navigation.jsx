@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Menu, X, ArrowUpRight } from 'lucide-react'
 import { useLanguage } from '../context/useLanguage'
-import { LOGIN_URL, SIGNUP_URL } from '../config/links'
 
-export default function Navigation({ onBecomeAffiliate }) {
+export default function Navigation({ onBecomeAffiliate, onLogin }) {
   const { lang, setLang, copy } = useLanguage()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
@@ -107,21 +106,9 @@ export default function Navigation({ onBecomeAffiliate }) {
   }
 
   const handleCtaClick = (e) => {
-    if (!SIGNUP_URL || SIGNUP_URL.trim() === '') {
-      e.preventDefault()
-    }
     if (onBecomeAffiliate) {
-      onBecomeAffiliate('signup')
-    }
-    setIsMenuOpen(false)
-  }
-
-  const handleSignInClick = (e) => {
-    if (!LOGIN_URL || LOGIN_URL.trim() === '') {
       e.preventDefault()
-    }
-    if (onBecomeAffiliate) {
-      onBecomeAffiliate('signin')
+      onBecomeAffiliate()
     }
     setIsMenuOpen(false)
   }
@@ -190,7 +177,7 @@ export default function Navigation({ onBecomeAffiliate }) {
             </button>
             <button
               type="button"
-              className={`border-none px-3 text-[14px] font-telugu-sans font-bold rounded-full cursor-pointer transition-all duration-200 leading-none inline-flex items-center justify-center min-w-[42px] h-8 ${
+              className={`border-none px-3 text-[14px] font-telugu-sans font-bold rounded-full cursor-pointer transition-all duration-200 leading-none inline-flex items-center justify-center min-w-[56px] h-8 ${
                 lang === 'te'
                   ? 'bg-white !text-brand-violet shadow-sm font-extrabold'
                   : 'bg-transparent text-ink-secondary hover:text-ink hover:bg-white/50'
@@ -199,32 +186,18 @@ export default function Navigation({ onBecomeAffiliate }) {
               aria-pressed={lang === 'te'}
               title="తెలుగుకు మారండి"
             >
-              తె
+              తెలుగు
             </button>
           </div>
 
-          {/* Sign In Link: connects to /affiliate/auth?mode=signin or external LOGIN_URL */}
-          <a
-            href={LOGIN_URL && LOGIN_URL.trim() !== '' ? LOGIN_URL : '/affiliate/auth?mode=signin'}
-            target={LOGIN_URL && LOGIN_URL.trim() !== '' ? '_blank' : undefined}
-            rel={LOGIN_URL && LOGIN_URL.trim() !== '' ? 'noopener noreferrer' : undefined}
-            className="hidden lg:inline-flex text-[14.5px] font-semibold text-ink-secondary hover:text-brand-violet whitespace-nowrap px-2.5 py-1.5 transition-colors duration-200"
-            onClick={handleSignInClick}
-          >
-            {copy.nav.signIn || (lang === 'te' ? 'సైన్ ఇన్' : 'Sign in')}
-          </a>
+          {/* Login Link: rendered before CTA button */}
+          <button type="button" onClick={onLogin} className="hidden lg:inline-flex text-[14.5px] font-semibold text-ink-secondary hover:text-brand-violet whitespace-nowrap px-2.5 py-1.5 transition-colors duration-200 bg-transparent border-none cursor-pointer">{lang === 'te' ? 'లాగిన్' : 'Login'}</button>
 
           {/* Pinned Primary CTA Button */}
-          <a
-            href={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? SIGNUP_URL : '/affiliate/auth?mode=signup'}
-            target={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? '_blank' : undefined}
-            rel={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? 'noopener noreferrer' : undefined}
-            className="hidden lg:inline-flex items-center gap-2 bg-brand-violet hover:bg-brand-violet-hover text-white px-5 py-2.5 text-sm font-semibold rounded-full shadow-sm hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap shrink-0"
-            onClick={handleCtaClick}
-          >
+          <button type="button" className="hidden lg:inline-flex items-center gap-2 bg-brand-violet hover:bg-brand-violet-hover text-white px-5 py-2.5 text-sm font-semibold rounded-full shadow-sm hover:-translate-y-0.5 transition-all duration-200 whitespace-nowrap shrink-0 border-none cursor-pointer" onClick={handleCtaClick}>
             <span>{copy.nav.cta}</span>
             <ArrowUpRight size={16} aria-hidden="true" />
-          </a>
+          </button>
 
           {/* Mobile Hamburger Button */}
           <button
@@ -321,25 +294,11 @@ export default function Navigation({ onBecomeAffiliate }) {
         </nav>
 
         <div className="mt-auto flex flex-col gap-3">
-          <a
-            href={LOGIN_URL && LOGIN_URL.trim() !== '' ? LOGIN_URL : '/affiliate/auth?mode=signin'}
-            target={LOGIN_URL && LOGIN_URL.trim() !== '' ? '_blank' : undefined}
-            rel={LOGIN_URL && LOGIN_URL.trim() !== '' ? 'noopener noreferrer' : undefined}
-            className="w-full text-center py-2.5 text-sm font-semibold text-ink-secondary hover:text-brand-violet transition-colors"
-            onClick={handleSignInClick}
-          >
-            {copy.nav.signIn || (lang === 'te' ? 'సైన్ ఇన్' : 'Sign in')}
-          </a>
-          <a
-            href={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? SIGNUP_URL : '/affiliate/auth?mode=signup'}
-            target={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? '_blank' : undefined}
-            rel={SIGNUP_URL && SIGNUP_URL.trim() !== '' ? 'noopener noreferrer' : undefined}
-            className="w-full inline-flex items-center justify-center gap-2 bg-brand-violet hover:bg-brand-violet-hover text-white px-5 py-3 text-sm font-semibold rounded-full shadow-sm transition-all"
-            onClick={handleCtaClick}
-          >
+          <button type="button" className="w-full text-center py-2.5 text-sm font-semibold text-ink-secondary hover:text-brand-violet transition-colors bg-transparent border-none cursor-pointer" onClick={() => { setIsMenuOpen(false); if (onLogin) onLogin(); }}>{lang === 'te' ? 'లాగిన్' : 'Login'}</button>
+          <button type="button" className="w-full inline-flex items-center justify-center gap-2 bg-brand-violet hover:bg-brand-violet-hover text-white px-5 py-3 text-sm font-semibold rounded-full shadow-sm transition-all border-none cursor-pointer" onClick={handleCtaClick}>
             <span>{copy.nav.cta}</span>
             <ArrowUpRight size={16} aria-hidden="true" />
-          </a>
+          </button>
         </div>
       </div>
     </header>
