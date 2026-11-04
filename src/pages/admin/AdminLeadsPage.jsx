@@ -63,6 +63,12 @@ export default function AdminLeadsPage() {
   const [actionLoading, setActionLoading] = useState(false)
   const [actionSuccess, setActionSuccess] = useState('')
 
+  // Conversion fields
+  const [conversionValue, setConversionValue] = useState('')
+  const [conversionDate, setConversionDate] = useState('')
+  const [conversionReference, setConversionReference] = useState('')
+  const [isEligibleCommission, setIsEligibleCommission] = useState(true)
+
   const t = (path) => getPortalText(lang, path)
 
   const fetchLeads = async (pageToFetch = page) => {
@@ -132,6 +138,10 @@ export default function AdminLeadsPage() {
     setSelectedLead(lead)
     setTargetStatus(newStatus)
     setAdminNotes(lead.admin_notes || '')
+    setConversionValue(lead.conversion_value || '')
+    setConversionDate(lead.conversion_date ? lead.conversion_date.split('T')[0] : new Date().toISOString().split('T')[0])
+    setConversionReference(lead.conversion_reference || '')
+    setIsEligibleCommission(lead.is_eligible_for_commission !== undefined ? lead.is_eligible_for_commission : true)
     setActionSuccess('')
     setActionModalOpen(true)
   }
@@ -142,13 +152,30 @@ export default function AdminLeadsPage() {
     try {
       setActionLoading(true)
       setError(null)
-      const updated = await api.updateAdminReferralStatus(selectedLead.id, {
-        status: targetStatus,
-        admin_notes: adminNotes.trim() || null,
-      })
 
-      setActionSuccess(t('admin.leads.updateSuccess'))
-      // Update in local list
+      let updated
+      if (targetStatus === 'converted') {
+        const val = Number(conversionValue)
+        if (!val || val <= 0) {
+          alert('Please enter a valid eligible conversion value (e.g. ₹10,000).')
+          setActionLoading(false)
+          return
+        }
+        updated = await api.recordLeadConversion(selectedLead.id, {
+          conversion_value: val,
+          conversion_date: conversionDate ? new Date(conversionDate).toISOString() : new Date().toISOString(),
+          conversion_reference: conversionReference.trim() || null,
+          is_eligible_for_commission: isEligibleCommission,
+          admin_notes: adminNotes.trim() || null,
+        })
+      } else {
+        updated = await api.updateAdminReferralStatus(selectedLead.id, {
+          status: targetStatus,
+          admin_notes: adminNotes.trim() || null,
+        })
+      }
+
+      setActionSuccess(targetStatus === 'converted' ? 'Lead converted & registered in Commission Ledger!' : t('admin.leads.updateSuccess'))
       setReferrals((prev) =>
         prev.map((item) => (item.id === updated.id ? updated : item))
       )
@@ -158,8 +185,8 @@ export default function AdminLeadsPage() {
         setActionSuccess('')
       }, 1400)
     } catch (err) {
-      console.error('Failed to update referral status:', err)
-      setError(err.message || 'Failed to update referral status.')
+      console.error('Failed to update lead:', err)
+      setError(err.message || 'Status update failed.')
     } finally {
       setActionLoading(false)
     }
@@ -701,6 +728,81 @@ export default function AdminLeadsPage() {
                   ))}
                 </div>
               </div>
+
+              {targetStatus === 'converted' && (
+                <div className="p-4 rounded-2xl bg-purple-50/70 border border-purple-200 space-y-3">
+                  <div className="font-bold text-xs text-purple-950 flex items-center justify-between">
+                    <span>Verified Conversion & Commission Split</span>
+                    <span className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-200 text-purple-900 font-extrabold">
+                      Financial Event
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[#575266] mb-1">
+                        Eligible Transaction Base (₹) *
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        placeholder="e.g. 10000"
+                        value={conversionValue}
+                        onChange={(e) => setConversionValue(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 bg-white text-xs font-mono font-bold"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold uppercase tracking-wider text-[#575266] mb-1">
+                        Conversion Date
+                      </label>
+                      <input
+                        type="date"
+                        value={conversionDate}
+                        onChange={(e) => setConversionDate(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 bg-white text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold uppercase tracking-wider text-[#575266] mb-1">
+                      Transaction / Reference ID
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. TXN-HOSP-2026-991"
+                      value={conversionReference}
+                      onChange={(e) => setConversionReference(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 bg-white text-xs font-mono"
+                    />
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer pt-1">
+                    <input
+                      type="checkbox"
+                      checked={isEligibleCommission}
+                      onChange={(e) => setIsEligibleCommission(e.target.checked)}
+                      className="accent-[#6B3CFF]"
+                    />
+                    <span className="text-xs font-semibold text-[#12101F]">
+                      Record commission share in central ledger for this referral
+                    </span>
+                  </label>
+
+                  {Number(conversionValue) > 0 && (
+                    <div className="p-2.5 rounded-xl bg-white border border-purple-100 text-[11px] text-[#575266] space-y-0.5">
+                      <div className="font-semibold text-purple-900">Split Preview:</div>
+                      <div>Base: <strong>₹{Number(conversionValue).toLocaleString('en-IN')}</strong></div>
+                      <div>Provider Pays (40%): <strong className="text-blue-700">₹{(Number(conversionValue) * 0.40).toLocaleString('en-IN')}</strong></div>
+                      <div>Affiliate Share (20%): <strong className="text-purple-700">₹{(Number(conversionValue) * 0.20).toLocaleString('en-IN')}</strong></div>
+                      <div>sBLOOM Margin (20%): <strong className="text-emerald-700">₹{(Number(conversionValue) * 0.20).toLocaleString('en-IN')}</strong></div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-[#575266] mb-2">

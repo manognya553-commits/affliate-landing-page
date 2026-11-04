@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     FRONTEND_URL: Optional[str] = None
     CORS_ORIGINS: Optional[str] = None
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
     EMAIL_VERIFY_EXPIRE_HOURS: int = 24
     PASSWORD_RESET_EXPIRE_HOURS: int = 2

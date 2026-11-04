@@ -381,22 +381,37 @@ class AffiliateMetricsResponse(BaseModel):
 # ==============================================================================
 
 class AdminSummaryResponse(BaseModel):
-    pending: int
-    info_requested: int
-    approved: int
-    total: int
+    pending: int = 0
+    info_requested: int = 0
+    approved: int = 0
+    total: int = 0
     total_referrals: int = 0
     pending_referrals: int = 0
     contacted_referrals: int = 0
     qualified_referrals: int = 0
     converted_referrals: int = 0
     rejected_referrals: int = 0
+    conversion_rate: float = 0.0
     verified_affiliates: int = 0
     unverified_affiliates: int = 0
     suspended_affiliates: int = 0
     rejected_affiliates: int = 0
+    total_registered_affiliates: int = 0
+    active_affiliates: int = 0
+    new_registrations_period: int = 0
     total_providers: int = 0
     active_providers: int = 0
+    inactive_providers: int = 0
+    active_services_count: int = 0
+    provider_commission_eligible: float = 0.0
+    affiliate_commission_payable: float = 0.0
+    sbloom_retained_commission: float = 0.0
+    provider_invoiced: float = 0.0
+    provider_collected: float = 0.0
+    affiliate_invoiced: float = 0.0
+    affiliate_paid: float = 0.0
+    outstanding_receivables: float = 0.0
+    outstanding_payables: float = 0.0
 
 
 class AdminReferralLeadResponse(BaseModel):
@@ -417,6 +432,11 @@ class AdminReferralLeadResponse(BaseModel):
     service_id: Optional[UUID] = None
     service_name: Optional[str] = None
     admin_notes: Optional[str] = None
+    conversion_date: Optional[datetime] = None
+    conversion_value: Optional[float] = None
+    conversion_reference: Optional[str] = None
+    is_eligible_for_commission: bool = False
+    commission_details: Optional[Dict[str, Any]] = None
     updated_by: Optional[UUID] = None
     updater_email: Optional[str] = None
     created_at: datetime
@@ -495,6 +515,333 @@ class AuditLogItem(BaseModel):
         if v is not None:
             return str(v)
         return None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ==============================================================================
+# COMMISSION & FINANCIAL SCHEMAS
+# ==============================================================================
+
+class AdminRecordConversionRequest(BaseModel):
+    conversion_value: float = Field(..., gt=0, description="Eligible transaction amount (e.g. ₹10,000)")
+    conversion_date: Optional[datetime] = None
+    conversion_reference: Optional[str] = None
+    is_eligible_for_commission: bool = True
+    admin_notes: Optional[str] = None
+    agreement_id: Optional[UUID] = None
+
+
+class CommissionAgreementCreate(BaseModel):
+    provider_id: UUID
+    service_id: Optional[UUID] = None
+    agreement_type: str = Field(default="percentage", pattern="^(percentage|fixed)$")
+    provider_rate: Optional[float] = None
+    affiliate_rate: Optional[float] = None
+    sbloom_share_rate: Optional[float] = None
+    provider_fixed_amount: Optional[float] = None
+    affiliate_fixed_amount: Optional[float] = None
+    sbloom_fixed_amount: Optional[float] = None
+    calculation_basis: str = Field(default="transaction_value")
+    eligibility_trigger: str = Field(default="on_conversion")
+    effective_date: Optional[datetime] = None
+    expiry_date: Optional[datetime] = None
+    status: str = Field(default="active", pattern="^(active|draft|superseded|expired)$")
+    notes: Optional[str] = None
+
+    @field_validator("provider_rate", "affiliate_rate", "sbloom_share_rate")
+    @classmethod
+    def validate_rates(cls, v: Optional[float]) -> Optional[float]:
+        if v is not None and (v < 0 or v > 100):
+            raise ValueError("Rate must be between 0 and 100 percent")
+        return v
+
+
+class CommissionAgreementUpdate(BaseModel):
+    service_id: Optional[UUID] = None
+    agreement_type: Optional[str] = None
+    provider_rate: Optional[float] = None
+    affiliate_rate: Optional[float] = None
+    sbloom_share_rate: Optional[float] = None
+    provider_fixed_amount: Optional[float] = None
+    affiliate_fixed_amount: Optional[float] = None
+    sbloom_fixed_amount: Optional[float] = None
+    calculation_basis: Optional[str] = None
+    eligibility_trigger: Optional[str] = None
+    effective_date: Optional[datetime] = None
+    expiry_date: Optional[datetime] = None
+    status: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class CommissionAgreementResponse(BaseModel):
+    id: UUID
+    provider_id: UUID
+    provider_name: Optional[str] = None
+    service_id: Optional[UUID] = None
+    service_name: Optional[str] = None
+    agreement_type: str
+    provider_rate: Optional[float] = None
+    affiliate_rate: Optional[float] = None
+    sbloom_share_rate: Optional[float] = None
+    provider_fixed_amount: Optional[float] = None
+    affiliate_fixed_amount: Optional[float] = None
+    sbloom_fixed_amount: Optional[float] = None
+    calculation_basis: str
+    eligibility_trigger: str
+    effective_date: datetime
+    expiry_date: Optional[datetime] = None
+    status: str
+    notes: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CommissionLedgerItemResponse(BaseModel):
+    id: UUID
+    referral_id: UUID
+    affiliate_user_id: UUID
+    affiliate_name: Optional[str] = None
+    affiliate_email: Optional[str] = None
+    provider_id: UUID
+    provider_name: Optional[str] = None
+    service_id: Optional[UUID] = None
+    service_name: Optional[str] = None
+    customer_name: Optional[str] = None
+    eligible_transaction_value: float
+    provider_commission_rate: Optional[float] = None
+    affiliate_commission_rate: Optional[float] = None
+    sbloom_share_rate: Optional[float] = None
+    provider_commission_amount: float
+    affiliate_commission_amount: float
+    sbloom_retained_amount: float
+    currency: str = "INR"
+    status: str
+    provider_invoice_id: Optional[UUID] = None
+    affiliate_invoice_id: Optional[UUID] = None
+    verified_at: Optional[datetime] = None
+    notes: Optional[str] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProviderInvoiceItemResponse(BaseModel):
+    id: UUID
+    ledger_id: Optional[UUID] = None
+    referral_id: Optional[UUID] = None
+    customer_name: str
+    service_name: str
+    eligible_transaction_value: float
+    commission_rate: Optional[float] = None
+    commission_amount: float
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProviderPaymentResponse(BaseModel):
+    id: UUID
+    amount: float
+    payment_method: str
+    payment_reference: str
+    payment_date: datetime
+    notes: Optional[str] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProviderInvoiceResponse(BaseModel):
+    id: UUID
+    invoice_number: str
+    provider_id: UUID
+    provider_name: str
+    billing_period: Optional[str] = None
+    invoice_date: datetime
+    due_date: datetime
+    provider_gstin: Optional[str] = None
+    billing_address: Optional[str] = None
+    subtotal_amount: float
+    tax_rate: float
+    tax_amount: float
+    total_amount: float
+    amount_paid: float
+    amount_due: float
+    status: str
+    cancellation_reason: Optional[str] = None
+    items: List[ProviderInvoiceItemResponse] = []
+    payments: List[ProviderPaymentResponse] = []
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ProviderInvoiceCreate(BaseModel):
+    provider_id: UUID
+    ledger_ids: List[UUID] = Field(..., min_length=1)
+    due_date: datetime
+    provider_gstin: Optional[str] = None
+    billing_address: Optional[str] = None
+    tax_rate: float = 0.00
+    notes: Optional[str] = None
+
+
+class RecordProviderPaymentRequest(BaseModel):
+    amount: float = Field(..., gt=0)
+    payment_method: str = "bank_transfer"
+    payment_reference: str = Field(..., min_length=2)
+    payment_date: Optional[datetime] = None
+    notes: Optional[str] = None
+
+
+class CancelInvoiceRequest(BaseModel):
+    reason: str = Field(..., min_length=3)
+
+
+class AffiliateInvoiceItemResponse(BaseModel):
+    id: UUID
+    ledger_id: Optional[UUID] = None
+    referral_id: Optional[UUID] = None
+    customer_name: str
+    provider_name: str
+    service_name: str
+    eligible_transaction_value: float
+    affiliate_rate: Optional[float] = None
+    commission_amount: float
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AffiliateInvoiceResponse(BaseModel):
+    id: UUID
+    invoice_number: str
+    affiliate_user_id: UUID
+    billing_period: str
+    invoice_date: datetime
+    due_date: Optional[datetime] = None
+    affiliate_name: str
+    affiliate_email: str
+    affiliate_city: Optional[str] = None
+    bank_name: Optional[str] = None
+    bank_account_number: Optional[str] = None
+    bank_ifsc: Optional[str] = None
+    upi_id: Optional[str] = None
+    pan_number: Optional[str] = None
+    subtotal_amount: float
+    tds_rate: float
+    tds_amount: float
+    total_payable: float
+    status: str
+    admin_notes: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    payout_reference: Optional[str] = None
+    payout_method: Optional[str] = None
+    paid_at: Optional[datetime] = None
+    items: List[AffiliateInvoiceItemResponse] = []
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class GenerateAffiliateInvoiceRequest(BaseModel):
+    billing_period: str = Field(..., pattern=r"^\d{4}-\d{2}$", description="e.g. '2026-11'")
+    ledger_ids: Optional[List[UUID]] = None
+    bank_name: Optional[str] = None
+    bank_account_number: Optional[str] = None
+    bank_ifsc: Optional[str] = None
+    upi_id: Optional[str] = None
+    pan_number: Optional[str] = None
+    tds_rate: float = 0.00
+
+
+class RecordAffiliatePayoutRequest(BaseModel):
+    payout_reference: str = Field(..., min_length=2, description="UTR / Bank transaction reference")
+    payout_method: str = "bank_transfer"
+    notes: Optional[str] = None
+
+
+class ApproveAffiliateInvoiceRequest(BaseModel):
+    admin_notes: Optional[str] = None
+
+
+class RejectAffiliateInvoiceRequest(BaseModel):
+    reason: str = Field(..., min_length=3)
+
+
+class AdminFinancialSummaryResponse(BaseModel):
+    provider_commission_eligible: float = 0.0
+    provider_commission_invoiced: float = 0.0
+    provider_commission_collected: float = 0.0
+    provider_receivables_outstanding: float = 0.0
+    affiliate_commission_earned: float = 0.0
+    affiliate_commission_invoiced: float = 0.0
+    affiliate_commission_paid: float = 0.0
+    affiliate_payables_outstanding: float = 0.0
+    sbloom_retained_commission: float = 0.0
+    sbloom_net_retained: float = 0.0
+    month_breakdown: List[Dict[str, Any]] = []
+    provider_breakdown: List[Dict[str, Any]] = []
+
+
+# ==============================================================================
+# AFFILIATE DIRECTORY SCHEMAS
+# ==============================================================================
+
+class AdminAffiliateListItem(BaseModel):
+    id: UUID
+    full_name: str
+    email: str
+    mobile: Optional[str] = None
+    city: Optional[str] = None
+    area: Optional[str] = None
+    status: str
+    email_verified: bool
+    registered_at: datetime
+    total_referrals: int = 0
+    converted_referrals: int = 0
+    eligible_commission: float = 0.0
+    outstanding_payment: float = 0.0
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AdminAffiliateListResponse(BaseModel):
+    items: List[AdminAffiliateListItem]
+    total: int
+    limit: int
+    offset: int
+
+
+class AdminAffiliateDetailResponse(BaseModel):
+    user_id: UUID
+    full_name: str
+    email: str
+    mobile: Optional[str] = None
+    city: Optional[str] = None
+    area: Optional[str] = None
+    occupation: Optional[str] = None
+    promotion_plan: Optional[str] = None
+    status: str
+    email_verified: bool
+    registered_at: datetime
+    bank_name: Optional[str] = None
+    bank_account_number: Optional[str] = None
+    bank_ifsc: Optional[str] = None
+    upi_id: Optional[str] = None
+    pan_number: Optional[str] = None
+    total_referrals: int = 0
+    converted_referrals: int = 0
+    eligible_commission: float = 0.0
+    outstanding_payment: float = 0.0
+    referral_history: List[Dict[str, Any]] = []
+    provider_performance: List[Dict[str, Any]] = []
+    commission_ledger: List[CommissionLedgerItemResponse] = []
+    invoice_history: List[AffiliateInvoiceResponse] = []
+    audit_events: List[AuditLogItem] = []
 
     model_config = ConfigDict(from_attributes=True)
 

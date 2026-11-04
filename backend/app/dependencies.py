@@ -116,16 +116,26 @@ def get_current_user(
 
 
 def require_permission(permission_key: str):
-    """Dependency factory ensuring user has the exact required permission."""
+    """Dependency factory ensuring user has the exact required permission or is an administrator."""
     def dependency(current_user: AuthenticatedUser = Depends(get_current_user)) -> AuthenticatedUser:
-        if permission_key not in current_user.permissions:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Permission denied: requires '{permission_key}'",
-            )
-        return current_user
+        if "admin" in current_user.roles or permission_key in current_user.permissions:
+            return current_user
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Permission denied: requires '{permission_key}'",
+        )
 
     return dependency
+
+
+def require_admin(current_user: AuthenticatedUser = Depends(get_current_user)) -> AuthenticatedUser:
+    """Dependency ensuring the user has the 'admin' role."""
+    if "admin" not in current_user.roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Administrator privileges required.",
+        )
+    return current_user
 
 
 import re

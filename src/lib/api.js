@@ -133,7 +133,7 @@ export const api = {
   getProviderDetail: (id) => api.get(`/api/public/providers/${id}`),
 
   // ---------------------------------------------------------------------------
-  // Affiliate Referral & Metric APIs
+  // Affiliate Referral, Metric & Finance APIs
   // ---------------------------------------------------------------------------
   getAffiliateReferrals: (status = null) => {
     const query = status && status !== 'all' ? `?status=${encodeURIComponent(status)}` : ''
@@ -141,11 +141,23 @@ export const api = {
   },
   submitAffiliateReferral: (data) => api.post('/api/affiliate/referrals', data),
   getAffiliateMetrics: () => api.get('/api/affiliate/metrics'),
+  getAffiliateFinanceSummary: () => api.get('/api/affiliate/finance/summary'),
+  getAffiliateUninvoicedCommissions: () => api.get('/api/affiliate/finance/uninvoiced'),
+  generateAffiliateInvoice: (data) => api.post('/api/affiliate/invoices/generate', data),
+  getAffiliateInvoices: () => api.get('/api/affiliate/invoices'),
+  getAffiliateInvoiceDetail: (invoiceId) => api.get(`/api/affiliate/invoices/${invoiceId}`),
 
   // ---------------------------------------------------------------------------
   // Admin Ecosystem & Referral Management APIs
   // ---------------------------------------------------------------------------
-  getAdminSummary: () => api.get('/api/admin/summary'),
+  getAdminSummary: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.period) searchParams.set('period', params.period)
+    if (params.start_date) searchParams.set('start_date', params.start_date)
+    if (params.end_date) searchParams.set('end_date', params.end_date)
+    const qs = searchParams.toString()
+    return api.get(`/api/admin/summary${qs ? `?${qs}` : ''}`)
+  },
   getAdminReferrals: (params = {}) => {
     const searchParams = new URLSearchParams()
     if (params.status && params.status !== 'all') searchParams.set('status', params.status)
@@ -158,6 +170,109 @@ export const api = {
   },
   getAdminReferralDetail: (leadId) => api.get(`/api/admin/referrals/${leadId}`),
   updateAdminReferralStatus: (leadId, data) => api.put(`/api/admin/referrals/${leadId}/status`, data),
+  recordLeadConversion: (leadId, data) => api.post(`/api/admin/referrals/${leadId}/conversion`, data),
+  getReferralsCsvUrl: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    if (params.sector && params.sector !== 'all') searchParams.set('sector', params.sector)
+    if (params.search) searchParams.set('search', params.search)
+    const qs = searchParams.toString()
+    return `/api/admin/referrals/export/csv${qs ? `?${qs}` : ''}`
+  },
+
+  // ---------------------------------------------------------------------------
+  // Admin Affiliate Management APIs
+  // ---------------------------------------------------------------------------
+  getAdminAffiliates: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    if (params.city) searchParams.set('city', params.city)
+    if (params.verified) searchParams.set('verified', params.verified)
+    if (params.search) searchParams.set('search', params.search)
+    if (params.limit) searchParams.set('limit', params.limit)
+    if (params.offset) searchParams.set('offset', params.offset)
+    const qs = searchParams.toString()
+    return api.get(`/api/admin/affiliates${qs ? `?${qs}` : ''}`)
+  },
+  getAdminAffiliateDetail: (userId) => api.get(`/api/admin/affiliates/${userId}`),
+  getAffiliatesCsvUrl: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    if (params.city) searchParams.set('city', params.city)
+    const qs = searchParams.toString()
+    return `/api/admin/affiliates/export/csv${qs ? `?${qs}` : ''}`
+  },
+
+  // ---------------------------------------------------------------------------
+  // Admin Commission Agreements APIs
+  // ---------------------------------------------------------------------------
+  getAdminAgreements: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.provider_id) searchParams.set('provider_id', params.provider_id)
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    const qs = searchParams.toString()
+    return api.get(`/api/admin/agreements${qs ? `?${qs}` : ''}`)
+  },
+  createAdminAgreement: (data) => api.post('/api/admin/agreements', data),
+  updateAdminAgreement: (id, data) => api.put(`/api/admin/agreements/${id}`, data),
+  updateAdminAgreementStatus: (id, status) => api.post(`/api/admin/agreements/${id}/status?status=${status}`),
+
+  // ---------------------------------------------------------------------------
+  // Admin Commission Ledger APIs
+  // ---------------------------------------------------------------------------
+  getAdminLedger: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.provider_id) searchParams.set('provider_id', params.provider_id)
+    if (params.affiliate_user_id) searchParams.set('affiliate_user_id', params.affiliate_user_id)
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    const qs = searchParams.toString()
+    return api.get(`/api/admin/ledger${qs ? `?${qs}` : ''}`)
+  },
+  updateAdminLedgerStatus: (id, status, notes = '') => {
+    const qs = notes ? `&notes=${encodeURIComponent(notes)}` : ''
+    return api.post(`/api/admin/ledger/${id}/status?status=${status}${qs}`)
+  },
+  getLedgerCsvUrl: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    const qs = searchParams.toString()
+    return `/api/admin/ledger/export/csv${qs ? `?${qs}` : ''}`
+  },
+
+  // ---------------------------------------------------------------------------
+  // Admin Financial Dashboard APIs
+  // ---------------------------------------------------------------------------
+  getAdminFinanceSummary: () => api.get('/api/admin/finance/summary'),
+
+  // ---------------------------------------------------------------------------
+  // Admin Provider Invoices (sBLOOM Bills Provider)
+  // ---------------------------------------------------------------------------
+  getAdminProviderInvoices: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.provider_id) searchParams.set('provider_id', params.provider_id)
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    const qs = searchParams.toString()
+    return api.get(`/api/admin/invoices/provider${qs ? `?${qs}` : ''}`)
+  },
+  createAdminProviderInvoice: (data) => api.post('/api/admin/invoices/provider', data),
+  getAdminProviderInvoiceDetail: (id) => api.get(`/api/admin/invoices/provider/${id}`),
+  recordProviderPayment: (id, data) => api.post(`/api/admin/invoices/provider/${id}/payments`, data),
+  cancelProviderInvoice: (id, reason) => api.post(`/api/admin/invoices/provider/${id}/cancel`, { reason }),
+
+  // ---------------------------------------------------------------------------
+  // Admin Affiliate Invoices (Affiliates Bill sBLOOM)
+  // ---------------------------------------------------------------------------
+  getAdminAffiliateInvoices: (params = {}) => {
+    const searchParams = new URLSearchParams()
+    if (params.affiliate_user_id) searchParams.set('affiliate_user_id', params.affiliate_user_id)
+    if (params.status && params.status !== 'all') searchParams.set('status', params.status)
+    const qs = searchParams.toString()
+    return api.get(`/api/admin/invoices/affiliate${qs ? `?${qs}` : ''}`)
+  },
+  getAdminAffiliateInvoiceDetail: (id) => api.get(`/api/admin/invoices/affiliate/${id}`),
+  approveAdminAffiliateInvoice: (id, adminNotes = null) => api.post(`/api/admin/invoices/affiliate/${id}/approve`, { admin_notes: adminNotes }),
+  rejectAdminAffiliateInvoice: (id, reason) => api.post(`/api/admin/invoices/affiliate/${id}/reject`, { reason }),
+  recordAdminAffiliatePayout: (id, data) => api.post(`/api/admin/invoices/affiliate/${id}/payout`, data),
 
   // ---------------------------------------------------------------------------
   // Admin Provider Management APIs

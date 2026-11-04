@@ -15,6 +15,9 @@ import {
   ChevronDown,
   LogOut,
   Radio,
+  Target,
+  Coins,
+  FileText,
 } from 'lucide-react'
 
 export default function AdminLayout() {
@@ -30,7 +33,7 @@ export default function AdminLayout() {
 
   const handleSignOut = async () => {
     await signOut()
-    navigate('/app/login')
+    navigate('/admin/login')
   }
 
   const navItems = [
@@ -41,27 +44,45 @@ export default function AdminLayout() {
       icon: LayoutDashboard,
     },
     {
-      to: '/admin/leads',
-      label: t('shell.sidebar.navLeadManagement') || 'Lead Management',
+      to: '/admin/affiliates',
+      label: lang === 'te' ? 'అఫిలియేట్ నిర్వహణ' : 'Affiliate Management',
       icon: Users,
     },
     {
-      to: '/admin/approvals',
-      label: t('shell.sidebar.navApprovals') || 'Affiliate Approvals',
-      icon: ShieldCheck,
+      to: '/admin/leads',
+      label: t('shell.sidebar.navLeadManagement') || 'Lead Management',
+      icon: Target,
     },
     {
       to: '/admin/providers',
       label: lang === 'te' ? 'సేవా ప్రొవైడర్లు' : 'Service Providers',
       icon: Building2,
     },
+    {
+      to: '/admin/finance',
+      label: lang === 'te' ? 'కమిషన్ & ఫైనాన్స్' : 'Commission & Finance',
+      icon: Coins,
+    },
+    {
+      to: '/admin/invoices',
+      label: lang === 'te' ? 'ఇన్‌వాయిస్ నిర్వహణ' : 'Invoice Management',
+      icon: FileText,
+    },
+    {
+      to: '/admin/approvals',
+      label: lang === 'te' ? 'ఆమోదాలు & ఆడిట్' : 'Approvals & Audit',
+      icon: ShieldCheck,
+    },
   ]
 
   const getBreadcrumb = () => {
     if (location.pathname === '/admin') return t('shell.sidebar.navOverview') || 'Ecosystem Overview'
+    if (location.pathname.startsWith('/admin/affiliates')) return lang === 'te' ? 'అఫిలియేట్ నిర్వహణ' : 'Affiliate Management'
     if (location.pathname.startsWith('/admin/leads')) return t('shell.sidebar.navLeadManagement') || 'Lead Management'
-    if (location.pathname.startsWith('/admin/approvals')) return t('shell.sidebar.navApprovals') || 'Affiliate Approvals'
     if (location.pathname.startsWith('/admin/providers')) return lang === 'te' ? 'సేవా ప్రొవైడర్లు' : 'Service Providers'
+    if (location.pathname.startsWith('/admin/finance')) return lang === 'te' ? 'కమిషన్ & ఫైనాన్స్' : 'Commission & Finance'
+    if (location.pathname.startsWith('/admin/invoices')) return lang === 'te' ? 'ఇన్‌వాయిస్ నిర్వహణ' : 'Invoice Management'
+    if (location.pathname.startsWith('/admin/approvals')) return lang === 'te' ? 'ఆమోదాలు & ఆడిట్' : 'Approvals & Audit'
     return 'Overview'
   }
 

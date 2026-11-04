@@ -1,238 +1,367 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
+import { Link } from 'react-router-dom'
+import { api } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
 import { useLanguage } from '../../context/useLanguage'
 import Card from '../../components/ui/Card'
 import Table from '../../components/ui/Table'
 import StatusBadge from '../../components/ui/StatusBadge'
 import Button from '../../components/ui/Button'
-import DemoDataNotice from '../../components/ui/DemoDataNotice'
-import { FileText, Download, Landmark, Calendar, ShieldCheck, Check, CheckCircle2 } from 'lucide-react'
+import {
+  FileText,
+  Download,
+  Landmark,
+  Calendar,
+  ShieldCheck,
+  Check,
+  CheckCircle2,
+  Receipt,
+  RefreshCw,
+  Printer,
+  Eye,
+  X,
+  ArrowRight,
+  Clock,
+} from 'lucide-react'
 
 export default function AffiliateInvoicesPage() {
-  const { profile, user } = useAuth()
+  const { user } = useAuth()
   const { lang } = useLanguage()
-  const [downloadingId, setDownloadingId] = useState(null)
-  const [downloadSuccess, setDownloadSuccess] = useState('')
+
+  const [invoices, setInvoices] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [inspectingInvoice, setInspectingInvoice] = useState(null)
 
   const partnerCode = `SBL-${(user?.id || '882199').slice(0, 8).toUpperCase()}`
 
-  // Sample verified invoice records
-  const invoices = [
-    {
-      id: 'INV-2026-10-0914',
-      period: '01 Oct 2026 – 31 Oct 2026',
-      date: '10 Nov 2026',
-      grossAmount: '₹40,000',
-      tds: '₹2,000',
-      netAmount: '₹38,000',
-      rail: 'UPI Handle',
-      utr: 'UTR-UPI2630981124',
-      status: 'Paid',
-    },
-    {
-      id: 'INV-2026-09-0822',
-      period: '01 Sep 2026 – 30 Sep 2026',
-      date: '10 Oct 2026',
-      grossAmount: '₹25,000',
-      tds: '₹1,250',
-      netAmount: '₹23,750',
-      rail: 'Bank NEFT',
-      utr: 'UTR-SBIN2628491021',
-      status: 'Paid',
-    },
-  ]
+  const fetchInvoices = useCallback(async () => {
+    setLoading(true)
+    try {
+      const data = await api.getAffiliateInvoices()
+      setInvoices(data || [])
+    } catch (err) {
+      console.error('Failed to fetch affiliate invoices:', err)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
 
-  const handleDownload = (invoiceId) => {
-    setDownloadingId(invoiceId)
-    setTimeout(() => {
-      setDownloadingId(null)
-      setDownloadSuccess(`Invoice ${invoiceId} statement generated and downloaded.`)
-      setTimeout(() => setDownloadSuccess(''), 3500)
-    }, 800)
+  useEffect(() => {
+    fetchInvoices()
+  }, [fetchInvoices])
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'paid':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <CheckCircle2 size={11} />
+            {lang === 'te' ? 'చెల్లించబడింది' : 'Paid'}
+          </span>
+        )
+      case 'approved':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200">
+            <Check size={11} />
+            {lang === 'te' ? 'ఆమోదించబడింది' : 'Approved'}
+          </span>
+        )
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 border border-red-200">
+            <X size={11} />
+            {lang === 'te' ? 'తిరస్కరించబడింది' : 'Rejected'}
+          </span>
+        )
+      default:
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
+            <Clock size={11} />
+            {lang === 'te' ? 'పరిశీలనలో ఉంది' : 'Submitted'}
+          </span>
+        )
+    }
   }
 
-  const columns = [
-    {
-      header: 'Invoice #',
-      key: 'id',
-      render: (item) => (
-        <div className="flex items-center gap-2">
-          <FileText className="w-4 h-4 text-[#6B3CFF]" />
-          <span className="font-mono font-bold text-[#12101F] text-xs">{item.id}</span>
-        </div>
-      ),
-    },
-    {
-      header: 'Settlement Period',
-      key: 'period',
-      render: (item) => <span className="text-xs text-[#575266]">{item.period}</span>,
-    },
-    {
-      header: 'Disbursement Date',
-      key: 'date',
-      render: (item) => <span className="text-xs font-medium text-[#12101F]">{item.date}</span>,
-    },
-    {
-      header: 'Gross / TDS (5%)',
-      key: 'grossAmount',
-      render: (item) => (
-        <div className="text-xs">
-          <span className="font-medium text-[#12101F]">{item.grossAmount}</span>
-          <span className="text-rose-600 block text-[11px]">TDS: -{item.tds}</span>
-        </div>
-      ),
-    },
-    {
-      header: 'Net Disbursed',
-      key: 'netAmount',
-      render: (item) => (
-        <span className="font-bold text-emerald-600 text-sm">{item.netAmount}</span>
-      ),
-    },
-    {
-      header: 'Rail & UTR Reference',
-      key: 'utr',
-      render: (item) => (
-        <div className="text-xs">
-          <span className="text-[#12101F] font-medium block">{item.rail}</span>
-          <span className="font-mono text-[11px] text-[#575266]">{item.utr}</span>
-        </div>
-      ),
-    },
-    {
-      header: 'Status',
-      key: 'status',
-      render: (item) => <StatusBadge status={item.status} size="sm" />,
-    },
-    {
-      header: 'Action',
-      key: 'action',
-      align: 'right',
-      render: (item) => (
-        <Button
-          size="sm"
-          variant="outline"
-          leftIcon={downloadingId === item.id ? null : Download}
-          isLoading={downloadingId === item.id}
-          onClick={() => handleDownload(item.id)}
-        >
-          Download PDF
-        </Button>
-      ),
-    },
-  ]
-
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
-      {/* Page Title */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-[#E8E2D8]">
+    <div className="space-y-8 font-sans">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#12101F]/10 pb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#12101F] tracking-tight">
-            {lang === 'te' ? 'పన్ను రసీదులు & స్టేట్‌మెంట్లు' : 'Tax Invoices & Statements'}
-          </h1>
-          <p className="text-sm text-[#575266] mt-1">
-            {lang === 'te'
-              ? 'నెలవారీ కమీషన్ చెల్లింపుల అధికారిక రసీదులు మరియు TDS స్టేట్‌మెంట్లు'
-              : 'Download monthly commission settlement receipts, GST tax statements, and banking UTR references.'}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="px-3.5 py-1.5 rounded-xl bg-[#F3ECE1] border border-[#E8E2D8] text-xs">
-            <span className="text-[#575266]">Partner Code: </span>
-            <span className="font-mono font-bold text-[#12101F]">{partnerCode}</span>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#6B3CFF]/10 text-[#6B3CFF] flex items-center justify-center">
+              <Receipt size={22} />
+            </div>
+            <div>
+              <h1 className="text-2xl font-black font-headline text-[#12101F] tracking-tight">
+                {lang === 'te' ? 'అఫిలియేట్ ఇన్‌వాయిస్‌లు' : 'My Invoices & Settlements'}
+              </h1>
+              <p className="text-xs text-[#575266] mt-0.5">
+                {lang === 'te'
+                  ? 'మీరు సమర్పించిన నెలవారీ ఇన్‌వాయిస్‌లు, ఆమోద స్థితి మరియు UTR రిఫరెన్స్ వివరాలు.'
+                  : 'Official tax-compliant invoice records, disbursal statements, and banking UTR references.'}
+              </p>
+            </div>
           </div>
         </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            to="/app/earnings"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold hover:bg-[#5827EB] transition-all shadow-sm shadow-[#6B3CFF]/20 no-underline"
+          >
+            <span>{lang === 'te' ? 'ఆదాయం డాష్‌బోర్డ్' : 'View Earnings'}</span>
+            <ArrowRight size={14} />
+          </Link>
+          <button
+            type="button"
+            onClick={fetchInvoices}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white border border-[#12101F]/15 text-[#12101F] text-xs font-bold hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+          >
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          </button>
+        </div>
       </div>
 
-      {downloadSuccess && (
-        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2 animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-          <span>{downloadSuccess}</span>
+      {/* Partner Info Banner */}
+      <div className="bg-white p-5 rounded-2xl border border-[#12101F]/10 shadow-xs flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#827C94]">
+            Affiliate Partner Identification
+          </div>
+          <div className="font-mono font-bold text-sm text-[#12101F] mt-0.5">{partnerCode}</div>
+        </div>
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#827C94]">
+            Registered Account
+          </div>
+          <div className="font-semibold text-xs text-[#12101F] mt-0.5">{user?.email}</div>
+        </div>
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-wider text-[#827C94]">
+            Disbursal Cycle
+          </div>
+          <div className="text-xs font-bold text-emerald-600 mt-0.5">Monthly Cycle (Net 15)</div>
+        </div>
+      </div>
+
+      {/* Invoices Table */}
+      <div className="bg-white rounded-2xl border border-[#12101F]/10 shadow-xs overflow-hidden">
+        {loading ? (
+          <div className="p-12 text-center text-[#827C94]">
+            <RefreshCw size={24} className="animate-spin mx-auto mb-2 text-[#6B3CFF]" />
+            <p className="text-xs">Loading invoice records...</p>
+          </div>
+        ) : invoices.length === 0 ? (
+          <div className="p-12 text-center text-[#827C94]">
+            <FileText size={32} className="mx-auto mb-2 opacity-40" />
+            <p className="text-sm font-bold text-[#12101F]">No invoices submitted yet</p>
+            <p className="text-xs mt-1">
+              When your referral leads convert, visit the Earnings page to generate and submit your invoice.
+            </p>
+            <Link
+              to="/app/earnings"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold no-underline"
+            >
+              <span>Go to Earnings Page</span>
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 text-[#827C94] uppercase tracking-wider text-[10px] border-b border-[#12101F]/10">
+                  <th className="py-3.5 px-4">Invoice #</th>
+                  <th className="py-3.5 px-4">Billing Period</th>
+                  <th className="py-3.5 px-4">Submission Date</th>
+                  <th className="py-3.5 px-4 text-right">Subtotal</th>
+                  <th className="py-3.5 px-4 text-right">TDS (5%)</th>
+                  <th className="py-3.5 px-4 text-right">Net Payable</th>
+                  <th className="py-3.5 px-4 text-center">Status</th>
+                  <th className="py-3.5 px-4 text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#12101F]/5 text-[#12101F]">
+                {invoices.map((inv) => (
+                  <tr key={inv.id} className="hover:bg-slate-50/50">
+                    <td className="py-3.5 px-4 font-mono font-bold text-[#6B3CFF]">
+                      {inv.invoice_number}
+                    </td>
+
+                    <td className="py-3.5 px-4 font-semibold text-[#12101F]">
+                      {inv.billing_period}
+                    </td>
+
+                    <td className="py-3.5 px-4 text-[#575266]">
+                      {new Date(inv.invoice_date).toLocaleDateString()}
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right font-mono">
+                      ₹{inv.subtotal_amount?.toLocaleString('en-IN')}
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right font-mono text-red-600">
+                      -₹{inv.tds_amount?.toLocaleString('en-IN') || '0.00'}
+                    </td>
+
+                    <td className="py-3.5 px-4 text-right font-mono font-bold text-emerald-700">
+                      ₹{inv.total_payable?.toLocaleString('en-IN')}
+                    </td>
+
+                    <td className="py-3.5 px-4 text-center">{getStatusBadge(inv.status)}</td>
+
+                    <td className="py-3.5 px-4 text-center">
+                      <button
+                        type="button"
+                        onClick={() => setInspectingInvoice(inv)}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 text-[#12101F] hover:bg-slate-200 font-bold text-xs border-none cursor-pointer"
+                      >
+                        <Eye size={12} />
+                        <span>View</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {/* INSPECT INVOICE MODAL */}
+      {inspectingInvoice && (
+        <div className="fixed inset-0 z-50 bg-[#0E0B1E]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto print:p-0">
+            <div className="flex items-center justify-between border-b border-[#12101F]/10 pb-4">
+              <div className="flex items-center gap-2">
+                <FileText size={20} className="text-[#6B3CFF]" />
+                <h2 className="text-base font-black font-headline text-[#12101F]">
+                  Affiliate Invoice Statement
+                </h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-3 py-1.5 rounded-lg border border-[#12101F]/15 bg-white text-xs font-bold text-[#12101F] flex items-center gap-1 cursor-pointer"
+                >
+                  <Printer size={13} /> Print
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInspectingInvoice(null)}
+                  className="w-8 h-8 rounded-lg text-[#827C94] hover:bg-slate-100 flex items-center justify-center border-none bg-transparent cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-6 text-xs text-[#12101F]">
+              <div className="flex justify-between items-start">
+                <div>
+                  <div className="font-extrabold text-xl text-[#6B3CFF]">sBLOOM Technologies</div>
+                  <div className="text-[11px] text-[#575266] mt-0.5">
+                    Affiliate Partner Commission Disbursement
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="font-mono font-bold text-sm text-[#12101F]">
+                    {inspectingInvoice.invoice_number}
+                  </div>
+                  <div className="text-[11px] text-[#827C94]">
+                    Period: {inspectingInvoice.billing_period}
+                  </div>
+                  <div className="text-[11px] text-[#827C94]">
+                    Date: {new Date(inspectingInvoice.invoice_date).toLocaleDateString()}
+                  </div>
+                </div>
+              </div>
+
+              {/* Settlement Banking Info */}
+              <div className="p-4 rounded-2xl bg-slate-50 border border-[#12101F]/10 grid grid-cols-2 gap-3">
+                <div>
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#827C94]">
+                    Affiliate Payee:
+                  </div>
+                  <div className="font-bold text-xs mt-0.5">{inspectingInvoice.affiliate_name}</div>
+                  <div className="font-mono text-[11px] text-[#575266]">{inspectingInvoice.affiliate_email}</div>
+                  {inspectingInvoice.pan_number && (
+                    <div className="font-mono text-[10px] text-[#827C94] mt-1">PAN: {inspectingInvoice.pan_number}</div>
+                  )}
+                </div>
+                <div className="text-right">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[#827C94]">
+                    Disbursement Account:
+                  </div>
+                  <div className="font-mono text-xs font-semibold text-[#12101F] mt-0.5">
+                    {inspectingInvoice.bank_account_number || inspectingInvoice.upi_id || 'On File'}
+                  </div>
+                  <div className="text-[11px] text-[#575266]">{inspectingInvoice.bank_name || ''} {inspectingInvoice.bank_ifsc ? `(${inspectingInvoice.bank_ifsc})` : ''}</div>
+                  {inspectingInvoice.payout_reference && (
+                    <div className="mt-2 text-emerald-700 font-mono text-[11px] font-bold">
+                      UTR: {inspectingInvoice.payout_reference}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Line Items */}
+              {inspectingInvoice.items?.length > 0 && (
+                <div className="space-y-2">
+                  <div className="font-bold text-xs uppercase tracking-wider text-[#827C94]">
+                    Referral Line Items
+                  </div>
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-slate-50 border-b border-[#12101F]/10 text-[#827C94] uppercase text-[10px]">
+                        <th className="py-2 px-3">Customer</th>
+                        <th className="py-2 px-3">Provider / Service</th>
+                        <th className="py-2 px-3 text-right">Commission</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#12101F]/5">
+                      {inspectingInvoice.items.map((line) => (
+                        <tr key={line.id}>
+                          <td className="py-2 px-3 font-semibold">{line.customer_name}</td>
+                          <td className="py-2 px-3 text-[#575266]">
+                            {line.provider_name} • {line.service_name}
+                          </td>
+                          <td className="py-2 px-3 text-right font-mono font-bold text-emerald-600">
+                            ₹{line.commission_amount?.toLocaleString('en-IN')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Totals */}
+              <div className="pt-4 border-t border-[#12101F]/10 flex justify-end">
+                <div className="w-64 space-y-1.5 text-xs">
+                  <div className="flex justify-between text-[#575266]">
+                    <span>Subtotal:</span>
+                    <span className="font-mono">₹{inspectingInvoice.subtotal_amount?.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between text-red-600">
+                    <span>TDS Withholding:</span>
+                    <span className="font-mono">-₹{inspectingInvoice.tds_amount?.toLocaleString('en-IN') || '0.00'}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-sm text-[#12101F] pt-2 border-t border-[#12101F]/10">
+                    <span>Net Disbursed:</span>
+                    <span className="font-mono text-emerald-700">
+                      ₹{inspectingInvoice.total_payable?.toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
-
-      {/* Financial Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card padding="p-5" variant="surface">
-          <span className="text-xs font-semibold text-[#575266] uppercase tracking-wider block">
-            Net Paid Out (FY 2026-27)
-          </span>
-          <span className="text-2xl font-bold font-serif text-[#12101F] block mt-1">
-            ₹61,750
-          </span>
-          <span className="text-xs text-emerald-600 font-medium mt-1 block">
-            ✓ 2 Settlements Cleared
-          </span>
-        </Card>
-
-        <Card padding="p-5" variant="surface">
-          <span className="text-xs font-semibold text-[#575266] uppercase tracking-wider block">
-            TDS Deposited (Sec 194H)
-          </span>
-          <span className="text-2xl font-bold font-serif text-rose-600 block mt-1">
-            ₹3,250
-          </span>
-          <span className="text-xs text-[#575266] mt-1 block">
-            Form 16A quarterly certificates
-          </span>
-        </Card>
-
-        <Card padding="p-5" variant="surface">
-          <span className="text-xs font-semibold text-[#575266] uppercase tracking-wider block">
-            Active Payout Rail
-          </span>
-          <span className="text-lg font-bold text-[#12101F] block mt-1">
-            {profile?.upi_id || 'UPI: partner@okhdfc'}
-          </span>
-          <span className="text-xs text-[#575266] mt-1 block">
-            Direct instant transfer
-          </span>
-        </Card>
-
-        <Card padding="p-5" variant="surface">
-          <span className="text-xs font-semibold text-[#575266] uppercase tracking-wider block">
-            Next Settlement Date
-          </span>
-          <span className="text-2xl font-bold font-serif text-[#6B3CFF] block mt-1">
-            10 Nov 2026
-          </span>
-          <span className="text-xs text-[#575266] mt-1 block">
-            Monthly batch disbursement
-          </span>
-        </Card>
-      </div>
-
-      {/* Statutory Section 194H Info */}
-      <div className="rounded-xl bg-[#6B3CFF]/5 border border-[#6B3CFF]/20 p-4 flex items-start gap-3">
-        <ShieldCheck className="w-5 h-5 text-[#6B3CFF] shrink-0 mt-0.5" />
-        <div className="text-xs text-[#12101F] space-y-1">
-          <p className="font-semibold text-[#0E0B1E]">
-            Statutory Section 194H Tax Withholding Compliance
-          </p>
-          <p className="text-[#575266] leading-relaxed">
-            As mandated by the Indian Income Tax Act, a statutory 5% Tax Deducted at Source (TDS) is deducted from all gross affiliate commissions. Form 16A certificates are generated quarterly and credited directly to your PAN.
-          </p>
-        </div>
-      </div>
-
-      {/* Invoices Data Grid */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-bold font-serif text-[#12101F]">
-            Settlement Statement History
-          </h2>
-          <span className="text-xs text-[#575266]">{invoices.length} Statements available</span>
-        </div>
-
-        <Table
-          columns={columns}
-          data={invoices}
-          emptyMessage="No settlement statements issued yet. Commission invoices are generated on the 10th of each calendar month."
-        />
-      </div>
-
-      <DemoDataNotice />
     </div>
   )
 }

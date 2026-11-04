@@ -1,6 +1,8 @@
 from datetime import datetime, timezone, timedelta
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
+from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -13,6 +15,10 @@ from app.models import (
     ReferralLead,
     ServiceProvider,
     ProviderService,
+    CommissionLedger,
+    AffiliateInvoice,
+    AffiliateInvoiceItem,
+    User,
 )
 from app.schemas import (
     AffiliateProfileUpdate,
@@ -21,9 +27,11 @@ from app.schemas import (
     ReferralLeadCreate,
     ReferralLeadResponse,
     AffiliateMetricsResponse,
+    GenerateAffiliateInvoiceRequest,
+    AffiliateInvoiceResponse,
+    CommissionLedgerItemResponse,
 )
 from app.security import get_client_ip
-
 router = APIRouter(prefix="/affiliate", tags=["Affiliate"])
 
 
@@ -411,3 +419,271 @@ def get_affiliate_metrics(
         rejected_referrals=rejected,
     )
 
+
+
+# ==============================================================================
+# AFFILIATE FINANCIAL & INVOICING ENDPOINTS
+# ==============================================================================
+
+def generate_affiliate_invoice_number(db: Session) -> str:
+    now = datetime.now(timezone.utc)
+    prefix = f"INV-AFF-{now.strftime('%Y%m')}-"
+    last_inv = db.query(AffiliateInvoice).filter(AffiliateInvoice.invoice_number.like(f"{prefix}%")).order_by(AffiliateInvoice.invoice_number.desc()).first()
+    if last_inv:
+        try:
+            seq = int(last_inv.invoice_number.split("-")[-1]) + 1
+        except Exception:
+            seq = 1
+    else:
+        seq = 1
+    return f"{prefix}{seq:04d}"
+
+
+@router.get("/finance/summary")
+def get_affiliate_finance_summary(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns the authenticated affiliate's own financial metrics:
+    total earnings, invoiced amount, paid amount, and outstanding payable balance.
+    NEVER exposes provider commercial terms or platform margin.
+    """
+    elig_sum = (
+        db.query(func.coalesce(func.sum(CommissionLedger.affiliate_commission_amount), 0.0))
+        .filter(
+            CommissionLedger.affiliate_user_id == current_user.id,
+            CommissionLedger.status.in_(["eligible", "invoiced_by_affiliate", "paid_to_affiliate"]),
+        )
+        .scalar()
+    )
+    invoiced_sum = (
+        db.query(func.coalesce(func.sum(AffiliateInvoice.total_payable), 0.0))
+        .filter(
+            AffiliateInvoice.affiliate_user_id == current_user.id,
+            AffiliateInvoice.status.in_(["submitted", "verified", "approved", "paid"]),
+        )
+        .scalar()
+    )
+    paid_sum = (
+        db.query(func.coalesce(func.sum(AffiliateInvoice.total_payable), 0.0))
+        .filter(
+            AffiliateInvoice.affiliate_user_id == current_user.id,
+            AffiliateInvoice.status == "paid",
+        )
+        .scalar()
+    )
+    uninvoiced_sum = (
+        db.query(func.coalesce(func.sum(CommissionLedger.affiliate_commission_amount), 0.0))
+        .filter(
+            CommissionLedger.affiliate_user_id == current_user.id,
+            CommissionLedger.status == "eligible",
+        )
+        .scalar()
+    )
+    outstanding_balance = max(0.0, float(elig_sum) - float(paid_sum))
+
+    return {
+        "eligible_commission": round(float(elig_sum), 2),
+        "uninvoiced_commission": round(float(uninvoiced_sum), 2),
+        "invoiced_commission": round(float(invoiced_sum), 2),
+        "paid_commission": round(float(paid_sum), 2),
+        "outstanding_balance": round(outstanding_balance, 2),
+    }
+
+
+@router.get("/finance/uninvoiced", response_model=List[CommissionLedgerItemResponse])
+def get_uninvoiced_commissions(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns converted referrals that are eligible for commission but not yet included in any invoice.
+    Affiliates only see their own customer name, provider name, service name, and their own commission share.
+    """
+    ledger_items = (
+        db.query(CommissionLedger, ServiceProvider.name, ProviderService.service_name, ReferralLead.client_name)
+        .outerjoin(ServiceProvider, ServiceProvider.id == CommissionLedger.provider_id)
+        .outerjoin(ProviderService, ProviderService.id == CommissionLedger.service_id)
+        .outerjoin(ReferralLead, ReferralLead.id == CommissionLedger.referral_id)
+        .filter(
+            CommissionLedger.affiliate_user_id == current_user.id,
+            CommissionLedger.status == "eligible",
+            CommissionLedger.affiliate_invoice_id.is_(None),
+        )
+        .order_by(CommissionLedger.created_at.desc())
+        .all()
+    )
+
+    items = []
+    for item, prov_name, srv_name, client_name in ledger_items:
+        items.append(
+            CommissionLedgerItemResponse(
+                id=item.id,
+                referral_id=item.referral_id,
+                affiliate_user_id=item.affiliate_user_id,
+                provider_id=item.provider_id,
+                provider_name=prov_name,
+                service_id=item.service_id,
+                service_name=srv_name,
+                customer_name=client_name,
+                eligible_transaction_value=float(item.eligible_transaction_value),
+                provider_commission_rate=None,  # NEVER exposed to affiliate
+                affiliate_commission_rate=float(item.affiliate_commission_rate) if item.affiliate_commission_rate else None,
+                sbloom_share_rate=None,  # NEVER exposed to affiliate
+                provider_commission_amount=0.0,  # NEVER exposed to affiliate
+                affiliate_commission_amount=float(item.affiliate_commission_amount),
+                sbloom_retained_amount=0.0,  # NEVER exposed to affiliate
+                currency=item.currency,
+                status=item.status,
+                provider_invoice_id=None,
+                affiliate_invoice_id=item.affiliate_invoice_id,
+                verified_at=item.verified_at,
+                notes=item.notes,
+                created_at=item.created_at,
+            )
+        )
+    return items
+
+
+@router.post("/invoices/generate", response_model=AffiliateInvoiceResponse, dependencies=[Depends(csrf_protect)])
+def generate_affiliate_invoice(
+    body: GenerateAffiliateInvoiceRequest,
+    request: Request,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Submits a monthly invoice from the affiliate to sBLOOM for all eligible uninvoiced referral conversions.
+    Locks ledger entries with immutable snapshots and concurrency-safe invoice number.
+    """
+    user = db.query(User).filter(User.id == current_user.id).first()
+    prof = db.query(AffiliateProfile).filter(AffiliateProfile.user_id == current_user.id).first()
+
+    query = db.query(CommissionLedger).filter(
+        CommissionLedger.affiliate_user_id == current_user.id,
+        CommissionLedger.status == "eligible",
+        CommissionLedger.affiliate_invoice_id.is_(None),
+    )
+    if body.ledger_ids:
+        query = query.filter(CommissionLedger.id.in_(body.ledger_ids))
+
+    ledger_items = query.all()
+    if not ledger_items:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No eligible uninvoiced referral commissions found to generate an invoice.",
+        )
+
+    subtotal = sum(float(item.affiliate_commission_amount) for item in ledger_items)
+    tds_rate = float(body.tds_rate or 0.0)
+    tds_amount = round(subtotal * (tds_rate / 100.0), 2)
+    total_payable = round(subtotal - tds_amount, 2)
+
+    now = datetime.now(timezone.utc)
+    due_date = now + timedelta(days=15)
+    inv_number = generate_affiliate_invoice_number(db)
+
+    # Use bank details provided in request or fallback to profile
+    bank_name = body.bank_name or (prof.bank_name if prof else None)
+    bank_acc = body.bank_account_number or (prof.bank_account_number if prof else None)
+    bank_ifsc = body.bank_ifsc or (prof.bank_ifsc if prof else None)
+    upi_id = body.upi_id or (prof.upi_id if prof else None)
+    pan_number = body.pan_number or (prof.pan_number if prof else None)
+
+    invoice = AffiliateInvoice(
+        invoice_number=inv_number,
+        affiliate_user_id=current_user.id,
+        billing_period=body.billing_period,
+        invoice_date=now,
+        due_date=due_date,
+        affiliate_name=prof.full_name if prof and prof.full_name else "Affiliate Partner",
+        affiliate_email=user.email,
+        affiliate_city=prof.city if prof else None,
+        bank_name=bank_name,
+        bank_account_number=bank_acc,
+        bank_ifsc=bank_ifsc,
+        upi_id=upi_id,
+        pan_number=pan_number,
+        subtotal_amount=subtotal,
+        tds_rate=tds_rate,
+        tds_amount=tds_amount,
+        total_payable=total_payable,
+        status="submitted",
+    )
+    db.add(invoice)
+    db.flush()
+
+    for item in ledger_items:
+        lead = db.query(ReferralLead).filter(ReferralLead.id == item.referral_id).first()
+        prov = db.query(ServiceProvider).filter(ServiceProvider.id == item.provider_id).first()
+        srv = db.query(ProviderService).filter(ProviderService.id == item.service_id).first() if item.service_id else None
+
+        line_item = AffiliateInvoiceItem(
+            invoice_id=invoice.id,
+            ledger_id=item.id,
+            referral_id=item.referral_id,
+            customer_name=lead.client_name if lead else "Client",
+            provider_name=prov.name if prov else "Provider",
+            service_name=srv.service_name if srv else "Service",
+            eligible_transaction_value=float(item.eligible_transaction_value),
+            affiliate_rate=float(item.affiliate_commission_rate) if item.affiliate_commission_rate else None,
+            commission_amount=float(item.affiliate_commission_amount),
+        )
+        db.add(line_item)
+
+        item.affiliate_invoice_id = invoice.id
+        item.status = "invoiced_by_affiliate"
+
+    audit = AuditLog(
+        actor_user_id=current_user.id,
+        action="affiliate_invoice.generated",
+        entity_type="affiliate_invoice",
+        entity_id=str(invoice.id),
+        after_state={"invoice_number": invoice.invoice_number, "total_payable": total_payable},
+        ip_address=get_client_ip(request),
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(invoice)
+
+    return AffiliateInvoiceResponse.model_validate(invoice)
+
+
+@router.get("/invoices", response_model=List[AffiliateInvoiceResponse])
+def get_affiliate_invoices(
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns all submitted and processed invoices for the authenticated affiliate.
+    """
+    invoices = (
+        db.query(AffiliateInvoice)
+        .filter(AffiliateInvoice.affiliate_user_id == current_user.id)
+        .order_by(AffiliateInvoice.created_at.desc())
+        .all()
+    )
+    return [AffiliateInvoiceResponse.model_validate(inv) for inv in invoices]
+
+
+@router.get("/invoices/{invoice_id}", response_model=AffiliateInvoiceResponse)
+def get_affiliate_invoice_detail(
+    invoice_id: UUID,
+    current_user: AuthenticatedUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Returns single invoice detail with line items for the authenticated affiliate.
+    """
+    inv = (
+        db.query(AffiliateInvoice)
+        .filter(
+            AffiliateInvoice.id == invoice_id,
+            AffiliateInvoice.affiliate_user_id == current_user.id,
+        )
+        .first()
+    )
+    if not inv:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found.")
+    return AffiliateInvoiceResponse.model_validate(inv)

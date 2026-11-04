@@ -26,10 +26,14 @@ import AffiliateSupportPage from './pages/affiliate/AffiliateSupportPage';
 import ComingSoonPage from './pages/affiliate/ComingSoonPage';
 
 // Admin Pages
+import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import AdminAffiliatesPage from './pages/admin/AdminAffiliatesPage';
 import AdminLeadsPage from './pages/admin/AdminLeadsPage';
 import AdminApprovalsPage from './pages/admin/AdminApprovalsPage';
 import AdminProvidersPage from './pages/admin/AdminProvidersPage';
+import AdminFinancePage from './pages/admin/AdminFinancePage';
+import AdminInvoicesPage from './pages/admin/AdminInvoicesPage';
 
 // Layouts & Gates
 import AffiliateLayout from './components/layout/AffiliateLayout';
@@ -118,6 +122,9 @@ export default function AppRouter() {
         <Route path="support" element={<AffiliateSupportPage />} />
       </Route>
 
+      {/* Admin Login: public, but with admin redirection and affiliate-session switching */}
+      <Route path="/admin/login" element={<AdminLoginPage />} />
+
       {/* Admin Portal: requires role === 'admin' */}
       <Route
         path="/admin"
@@ -128,9 +135,12 @@ export default function AppRouter() {
         }
       >
         <Route index element={<AdminDashboardPage />} />
+        <Route path="affiliates" element={<AdminAffiliatesPage />} />
         <Route path="leads" element={<AdminLeadsPage />} />
-        <Route path="approvals" element={<AdminApprovalsPage />} />
         <Route path="providers" element={<AdminProvidersPage />} />
+        <Route path="finance" element={<AdminFinancePage />} />
+        <Route path="invoices" element={<AdminInvoicesPage />} />
+        <Route path="approvals" element={<AdminApprovalsPage />} />
       </Route>
 
       {/* Fallback */}

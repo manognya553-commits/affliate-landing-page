@@ -1,7 +1,7 @@
 import React from 'react'
-import { Navigate, useLocation, Link } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { Loader2, ShieldAlert } from 'lucide-react'
+import { Loader2, ShieldAlert, LogOut, ArrowRight } from 'lucide-react'
 import { useLanguage } from '../../context/useLanguage'
 import { getPortalCopy } from '../../i18n/portalTranslations'
 
@@ -102,13 +102,14 @@ export function RequireStatusGate({ children }) {
  * Gate 5: Requires role === 'admin'.
  */
 export function RequireAdmin({ children }) {
-  const { session, loading, role } = useAuth()
+  const { session, loading, role, user, signOut } = useAuth()
   const { lang } = useLanguage()
   const location = useLocation()
+  const navigate = useNavigate()
 
   if (loading) return <LoadingSpinner />
   if (!session) {
-    return <Navigate to="/app/login" state={{ from: location }} replace />
+    return <Navigate to="/admin/login" state={{ from: location }} replace />
   }
 
   if (role !== 'admin') {
@@ -121,17 +122,45 @@ export function RequireAdmin({ children }) {
           <h2 className="text-xl font-bold font-headline text-[#12101F]">
             {lang === 'te' ? 'అడ్మిన్ అనుమతి లేదు' : 'Access Restricted'}
           </h2>
+
+          <div className="p-3 bg-red-50/70 rounded-2xl border border-red-100 text-xs text-[#575266] w-full text-left">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-red-700">
+              {lang === 'te' ? 'ప్రస్తుత ఖాతా' : 'Signed In As'}
+            </div>
+            <div className="font-mono text-xs text-[#12101F] font-semibold break-all mt-0.5">
+              {user?.email || 'Affiliate Account'}
+            </div>
+            <span className="inline-block mt-1.5 px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[10px] font-bold uppercase tracking-wider">
+              {lang === 'te' ? 'అఫిలియేట్ యూజర్' : 'Affiliate Account'}
+            </span>
+          </div>
+
           <p className="text-sm text-[#575266] leading-relaxed">
             {lang === 'te'
-              ? 'ఈ విభాగాన్ని యాక్సెస్ చేయడానికి అడ్మినిస్ట్రేటర్ అధికారాలు అవసరం.'
-              : 'You need administrator privileges to view this section.'}
+              ? 'ఈ విభాగాన్ని యాక్సెస్ చేయడానికి అడ్మినిస్ట్రేటర్ అధికారాలు అవసరం. దయచేసి సూపర్ అడ్మిన్ ఖాతాతో లాగిన్ అవ్వండి.'
+              : 'You need administrator privileges to view this section. Please sign in with your administrator credentials (e.g. Super Admin).'}
           </p>
-          <Link
-            to="/app"
-            className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#6B3CFF] text-white text-sm font-semibold hover:bg-[#5025D1] transition-all no-underline"
-          >
-            {lang === 'te' ? 'అఫిలియేట్ పోర్టల్‌కు వెళ్లండి' : 'Go to Affiliate Portal'}
-          </Link>
+
+          <div className="w-full flex flex-col gap-2.5 mt-2">
+            <button
+              type="button"
+              onClick={async () => {
+                await signOut()
+                navigate('/admin/login', { replace: true })
+              }}
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#6B3CFF] text-white text-sm font-semibold hover:bg-[#5025D1] transition-all cursor-pointer border-none shadow-md shadow-[#6B3CFF]/20"
+            >
+              <LogOut size={16} />
+              <span>{lang === 'te' ? 'సైన్ అవుట్ చేసి అడ్మిన్‌గా లాగిన్ అవ్వండి' : 'Sign Out & Log In as Admin'}</span>
+            </button>
+            <Link
+              to="/app"
+              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-slate-100 text-[#12101F] text-sm font-medium hover:bg-slate-200 transition-all no-underline"
+            >
+              <span>{lang === 'te' ? 'అఫిలియేట్ పోర్టల్‌కు తిరిగి వెళ్లండి' : 'Return to Affiliate Portal'}</span>
+              <ArrowRight size={14} />
+            </Link>
+          </div>
         </div>
       </div>
     )
