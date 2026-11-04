@@ -48,11 +48,6 @@ export default function AffiliateEarningsPage() {
   const [saveSuccess, setSaveSuccess] = useState('')
   const [saveError, setSaveError] = useState('')
 
-  // Invoice Generation State
-  const [generatingInvoice, setGeneratingInvoice] = useState(false)
-  const [invoiceSuccess, setInvoiceSuccess] = useState('')
-  const [invoiceError, setInvoiceError] = useState('')
-
   const loadData = useCallback(async () => {
     try {
       setLoading(true)
@@ -110,39 +105,6 @@ export default function AffiliateEarningsPage() {
     }
   }
 
-  const handleGenerateInvoice = async () => {
-    if (uninvoicedItems.length === 0) return
-    const now = new Date()
-    const billingPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-
-    if (!window.confirm(`Generate official monthly invoice for period ${billingPeriod} totaling ₹${financeSummary.uninvoiced_commission.toLocaleString('en-IN')}?`)) {
-      return
-    }
-
-    setGeneratingInvoice(true)
-    setInvoiceError('')
-    setInvoiceSuccess('')
-    try {
-      const res = await api.generateAffiliateInvoice({
-        billing_period: billingPeriod,
-        bank_name: bankName || null,
-        bank_account_number: accountNumber || null,
-        bank_ifsc: ifsc || null,
-        upi_id: upiId || null,
-        pan_number: panNumber || null,
-      })
-
-      setInvoiceSuccess(`Invoice ${res.invoice_number} submitted to sBLOOM for settlement!`)
-      await loadData()
-      setTimeout(() => setInvoiceSuccess(''), 5000)
-    } catch (err) {
-      console.error('Invoice generation failed:', err)
-      setInvoiceError(err.message || 'Failed to generate monthly invoice.')
-    } finally {
-      setGeneratingInvoice(false)
-    }
-  }
-
   return (
     <div className="space-y-8 font-sans">
       {/* Page Header */}
@@ -185,20 +147,6 @@ export default function AffiliateEarningsPage() {
         </div>
       </div>
 
-      {invoiceSuccess && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
-          <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
-          <span className="font-semibold">{invoiceSuccess}</span>
-        </div>
-      )}
-
-      {invoiceError && (
-        <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
-          <AlertCircle size={16} className="text-red-500 shrink-0" />
-          <span className="font-semibold">{invoiceError}</span>
-        </div>
-      )}
-
       {/* Financial KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Total Eligible Commission */}
@@ -217,13 +165,13 @@ export default function AffiliateEarningsPage() {
         {/* 2. Uninvoiced Ready to Claim */}
         <div className="bg-purple-50/70 p-5 rounded-2xl border border-purple-200 shadow-xs">
           <div className="text-[11px] font-bold uppercase tracking-wider text-purple-900">
-            {lang === 'te' ? 'ఇన్‌వాయిస్ చేయదగిన మొత్తం' : 'Ready to Invoice (Unclaimed)'}
+            {lang === 'te' ? 'సెటిల్‌మెంట్‌కు సిద్ధంగా ఉన్న మొత్తం' : 'Eligible for Next Invoice'}
           </div>
           <div className="text-2xl font-black text-[#6B3CFF] mt-1 font-mono">
             ₹{financeSummary.uninvoiced_commission?.toLocaleString('en-IN') || '0.00'}
           </div>
           <div className="text-[11px] text-purple-700 mt-1">
-            {uninvoicedItems.length} {lang === 'te' ? 'కన్వర్షన్స్ సిద్ధంగా ఉన్నాయి' : 'conversions available'}
+            {uninvoicedItems.length} {lang === 'te' ? 'కన్వర్షన్స్ పెండింగ్‌లో ఉన్నాయి' : 'conversions pending statement'}
           </div>
         </div>
 
@@ -236,7 +184,7 @@ export default function AffiliateEarningsPage() {
             ₹{financeSummary.invoiced_commission?.toLocaleString('en-IN') || '0.00'}
           </div>
           <div className="text-[11px] text-[#575266] mt-1">
-            {lang === 'te' ? 'పరిశీలన మరియు ఆమోదంలో ఉంది' : 'Submitted invoice claims'}
+            {lang === 'te' ? 'అధికారిక పేఅవుట్ ఇన్‌వాయిస్‌లు' : 'Issued payout statements'}
           </div>
         </div>
 
@@ -254,41 +202,30 @@ export default function AffiliateEarningsPage() {
         </div>
       </div>
 
-      {/* Uninvoiced Earnings Action Card */}
+      {/* Uninvoiced Earnings Information Card */}
       {uninvoicedItems.length > 0 && (
         <div className="p-6 rounded-3xl bg-gradient-to-r from-[#6B3CFF]/10 via-[#FAF7F2] to-emerald-50/40 border border-[#6B3CFF]/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-[#6B3CFF] text-white">
               <Coins size={11} />
-              <span>Earnings Settlement</span>
+              <span>Monthly Settlement Cycle</span>
             </div>
             <h3 className="text-base font-black text-[#12101F] font-headline">
-              {lang === 'te' ? 'మీ కమిషన్ ఇన్‌వాయిస్‌ను సమర్పించండి' : 'Submit Monthly Invoice for Disbursal'}
+              {lang === 'te' ? 'కమిషన్ సెటిల్‌మెంట్ ప్రక్రియ' : 'Eligible Commissions Pending Next Invoice Statement'}
             </h3>
             <p className="text-xs text-[#575266] leading-relaxed max-w-xl">
               You have <strong className="text-[#12101F]">{uninvoicedItems.length} verified referral conversion(s)</strong> totaling{' '}
-              <strong className="text-[#6B3CFF] font-mono">₹{financeSummary.uninvoiced_commission.toLocaleString('en-IN')}</strong> ready for settlement. Generating your invoice submits it directly to sBLOOM for review and payment.
+              <strong className="text-[#6B3CFF] font-mono">₹{financeSummary.uninvoiced_commission.toLocaleString('en-IN')}</strong> eligible for payout. sBLOOM administrators compile and issue monthly payout invoices directly to your registered bank account during the monthly settlement cycle.
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={handleGenerateInvoice}
-            disabled={generatingInvoice}
-            className="px-6 py-3 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold hover:bg-[#5827EB] active:scale-[0.99] transition-all shadow-lg shadow-[#6B3CFF]/25 cursor-pointer border-none flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
+          <Link
+            to="/app/invoices"
+            className="px-6 py-3 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold hover:bg-[#5827EB] active:scale-[0.99] transition-all shadow-lg shadow-[#6B3CFF]/25 no-underline flex items-center justify-center gap-2 shrink-0"
           >
-            {generatingInvoice ? (
-              <>
-                <RefreshCw size={14} className="animate-spin" />
-                <span>Generating Invoice...</span>
-              </>
-            ) : (
-              <>
-                <span>Generate Monthly Invoice</span>
-                <ArrowRight size={14} />
-              </>
-            )}
-          </button>
+            <span>{lang === 'te' ? 'పేఅవుట్ ఇన్‌వాయిస్‌లు చూడండి' : 'View Payout Invoices'}</span>
+            <ArrowRight size={14} />
+          </Link>
         </div>
       )}
 
@@ -353,7 +290,7 @@ export default function AffiliateEarningsPage() {
                     </td>
                     <td className="py-3 px-4 text-center">
                       <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200">
-                        Ready to Invoice
+                        Eligible for Settlement
                       </span>
                     </td>
                   </tr>
@@ -448,7 +385,7 @@ export default function AffiliateEarningsPage() {
               />
             </div>
 
-            <div>
+            <div className="sm:col-span-2">
               <label className="block font-bold uppercase tracking-wider text-[#827C94] mb-1">
                 PAN Number (Tax Compliance)
               </label>

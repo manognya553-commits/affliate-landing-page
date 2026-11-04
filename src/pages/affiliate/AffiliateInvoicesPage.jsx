@@ -56,28 +56,23 @@ export default function AffiliateInvoicesPage() {
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
             <CheckCircle2 size={11} />
-            {lang === 'te' ? 'చెల్లించబడింది' : 'Paid'}
+            {lang === 'te' ? 'చెల్లించబడింది' : 'Paid / Disbursed'}
           </span>
         )
-      case 'approved':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200">
-            <Check size={11} />
-            {lang === 'te' ? 'ఆమోదించబడింది' : 'Approved'}
-          </span>
-        )
-      case 'rejected':
+      case 'cancelled':
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 border border-red-200">
             <X size={11} />
-            {lang === 'te' ? 'తిరస్కరించబడింది' : 'Rejected'}
+            {lang === 'te' ? 'రద్దు చేయబడింది' : 'Cancelled'}
           </span>
         )
+      case 'issued':
+      case 'approved':
       default:
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200">
             <Clock size={11} />
-            {lang === 'te' ? 'పరిశీలనలో ఉంది' : 'Submitted'}
+            {lang === 'te' ? 'జారీ చేయబడింది' : 'Issued (Pending Disbursal)'}
           </span>
         )
     }
@@ -94,12 +89,12 @@ export default function AffiliateInvoicesPage() {
             </div>
             <div>
               <h1 className="text-2xl font-black font-headline text-[#12101F] tracking-tight">
-                {lang === 'te' ? 'అఫిలియేట్ ఇన్‌వాయిస్‌లు' : 'My Invoices & Settlements'}
+                {lang === 'te' ? 'అఫిలియేట్ పేఅవుట్ ఇన్‌వాయిస్‌లు' : 'My Payout Invoices & Statements'}
               </h1>
               <p className="text-xs text-[#575266] mt-0.5">
                 {lang === 'te'
-                  ? 'మీరు సమర్పించిన నెలవారీ ఇన్‌వాయిస్‌లు, ఆమోద స్థితి మరియు UTR రిఫరెన్స్ వివరాలు.'
-                  : 'Official tax-compliant invoice records, disbursal statements, and banking UTR references.'}
+                  ? 'sBLOOM ద్వారా మీకు జారీ చేయబడిన అధికారిక పేఅవుట్ ఇన్‌వాయిస్‌లు మరియు చెల్లింపు వివరాలు.'
+                  : 'Official tax-compliant payout invoices and disbursal statements issued to you by sBLOOM.'}
               </p>
             </div>
           </div>
@@ -151,20 +146,24 @@ export default function AffiliateInvoicesPage() {
         {loading ? (
           <div className="p-12 text-center text-[#827C94]">
             <RefreshCw size={24} className="animate-spin mx-auto mb-2 text-[#6B3CFF]" />
-            <p className="text-xs">Loading invoice records...</p>
+            <p className="text-xs">Loading payout records...</p>
           </div>
         ) : invoices.length === 0 ? (
           <div className="p-12 text-center text-[#827C94]">
             <FileText size={32} className="mx-auto mb-2 opacity-40" />
-            <p className="text-sm font-bold text-[#12101F]">No invoices submitted yet</p>
-            <p className="text-xs mt-1">
-              When your referral leads convert, visit the Earnings page to generate and submit your invoice.
+            <p className="text-sm font-bold text-[#12101F]">
+              {lang === 'te' ? 'ఇంకా ఎటువంటి పేఅవుట్ ఇన్‌వాయిస్‌లు జారీ చేయబడలేదు' : 'No payout invoices issued yet'}
+            </p>
+            <p className="text-xs mt-1 max-w-md mx-auto">
+              {lang === 'te'
+                ? 'మీ రిఫరల్స్ కన్వర్ట్ అయినప్పుడు, మీ అర్హత కలిగిన కమీషన్లకు sBLOOM అడ్మిన్ అధికారిక నెలవారీ పేఅవుట్ ఇన్‌వాయిస్‌ను ఇక్కడ జారీ చేస్తుంది.'
+                : 'Once your converted referrals qualify, sBLOOM administrators compile and issue your official monthly payout invoice here.'}
             </p>
             <Link
               to="/app/earnings"
               className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold no-underline"
             >
-              <span>Go to Earnings Page</span>
+              <span>{lang === 'te' ? 'ఆదాయం వివరాలను చూడండి' : 'Check Referral Earnings'}</span>
               <ArrowRight size={13} />
             </Link>
           </div>
@@ -174,8 +173,8 @@ export default function AffiliateInvoicesPage() {
               <thead>
                 <tr className="bg-slate-50 text-[#827C94] uppercase tracking-wider text-[10px] border-b border-[#12101F]/10">
                   <th className="py-3.5 px-4">Invoice #</th>
-                  <th className="py-3.5 px-4">Billing Period</th>
-                  <th className="py-3.5 px-4">Submission Date</th>
+                  <th className="py-3.5 px-4">Period</th>
+                  <th className="py-3.5 px-4">Issue Date</th>
                   <th className="py-3.5 px-4 text-right">Subtotal</th>
                   <th className="py-3.5 px-4 text-right">TDS (5%)</th>
                   <th className="py-3.5 px-4 text-right">Net Payable</th>
@@ -219,7 +218,7 @@ export default function AffiliateInvoicesPage() {
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 text-[#12101F] hover:bg-slate-200 font-bold text-xs border-none cursor-pointer"
                       >
                         <Eye size={12} />
-                        <span>View</span>
+                        <span>View Statement</span>
                       </button>
                     </td>
                   </tr>
@@ -238,7 +237,7 @@ export default function AffiliateInvoicesPage() {
               <div className="flex items-center gap-2">
                 <FileText size={20} className="text-[#6B3CFF]" />
                 <h2 className="text-base font-black font-headline text-[#12101F]">
-                  Affiliate Invoice Statement
+                  Commission Payout Invoice & Settlement Statement
                 </h2>
               </div>
               <div className="flex items-center gap-2">
@@ -264,7 +263,7 @@ export default function AffiliateInvoicesPage() {
                 <div>
                   <div className="font-extrabold text-xl text-[#6B3CFF]">sBLOOM Technologies</div>
                   <div className="text-[11px] text-[#575266] mt-0.5">
-                    Affiliate Partner Commission Disbursement
+                    Affiliate Partner Commission Disbursal Statement
                   </div>
                 </div>
                 <div className="text-right">
@@ -275,7 +274,7 @@ export default function AffiliateInvoicesPage() {
                     Period: {inspectingInvoice.billing_period}
                   </div>
                   <div className="text-[11px] text-[#827C94]">
-                    Date: {new Date(inspectingInvoice.invoice_date).toLocaleDateString()}
+                    Issue Date: {new Date(inspectingInvoice.invoice_date).toLocaleDateString()}
                   </div>
                 </div>
               </div>
@@ -284,7 +283,7 @@ export default function AffiliateInvoicesPage() {
               <div className="p-4 rounded-2xl bg-slate-50 border border-[#12101F]/10 grid grid-cols-2 gap-3">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[#827C94]">
-                    Affiliate Payee:
+                    Issued To (Affiliate Partner):
                   </div>
                   <div className="font-bold text-xs mt-0.5">{inspectingInvoice.affiliate_name}</div>
                   <div className="font-mono text-[11px] text-[#575266]">{inspectingInvoice.affiliate_email}</div>
@@ -302,7 +301,7 @@ export default function AffiliateInvoicesPage() {
                   <div className="text-[11px] text-[#575266]">{inspectingInvoice.bank_name || ''} {inspectingInvoice.bank_ifsc ? `(${inspectingInvoice.bank_ifsc})` : ''}</div>
                   {inspectingInvoice.payout_reference && (
                     <div className="mt-2 text-emerald-700 font-mono text-[11px] font-bold">
-                      UTR: {inspectingInvoice.payout_reference}
+                      Disbursal UTR: {inspectingInvoice.payout_reference}
                     </div>
                   )}
                 </div>
@@ -312,7 +311,7 @@ export default function AffiliateInvoicesPage() {
               {inspectingInvoice.items?.length > 0 && (
                 <div className="space-y-2">
                   <div className="font-bold text-xs uppercase tracking-wider text-[#827C94]">
-                    Referral Line Items
+                    Converted Referral Commission Line Items
                   </div>
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
@@ -347,11 +346,11 @@ export default function AffiliateInvoicesPage() {
                     <span className="font-mono">₹{inspectingInvoice.subtotal_amount?.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between text-red-600">
-                    <span>TDS Withholding:</span>
+                    <span>TDS Withholding ({inspectingInvoice.tds_rate || 5}%):</span>
                     <span className="font-mono">-₹{inspectingInvoice.tds_amount?.toLocaleString('en-IN') || '0.00'}</span>
                   </div>
                   <div className="flex justify-between font-bold text-sm text-[#12101F] pt-2 border-t border-[#12101F]/10">
-                    <span>Net Disbursed:</span>
+                    <span>Net Disbursed / Payable:</span>
                     <span className="font-mono text-emerald-700">
                       ₹{inspectingInvoice.total_payable?.toLocaleString('en-IN')}
                     </span>

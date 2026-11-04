@@ -758,6 +758,23 @@ class GenerateAffiliateInvoiceRequest(BaseModel):
     tds_rate: float = 0.00
 
 
+class AdminGenerateAffiliateInvoiceRequest(BaseModel):
+    affiliate_user_id: UUID
+    billing_period: str = Field(..., pattern=r"^\d{4}-\d{2}$", description="e.g. '2026-11'")
+    ledger_ids: Optional[List[UUID]] = None
+    bank_name: Optional[str] = None
+    bank_account_number: Optional[str] = None
+    bank_ifsc: Optional[str] = None
+    upi_id: Optional[str] = None
+    pan_number: Optional[str] = None
+    tds_rate: float = 5.00
+    notes: Optional[str] = None
+
+
+class CancelAffiliateInvoiceRequest(BaseModel):
+    reason: str = Field(..., min_length=3)
+
+
 class RecordAffiliatePayoutRequest(BaseModel):
     payout_reference: str = Field(..., min_length=2, description="UTR / Bank transaction reference")
     payout_method: str = "bank_transfer"

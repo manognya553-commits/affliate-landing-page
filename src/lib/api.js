@@ -269,9 +269,11 @@ export const api = {
     const qs = searchParams.toString()
     return api.get(`/api/admin/invoices/affiliate${qs ? `?${qs}` : ''}`)
   },
+  createAdminAffiliateInvoice: (data) => api.post('/api/admin/invoices/affiliate', data),
   getAdminAffiliateInvoiceDetail: (id) => api.get(`/api/admin/invoices/affiliate/${id}`),
   approveAdminAffiliateInvoice: (id, adminNotes = null) => api.post(`/api/admin/invoices/affiliate/${id}/approve`, { admin_notes: adminNotes }),
   rejectAdminAffiliateInvoice: (id, reason) => api.post(`/api/admin/invoices/affiliate/${id}/reject`, { reason }),
+  cancelAdminAffiliateInvoice: (id, reason) => api.post(`/api/admin/invoices/affiliate/${id}/cancel`, { reason }),
   recordAdminAffiliatePayout: (id, data) => api.post(`/api/admin/invoices/affiliate/${id}/payout`, data),
 
   // ---------------------------------------------------------------------------

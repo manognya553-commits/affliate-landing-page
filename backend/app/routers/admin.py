@@ -42,6 +42,8 @@ from app.schemas import (
     RecordAffiliatePayoutRequest,
     ApproveAffiliateInvoiceRequest,
     RejectAffiliateInvoiceRequest,
+    AdminGenerateAffiliateInvoiceRequest,
+    CancelAffiliateInvoiceRequest,
     AdminFinancialSummaryResponse,
     AdminAffiliateListItem,
     AdminAffiliateListResponse,
@@ -143,7 +145,7 @@ def get_admin_summary(
     )
     aff_payable_sum = (
         db.query(func.coalesce(func.sum(CommissionLedger.affiliate_commission_amount), 0.0))
-        .filter(CommissionLedger.status.in_(["eligible", "invoiced_by_affiliate"]))
+        .filter(CommissionLedger.status.in_(["eligible", "invoiced_to_affiliate", "invoiced_by_affiliate"]))
         .scalar()
     )
     sbloom_retained_sum = (
@@ -163,7 +165,7 @@ def get_admin_summary(
     )
     aff_invoiced_sum = (
         db.query(func.coalesce(func.sum(AffiliateInvoice.total_payable), 0.0))
-        .filter(AffiliateInvoice.status.in_(["submitted", "verified", "approved", "paid"]))
+        .filter(AffiliateInvoice.status.in_(["issued", "submitted", "verified", "approved", "paid"]))
         .scalar()
     )
     aff_paid_sum = (
@@ -1478,7 +1480,7 @@ def list_admin_affiliates(
         # Financial ledger calculations
         elig_comm = (
             db.query(func.coalesce(func.sum(CommissionLedger.affiliate_commission_amount), 0.0))
-            .filter(CommissionLedger.affiliate_user_id == user.id, CommissionLedger.status.in_(["eligible", "invoiced_by_affiliate", "paid_to_affiliate"]))
+            .filter(CommissionLedger.affiliate_user_id == user.id, CommissionLedger.status.in_(["eligible", "invoiced_to_affiliate", "invoiced_by_affiliate", "paid_to_affiliate"]))
             .scalar()
         )
         paid_comm = (
@@ -1543,7 +1545,7 @@ def export_affiliates_csv(
         conv_refs = db.query(ReferralLead).filter(ReferralLead.affiliate_user_id == user.id, ReferralLead.status == "converted").count()
         elig_comm = (
             db.query(func.coalesce(func.sum(CommissionLedger.affiliate_commission_amount), 0.0))
-            .filter(CommissionLedger.affiliate_user_id == user.id, CommissionLedger.status.in_(["eligible", "invoiced_by_affiliate", "paid_to_affiliate"]))
+            .filter(CommissionLedger.affiliate_user_id == user.id, CommissionLedger.status.in_(["eligible", "invoiced_to_affiliate", "invoiced_by_affiliate", "paid_to_affiliate"]))
             .scalar()
         )
         full_name = prof.full_name if (prof and prof.full_name) else user.email.split("@")[0]
@@ -1616,7 +1618,7 @@ def get_admin_affiliate_detail(
     ledger_resp = []
     elig_comm = 0.0
     for item, p_name, s_name, c_name in ledger_items:
-        if item.status in ["eligible", "invoiced_by_affiliate", "paid_to_affiliate"]:
+        if item.status in ["eligible", "invoiced_to_affiliate", "invoiced_by_affiliate", "paid_to_affiliate"]:
             elig_comm += float(item.affiliate_commission_amount)
         ledger_resp.append(
             CommissionLedgerItemResponse(
@@ -2030,7 +2032,7 @@ def export_commission_ledger_csv(
 @router.post("/ledger/{ledger_id}/status", response_model=CommissionLedgerItemResponse, dependencies=[Depends(csrf_protect)])
 def update_ledger_status(
     ledger_id: UUID,
-    status: str = Query(..., pattern="^(pending_verification|eligible|invoiced_to_provider|collected_from_provider|invoiced_by_affiliate|paid_to_affiliate|disputed|reversed)$"),
+    status: str = Query(..., pattern="^(pending_verification|eligible|invoiced_to_provider|collected_from_provider|invoiced_to_affiliate|invoiced_by_affiliate|paid_to_affiliate|disputed|reversed)$"),
     notes: Optional[str] = Query(None),
     request: Request = None,
     current_user: AuthenticatedUser = Depends(require_permission("leads.manage")),
@@ -2125,7 +2127,7 @@ def get_admin_finance_summary(
     )
     aff_invoiced_sum = (
         db.query(func.coalesce(func.sum(AffiliateInvoice.total_payable), 0.0))
-        .filter(AffiliateInvoice.status.in_(["submitted", "verified", "approved", "paid"]))
+        .filter(AffiliateInvoice.status.in_(["issued", "submitted", "verified", "approved", "paid"]))
         .scalar()
     )
     aff_paid_sum = (
@@ -2549,6 +2551,157 @@ def reject_affiliate_invoice(
     audit = AuditLog(
         actor_user_id=current_user.id,
         action="affiliate_invoice.rejected",
+        entity_type="affiliate_invoice",
+        entity_id=str(inv.id),
+        reason=body.reason.strip(),
+        ip_address=get_client_ip(request),
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(inv)
+    return AffiliateInvoiceResponse.model_validate(inv)
+
+
+@router.post("/invoices/affiliate", response_model=AffiliateInvoiceResponse, dependencies=[Depends(csrf_protect)])
+def generate_affiliate_payout_invoice(
+    body: AdminGenerateAffiliateInvoiceRequest,
+    request: Request,
+    current_user: AuthenticatedUser = Depends(require_permission("affiliates.decide")),
+    db: Session = Depends(get_db),
+):
+    """
+    Admin generates an official payout invoice for an affiliate covering verified eligible commissions.
+    Locks ledger entries and generates SBL-AFF invoice which reflects directly in the affiliate portal.
+    """
+    user = db.query(User).filter(User.id == body.affiliate_user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Affiliate user not found.")
+
+    prof = db.query(AffiliateProfile).filter(AffiliateProfile.user_id == body.affiliate_user_id).first()
+
+    query = db.query(CommissionLedger).filter(
+        CommissionLedger.affiliate_user_id == body.affiliate_user_id,
+        CommissionLedger.status == "eligible",
+        CommissionLedger.affiliate_invoice_id.is_(None),
+    )
+    if body.ledger_ids:
+        query = query.filter(CommissionLedger.id.in_(body.ledger_ids))
+
+    ledger_items = query.all()
+    if not ledger_items:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No eligible uninvoiced referral commissions found for this affiliate.",
+        )
+
+    subtotal = sum(float(item.affiliate_commission_amount) for item in ledger_items)
+    tds_rate = float(body.tds_rate if body.tds_rate is not None else 5.0)
+    tds_amount = round(subtotal * (tds_rate / 100.0), 2)
+    total_payable = round(subtotal - tds_amount, 2)
+
+    now = datetime.now(timezone.utc)
+    due_date = now + timedelta(days=15)
+    inv_number = generate_affiliate_invoice_number(db)
+
+    # Use bank details provided in request or fallback to affiliate profile
+    bank_name = body.bank_name or (prof.bank_name if prof else None)
+    bank_acc = body.bank_account_number or (prof.bank_account_number if prof else None)
+    bank_ifsc = body.bank_ifsc or (prof.bank_ifsc if prof else None)
+    upi_id = body.upi_id or (prof.upi_id if prof else None)
+    pan_number = body.pan_number or (prof.pan_number if prof else None)
+
+    invoice = AffiliateInvoice(
+        invoice_number=inv_number,
+        affiliate_user_id=body.affiliate_user_id,
+        billing_period=body.billing_period,
+        invoice_date=now,
+        due_date=due_date,
+        affiliate_name=prof.full_name if prof and prof.full_name else (user.email.split("@")[0]),
+        affiliate_email=user.email,
+        affiliate_city=prof.city if prof else None,
+        bank_name=bank_name,
+        bank_account_number=bank_acc,
+        bank_ifsc=bank_ifsc,
+        upi_id=upi_id,
+        pan_number=pan_number,
+        subtotal_amount=subtotal,
+        tds_rate=tds_rate,
+        tds_amount=tds_amount,
+        total_payable=total_payable,
+        status="issued",
+        admin_notes=body.notes.strip() if body.notes else None,
+        verified_at=now,
+        verified_by=current_user.id,
+    )
+    db.add(invoice)
+    db.flush()
+
+    for item in ledger_items:
+        lead = db.query(ReferralLead).filter(ReferralLead.id == item.referral_id).first()
+        prov = db.query(ServiceProvider).filter(ServiceProvider.id == item.provider_id).first()
+        srv = db.query(ProviderService).filter(ProviderService.id == item.service_id).first() if item.service_id else None
+
+        line_item = AffiliateInvoiceItem(
+            invoice_id=invoice.id,
+            ledger_id=item.id,
+            referral_id=item.referral_id,
+            customer_name=lead.client_name if lead else "Client",
+            provider_name=prov.name if prov else "Provider",
+            service_name=srv.service_name if srv else "Service",
+            eligible_transaction_value=float(item.eligible_transaction_value),
+            affiliate_rate=float(item.affiliate_commission_rate) if item.affiliate_commission_rate else None,
+            commission_amount=float(item.affiliate_commission_amount),
+        )
+        db.add(line_item)
+
+        item.affiliate_invoice_id = invoice.id
+        item.status = "invoiced_to_affiliate"
+
+    audit = AuditLog(
+        actor_user_id=current_user.id,
+        action="affiliate_invoice.issued_by_admin",
+        entity_type="affiliate_invoice",
+        entity_id=str(invoice.id),
+        after_state={"invoice_number": invoice.invoice_number, "total_payable": total_payable, "affiliate_user_id": str(body.affiliate_user_id)},
+        ip_address=get_client_ip(request),
+    )
+    db.add(audit)
+    db.commit()
+    db.refresh(invoice)
+
+    return AffiliateInvoiceResponse.model_validate(invoice)
+
+
+@router.post("/invoices/affiliate/{invoice_id}/cancel", response_model=AffiliateInvoiceResponse, dependencies=[Depends(csrf_protect)])
+def cancel_affiliate_invoice(
+    invoice_id: UUID,
+    body: CancelAffiliateInvoiceRequest,
+    request: Request,
+    current_user: AuthenticatedUser = Depends(require_permission("affiliates.decide")),
+    db: Session = Depends(get_db),
+):
+    inv = db.query(AffiliateInvoice).filter(AffiliateInvoice.id == invoice_id).first()
+    if not inv:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found.")
+
+    if inv.status == "paid":
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot cancel an invoice that has already been paid.")
+
+    inv.status = "cancelled"
+    inv.rejection_reason = body.reason.strip()
+    inv.updated_at = datetime.now(timezone.utc)
+
+    # Revert all ledger items back to eligible so they can be re-invoiced
+    for line in inv.items:
+        if line.ledger_id:
+            led = db.query(CommissionLedger).filter(CommissionLedger.id == line.ledger_id).first()
+            if led:
+                led.status = "eligible"
+                led.affiliate_invoice_id = None
+
+    audit = AuditLog(
+        actor_user_id=current_user.id,
+        action="affiliate_invoice.cancelled",
         entity_type="affiliate_invoice",
         entity_id=str(inv.id),
         reason=body.reason.strip(),

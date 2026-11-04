@@ -20,6 +20,7 @@ import {
   ArrowRight,
   Printer,
   DollarSign,
+  Ban,
 } from 'lucide-react'
 
 export default function AdminInvoicesPage() {
@@ -52,6 +53,20 @@ export default function AdminInvoicesPage() {
   // Affiliate Invoices State
   const [affiliateInvoices, setAffiliateInvoices] = useState([])
   const [affLoading, setAffLoading] = useState(false)
+  const [showCreateAffModal, setShowCreateAffModal] = useState(false)
+  const [affiliatesList, setAffiliatesList] = useState([])
+  const [selectedAffiliateId, setSelectedAffiliateId] = useState('')
+  const [affUninvoicedLedger, setAffUninvoicedLedger] = useState([])
+  const [selectedAffLedgerIds, setSelectedAffLedgerIds] = useState([])
+  const [affBillingPeriod, setAffBillingPeriod] = useState(new Date().toISOString().slice(0, 7))
+  const [affTdsRate, setAffTdsRate] = useState(5.0)
+  const [affBankName, setAffBankName] = useState('')
+  const [affAccountNum, setAffAccountNum] = useState('')
+  const [affIfsc, setAffIfsc] = useState('')
+  const [affUpi, setAffUpi] = useState('')
+  const [affPan, setAffPan] = useState('')
+  const [affNotes, setAffNotes] = useState('')
+  const [createAffLoading, setCreateAffLoading] = useState(false)
 
   // Payout Recording for Affiliate Invoices
   const [payoutInvoice, setPayoutInvoice] = useState(null)
@@ -102,10 +117,21 @@ export default function AdminInvoicesPage() {
     }
   }
 
+  // Load affiliates for invoice creation
+  const fetchAffiliates = async () => {
+    try {
+      const res = await api.getAdminAffiliates({ limit: 100 })
+      setAffiliatesList(res?.items || [])
+    } catch (err) {
+      console.error('Failed to load affiliates list:', err)
+    }
+  }
+
   useEffect(() => {
     fetchProviderInvoices()
     fetchAffiliateInvoices()
     fetchProviders()
+    fetchAffiliates()
   }, [fetchProviderInvoices, fetchAffiliateInvoices])
 
   // When selected provider changes in modal, load their uninvoiced ledger items
@@ -129,6 +155,40 @@ export default function AdminInvoicesPage() {
     }
     loadUninvoiced()
   }, [selectedProviderId])
+
+  // When selected affiliate changes in modal, load their uninvoiced eligible ledger items & settlement details
+  useEffect(() => {
+    if (!selectedAffiliateId) {
+      setAffUninvoicedLedger([])
+      setSelectedAffLedgerIds([])
+      setAffBankName('')
+      setAffAccountNum('')
+      setAffIfsc('')
+      setAffUpi('')
+      setAffPan('')
+      return
+    }
+    const loadAffiliateData = async () => {
+      try {
+        const [ledgerData, detailData] = await Promise.all([
+          api.getAdminLedger({ affiliate_user_id: selectedAffiliateId, status: 'eligible' }),
+          api.getAdminAffiliateDetail(selectedAffiliateId).catch(() => null),
+        ])
+        setAffUninvoicedLedger(ledgerData || [])
+        setSelectedAffLedgerIds((ledgerData || []).map((i) => i.id))
+        if (detailData?.profile) {
+          setAffBankName(detailData.profile.bank_name || '')
+          setAffAccountNum(detailData.profile.bank_account_number || '')
+          setAffIfsc(detailData.profile.bank_ifsc || '')
+          setAffUpi(detailData.profile.upi_id || '')
+          setAffPan(detailData.profile.pan_number || '')
+        }
+      } catch (err) {
+        console.error('Failed to load affiliate ledger and profile:', err)
+      }
+    }
+    loadAffiliateData()
+  }, [selectedAffiliateId])
 
   // Create Provider Invoice
   const handleCreateProviderInvoice = async (e) => {
@@ -154,6 +214,40 @@ export default function AdminInvoicesPage() {
       alert(err.message || 'Failed to create provider invoice.')
     } finally {
       setCreateProvLoading(false)
+    }
+  }
+
+  // Create Affiliate Payout Invoice
+  const handleCreateAffiliateInvoice = async (e) => {
+    e.preventDefault()
+    if (!selectedAffiliateId || selectedAffLedgerIds.length === 0) {
+      alert('Please select an affiliate partner and at least one eligible commission.')
+      return
+    }
+    setCreateAffLoading(true)
+    try {
+      const payload = {
+        affiliate_user_id: selectedAffiliateId,
+        billing_period: affBillingPeriod || new Date().toISOString().slice(0, 7),
+        ledger_ids: selectedAffLedgerIds,
+        tds_rate: Number(affTdsRate) || 0,
+        bank_name: affBankName.trim() || null,
+        bank_account_number: affAccountNum.trim() || null,
+        bank_ifsc: affIfsc.trim().toUpperCase() || null,
+        upi_id: affUpi.trim() || null,
+        pan_number: affPan.trim().toUpperCase() || null,
+        notes: affNotes.trim() || null,
+      }
+      await api.createAdminAffiliateInvoice(payload)
+      setShowCreateAffModal(false)
+      setSelectedAffiliateId('')
+      setSelectedAffLedgerIds([])
+      setAffNotes('')
+      await fetchAffiliateInvoices()
+    } catch (err) {
+      alert(err.message || 'Failed to generate affiliate payout invoice.')
+    } finally {
+      setCreateAffLoading(false)
     }
   }
 
@@ -191,26 +285,15 @@ export default function AdminInvoicesPage() {
     }
   }
 
-  // Approve Affiliate Invoice
-  const handleApproveAffiliateInvoice = async (invoiceId) => {
-    if (!window.confirm('Approve this affiliate invoice for settlement payout?')) return
-    try {
-      await api.approveAdminAffiliateInvoice(invoiceId)
-      await fetchAffiliateInvoices()
-    } catch (err) {
-      alert(err.message || 'Failed to approve invoice.')
-    }
-  }
-
-  // Reject Affiliate Invoice
-  const handleRejectAffiliateInvoice = async (invoiceId) => {
-    const reason = window.prompt('Enter reason for rejecting this affiliate invoice:')
+  // Cancel Affiliate Invoice
+  const handleCancelAffiliateInvoice = async (invoiceId) => {
+    const reason = window.prompt('Enter reason for cancelling this affiliate payout invoice:')
     if (!reason || !reason.trim()) return
     try {
-      await api.rejectAdminAffiliateInvoice(invoiceId, reason)
+      await api.cancelAdminAffiliateInvoice(invoiceId, reason)
       await fetchAffiliateInvoices()
     } catch (err) {
-      alert(err.message || 'Failed to reject invoice.')
+      alert(err.message || 'Failed to cancel affiliate invoice.')
     }
   }
 
@@ -235,6 +318,16 @@ export default function AdminInvoicesPage() {
     }
   }
 
+  // Calculate live affiliate modal totals
+  const selectedAffLedgerItems = affUninvoicedLedger.filter((item) => selectedAffLedgerIds.includes(item.id))
+  const affSubtotal = selectedAffLedgerItems.reduce((acc, item) => acc + (Number(item.affiliate_commission_amount) || 0), 0)
+  const affTdsAmount = roundToTwo(affSubtotal * ((Number(affTdsRate) || 0) / 100))
+  const affTotalPayable = roundToTwo(affSubtotal - affTdsAmount)
+
+  function roundToTwo(num) {
+    return Math.round((num + Number.EPSILON) * 100) / 100
+  }
+
   return (
     <div className="space-y-8 font-sans">
       {/* Top Header */}
@@ -249,14 +342,14 @@ export default function AdminInvoicesPage() {
             </h1>
             <p className="text-xs text-[#575266] mt-0.5">
               {lang === 'te'
-                ? 'సేవా ప్రొవైడర్లకు పంపే ఇన్‌వాయిస్‌లు మరియు అఫిలియేట్ల నుండి వచ్చే క్లెయిమ్‌ల పూర్తి నిర్వహణ.'
-                : 'Bilateral invoicing system: sBLOOM bills Providers & Affiliates bill sBLOOM.'}
+                ? 'సేవా ప్రొవైడర్లకు పంపే ఇన్‌వాయిస్‌లు మరియు అఫిలియేట్లకు ఇచ్చే చెల్లింపు ఇన్‌వాయిస్‌ల పూర్తి నిర్వహణ.'
+                : 'Manage provider billing invoices (sBLOOM → Providers) and affiliate payout invoices (sBLOOM → Affiliates).'}
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          {activeTab === 'provider' && (
+          {activeTab === 'provider' ? (
             <button
               type="button"
               onClick={() => setShowCreateProvModal(true)}
@@ -264,6 +357,15 @@ export default function AdminInvoicesPage() {
             >
               <Plus size={15} />
               <span>Bill a Service Provider</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowCreateAffModal(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold hover:bg-[#5827EB] transition-all shadow-sm shadow-[#6B3CFF]/20 cursor-pointer border-none"
+            >
+              <Plus size={15} />
+              <span>Generate Affiliate Invoice</span>
             </button>
           )}
         </div>
@@ -296,7 +398,7 @@ export default function AdminInvoicesPage() {
           }`}
         >
           <User size={14} />
-          <span>Affiliate Claims (Affiliates &rarr; sBLOOM)</span>
+          <span>Affiliate Payout Invoices (sBLOOM &rarr; Affiliates)</span>
           <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20">
             {affiliateInvoices.length}
           </span>
@@ -314,15 +416,16 @@ export default function AdminInvoicesPage() {
               </div>
             ) : providerInvoices.length === 0 ? (
               <div className="p-12 text-center text-[#827C94]">
-                <Receipt size={32} className="mx-auto mb-2 opacity-40" />
-                <p className="text-sm font-bold text-[#12101F]">No provider invoices issued yet</p>
-                <p className="text-xs mt-1">Generate an invoice to bill a provider for verified converted referrals.</p>
+                <FileText size={32} className="mx-auto mb-2 opacity-40" />
+                <p className="text-sm font-bold text-[#12101F]">No provider invoices generated yet</p>
+                <p className="text-xs mt-1">Select a service provider to bill them for converted referrals.</p>
                 <button
                   type="button"
                   onClick={() => setShowCreateProvModal(true)}
-                  className="mt-3 px-4 py-2 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold border-none cursor-pointer"
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold border-none cursor-pointer"
                 >
-                  Create First Provider Invoice
+                  <Plus size={14} />
+                  <span>Create First Provider Invoice</span>
                 </button>
               </div>
             ) : (
@@ -332,9 +435,10 @@ export default function AdminInvoicesPage() {
                     <tr className="bg-slate-50 text-[#827C94] uppercase tracking-wider text-[10px] border-b border-[#12101F]/10">
                       <th className="py-3.5 px-4">Invoice #</th>
                       <th className="py-3.5 px-4">Service Provider</th>
-                      <th className="py-3.5 px-4">Invoice Date / Due</th>
+                      <th className="py-3.5 px-4">Issue & Due Date</th>
                       <th className="py-3.5 px-4 text-right">Subtotal</th>
-                      <th className="py-3.5 px-4 text-right">Total Billed</th>
+                      <th className="py-3.5 px-4 text-right">GST / Tax</th>
+                      <th className="py-3.5 px-4 text-right">Total Invoiced</th>
                       <th className="py-3.5 px-4 text-right">Amount Paid</th>
                       <th className="py-3.5 px-4 text-center">Status</th>
                       <th className="py-3.5 px-4 text-center">Actions</th>
@@ -347,29 +451,37 @@ export default function AdminInvoicesPage() {
                           {inv.invoice_number}
                         </td>
 
-                        <td className="py-3.5 px-4">
-                          <div className="font-bold text-[#12101F]">{inv.provider_name}</div>
+                        <td className="py-3.5 px-4 font-bold text-[#12101F]">
+                          {inv.provider_name}
                           {inv.provider_gstin && (
-                            <div className="text-[10px] text-[#827C94]">GSTIN: {inv.provider_gstin}</div>
+                            <div className="text-[10px] font-mono text-[#827C94] font-normal">
+                              GSTIN: {inv.provider_gstin}
+                            </div>
                           )}
                         </td>
 
                         <td className="py-3.5 px-4 text-[#575266]">
                           <div>{new Date(inv.invoice_date).toLocaleDateString()}</div>
-                          <div className="text-[10px] text-[#827C94]">
-                            Due: {new Date(inv.due_date).toLocaleDateString()}
-                          </div>
+                          {inv.due_date && (
+                            <div className="text-[10px] text-[#827C94]">
+                              Due: {new Date(inv.due_date).toLocaleDateString()}
+                            </div>
+                          )}
                         </td>
 
                         <td className="py-3.5 px-4 text-right font-mono">
                           ₹{inv.subtotal_amount?.toLocaleString('en-IN')}
                         </td>
 
+                        <td className="py-3.5 px-4 text-right font-mono text-[#575266]">
+                          ₹{inv.tax_amount?.toLocaleString('en-IN') || '0.00'}
+                        </td>
+
                         <td className="py-3.5 px-4 text-right font-mono font-bold text-[#12101F]">
                           ₹{inv.total_amount?.toLocaleString('en-IN')}
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono font-bold text-emerald-600">
+                        <td className="py-3.5 px-4 text-right font-mono text-emerald-700 font-semibold">
                           ₹{inv.amount_paid?.toLocaleString('en-IN') || '0.00'}
                         </td>
 
@@ -381,11 +493,11 @@ export default function AdminInvoicesPage() {
                                 : inv.status === 'partially_paid'
                                 ? 'bg-blue-50 text-blue-700 border border-blue-200'
                                 : inv.status === 'cancelled'
-                                ? 'bg-slate-100 text-slate-500'
+                                ? 'bg-red-50 text-red-700 border border-red-200'
                                 : 'bg-amber-50 text-amber-800 border border-amber-200'
                             }`}
                           >
-                            {inv.status?.replace('_', ' ')}
+                            {inv.status}
                           </span>
                         </td>
 
@@ -408,7 +520,7 @@ export default function AdminInvoicesPage() {
                                 onClick={() => {
                                   setPayingInvoice(inv)
                                   setPaymentForm({
-                                    amount: inv.total_amount - (inv.amount_paid || 0),
+                                    amount: (inv.total_amount - (inv.amount_paid || 0)).toString(),
                                     payment_method: 'bank_transfer',
                                     payment_reference: '',
                                     notes: '',
@@ -442,20 +554,30 @@ export default function AdminInvoicesPage() {
         </div>
       )}
 
-      {/* TAB 2: AFFILIATE INVOICES */}
+      {/* TAB 2: AFFILIATE PAYOUT INVOICES */}
       {activeTab === 'affiliate' && (
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-[#12101F]/10 shadow-xs overflow-hidden">
             {affLoading ? (
               <div className="p-12 text-center text-[#827C94]">
                 <RefreshCw size={24} className="animate-spin mx-auto mb-2 text-[#6B3CFF]" />
-                <p className="text-xs">Loading affiliate claims...</p>
+                <p className="text-xs">Loading affiliate payout invoices...</p>
               </div>
             ) : affiliateInvoices.length === 0 ? (
               <div className="p-12 text-center text-[#827C94]">
                 <FileText size={32} className="mx-auto mb-2 opacity-40" />
-                <p className="text-sm font-bold text-[#12101F]">No affiliate claims submitted yet</p>
-                <p className="text-xs mt-1">Affiliates generate monthly invoices from their portal when eligible commissions accrue.</p>
+                <p className="text-sm font-bold text-[#12101F]">No affiliate payout invoices issued yet</p>
+                <p className="text-xs mt-1">
+                  Generate an official monthly payout invoice when an affiliate partner has verified converted referrals.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowCreateAffModal(true)}
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold border-none cursor-pointer shadow-sm shadow-[#6B3CFF]/20"
+                >
+                  <Plus size={14} />
+                  <span>Generate Affiliate Invoice</span>
+                </button>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -464,9 +586,9 @@ export default function AdminInvoicesPage() {
                     <tr className="bg-slate-50 text-[#827C94] uppercase tracking-wider text-[10px] border-b border-[#12101F]/10">
                       <th className="py-3.5 px-4">Invoice #</th>
                       <th className="py-3.5 px-4">Affiliate Partner</th>
-                      <th className="py-3.5 px-4">Billing Period</th>
+                      <th className="py-3.5 px-4">Period & Issue Date</th>
                       <th className="py-3.5 px-4 text-right">Subtotal</th>
-                      <th className="py-3.5 px-4 text-right">TDS (Tax)</th>
+                      <th className="py-3.5 px-4 text-right">TDS (5%)</th>
                       <th className="py-3.5 px-4 text-right">Net Payable</th>
                       <th className="py-3.5 px-4 text-center">Status</th>
                       <th className="py-3.5 px-4 text-center">Actions</th>
@@ -484,15 +606,20 @@ export default function AdminInvoicesPage() {
                           <div className="text-[11px] font-mono text-[#575266]">{inv.affiliate_email}</div>
                           {inv.bank_account_number && (
                             <div className="text-[10px] text-[#827C94]">
-                              A/C: {inv.bank_account_number} • {inv.bank_ifsc}
+                              A/C: {inv.bank_account_number} • {inv.bank_ifsc || 'IFSC on file'}
+                            </div>
+                          )}
+                          {inv.payout_reference && (
+                            <div className="text-[10px] font-mono text-emerald-700 font-semibold mt-0.5">
+                              UTR: {inv.payout_reference}
                             </div>
                           )}
                         </td>
 
                         <td className="py-3.5 px-4 font-semibold text-[#12101F]">
                           {inv.billing_period}
-                          <div className="text-[10px] text-[#827C94]">
-                            {new Date(inv.invoice_date).toLocaleDateString()}
+                          <div className="text-[10px] text-[#827C94] font-normal">
+                            Issued: {new Date(inv.invoice_date).toLocaleDateString()}
                           </div>
                         </td>
 
@@ -504,7 +631,7 @@ export default function AdminInvoicesPage() {
                           -₹{inv.tds_amount?.toLocaleString('en-IN') || '0.00'}
                         </td>
 
-                        <td className="py-3.5 px-4 text-right font-mono font-bold text-[#12101F]">
+                        <td className="py-3.5 px-4 text-right font-mono font-bold text-emerald-700">
                           ₹{inv.total_payable?.toLocaleString('en-IN')}
                         </td>
 
@@ -513,14 +640,12 @@ export default function AdminInvoicesPage() {
                             className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                               inv.status === 'paid'
                                 ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : inv.status === 'approved'
-                                ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                                : inv.status === 'rejected'
+                                : inv.status === 'cancelled'
                                 ? 'bg-red-50 text-red-700 border border-red-200'
-                                : 'bg-amber-50 text-amber-800 border border-amber-200'
+                                : 'bg-purple-50 text-purple-700 border border-purple-200'
                             }`}
                           >
-                            {inv.status}
+                            {inv.status === 'paid' ? 'Paid / Disbursed' : inv.status === 'cancelled' ? 'Cancelled' : 'Issued (Pending Payout)'}
                           </span>
                         </td>
 
@@ -537,17 +662,7 @@ export default function AdminInvoicesPage() {
                               <Eye size={12} className="inline mr-1" /> View
                             </button>
 
-                            {inv.status === 'submitted' && (
-                              <button
-                                type="button"
-                                onClick={() => handleApproveAffiliateInvoice(inv.id)}
-                                className="px-2.5 py-1.5 rounded-lg bg-[#6B3CFF] text-white hover:bg-[#5025D1] font-bold text-xs border-none cursor-pointer"
-                              >
-                                Approve
-                              </button>
-                            )}
-
-                            {inv.status === 'approved' && (
+                            {inv.status !== 'paid' && inv.status !== 'cancelled' && (
                               <button
                                 type="button"
                                 onClick={() => {
@@ -556,16 +671,16 @@ export default function AdminInvoicesPage() {
                                 }}
                                 className="px-2.5 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 font-bold text-xs border-none cursor-pointer"
                               >
-                                Payout
+                                Record Payout
                               </button>
                             )}
 
-                            {inv.status === 'submitted' && (
+                            {inv.status !== 'paid' && inv.status !== 'cancelled' && (
                               <button
                                 type="button"
-                                onClick={() => handleRejectAffiliateInvoice(inv.id)}
+                                onClick={() => handleCancelAffiliateInvoice(inv.id)}
                                 className="px-2 py-1.5 rounded-lg bg-slate-100 text-red-600 hover:bg-red-50 text-xs font-bold border-none cursor-pointer"
-                                title="Reject Claim"
+                                title="Cancel Payout Invoice"
                               >
                                 <X size={12} />
                               </button>
@@ -717,6 +832,258 @@ export default function AdminInvoicesPage() {
         </div>
       )}
 
+      {/* GENERATE AFFILIATE PAYOUT INVOICE MODAL */}
+      {showCreateAffModal && (
+        <div className="fixed inset-0 z-50 bg-[#0E0B1E]/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-2xl rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#12101F]/10 pb-4">
+              <div>
+                <h2 className="text-lg font-black font-headline text-[#12101F]">
+                  Generate Affiliate Payout Invoice
+                </h2>
+                <p className="text-xs text-[#575266] mt-0.5">
+                  Compile verified referral commissions into an official tax-compliant payout invoice for an affiliate partner.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCreateAffModal(false)}
+                className="w-8 h-8 rounded-lg text-[#827C94] hover:bg-slate-100 flex items-center justify-center border-none bg-transparent cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateAffiliateInvoice} className="space-y-5 text-xs">
+              <div>
+                <label className="block font-bold uppercase tracking-wider text-[#827C94] mb-1">
+                  Select Affiliate Partner *
+                </label>
+                <select
+                  value={selectedAffiliateId}
+                  onChange={(e) => setSelectedAffiliateId(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl border border-[#12101F]/15 bg-white text-xs font-semibold text-[#12101F]"
+                  required
+                >
+                  <option value="">Choose an Affiliate Partner...</option>
+                  {affiliatesList.map((aff) => (
+                    <option key={aff.id} value={aff.id}>
+                      {aff.full_name} ({aff.email}) — {aff.city || 'Location unlisted'}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedAffiliateId && (
+                <>
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="block font-bold uppercase tracking-wider text-[#827C94]">
+                        Eligible Uninvoiced Conversions ({affUninvoicedLedger.length})
+                      </label>
+                      {affUninvoicedLedger.length > 0 && (
+                        <div className="text-[11px] text-[#575266]">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedAffLedgerIds(affUninvoicedLedger.map((i) => i.id))}
+                            className="text-[#6B3CFF] hover:underline font-bold mr-2 border-none bg-transparent cursor-pointer"
+                          >
+                            Select All
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedAffLedgerIds([])}
+                            className="text-[#827C94] hover:underline border-none bg-transparent cursor-pointer"
+                          >
+                            Deselect
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {affUninvoicedLedger.length === 0 ? (
+                      <p className="text-xs text-amber-800 italic bg-amber-50 p-4 rounded-2xl border border-amber-200">
+                        This affiliate partner has no eligible uninvoiced referral commissions at this time. Only converted leads generate payable commissions.
+                      </p>
+                    ) : (
+                      <div className="space-y-2 max-h-48 overflow-y-auto border border-[#12101F]/10 rounded-2xl p-2.5 bg-slate-50">
+                        {affUninvoicedLedger.map((item) => (
+                          <label
+                            key={item.id}
+                            className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-[#12101F]/5 cursor-pointer hover:bg-purple-50/50 transition-colors"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedAffLedgerIds.includes(item.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setSelectedAffLedgerIds([...selectedAffLedgerIds, item.id])
+                                } else {
+                                  setSelectedAffLedgerIds(selectedAffLedgerIds.filter((id) => id !== item.id))
+                                }
+                              }}
+                              className="accent-[#6B3CFF] w-4 h-4 cursor-pointer"
+                            />
+                            <div className="flex-1 flex justify-between items-center">
+                              <div>
+                                <div className="font-bold text-[#12101F]">{item.customer_name}</div>
+                                <div className="text-[11px] text-[#575266]">
+                                  {item.provider_name} • {item.service_name}
+                                </div>
+                                <div className="text-[10px] text-[#827C94]">
+                                  Eligible Base: ₹{Number(item.eligible_transaction_value)?.toLocaleString('en-IN')} (Share: {item.affiliate_commission_rate ? `${item.affiliate_commission_rate}%` : 'Agreed'})
+                                </div>
+                              </div>
+                              <span className="font-mono font-bold text-emerald-700 text-sm">
+                                ₹{Number(item.affiliate_commission_amount)?.toLocaleString('en-IN')}
+                              </span>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Period and TDS Rate */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block font-bold uppercase tracking-wider text-[#827C94] mb-1">
+                        Billing Period (YYYY-MM) *
+                      </label>
+                      <input
+                        type="month"
+                        value={affBillingPeriod}
+                        onChange={(e) => setAffBillingPeriod(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 bg-white text-xs font-semibold"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block font-bold uppercase tracking-wider text-[#827C94] mb-1">
+                        TDS Withholding Rate (%)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        value={affTdsRate}
+                        onChange={(e) => setAffTdsRate(e.target.value)}
+                        placeholder="5.0"
+                        className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 bg-white text-xs font-mono font-semibold"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Financial Calculation Box */}
+                  <div className="p-4 rounded-2xl bg-purple-50/60 border border-purple-100 space-y-2">
+                    <div className="flex justify-between items-center text-xs text-[#575266]">
+                      <span>Selected Commission Subtotal ({selectedAffLedgerIds.length} item{selectedAffLedgerIds.length === 1 ? '' : 's'}):</span>
+                      <span className="font-mono font-bold text-[#12101F]">₹{affSubtotal.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs text-red-600">
+                      <span>TDS Withholding ({affTdsRate}%):</span>
+                      <span className="font-mono font-semibold">-₹{affTdsAmount.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm font-black text-[#12101F] pt-2 border-t border-purple-200">
+                      <span>Net Payout to Affiliate:</span>
+                      <span className="font-mono text-emerald-700 text-base">₹{affTotalPayable.toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+
+                  {/* Affiliate Settlement Banking Details (prefilled & editable) */}
+                  <div className="space-y-3 pt-2 border-t border-[#12101F]/10">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#827C94]">
+                      Affiliate Registered Settlement Details
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[10px] uppercase font-bold text-[#827C94] mb-1">Bank Name</label>
+                        <input
+                          type="text"
+                          value={affBankName}
+                          onChange={(e) => setAffBankName(e.target.value)}
+                          placeholder="e.g. State Bank of India"
+                          className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase font-bold text-[#827C94] mb-1">Account Number</label>
+                        <input
+                          type="text"
+                          value={affAccountNum}
+                          onChange={(e) => setAffAccountNum(e.target.value)}
+                          placeholder="Bank Account Number"
+                          className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 font-mono text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase font-bold text-[#827C94] mb-1">IFSC Code</label>
+                        <input
+                          type="text"
+                          value={affIfsc}
+                          onChange={(e) => setAffIfsc(e.target.value)}
+                          placeholder="e.g. SBIN0001234"
+                          className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 font-mono uppercase text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase font-bold text-[#827C94] mb-1">UPI ID</label>
+                        <input
+                          type="text"
+                          value={affUpi}
+                          onChange={(e) => setAffUpi(e.target.value)}
+                          placeholder="username@bank"
+                          className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 font-mono text-xs"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className="block text-[10px] uppercase font-bold text-[#827C94] mb-1">PAN Number</label>
+                        <input
+                          type="text"
+                          value={affPan}
+                          onChange={(e) => setAffPan(e.target.value)}
+                          placeholder="ABCDE1234F"
+                          className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 font-mono uppercase text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold uppercase tracking-wider text-[#827C94] mb-1">
+                      Admin Notes / Disbursal Instructions (Optional)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={affNotes}
+                      onChange={(e) => setAffNotes(e.target.value)}
+                      placeholder="Add any specific settlement notes or verification references..."
+                      className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 text-xs"
+                    />
+                  </div>
+                </>
+              )}
+
+              <div className="flex justify-end gap-2 pt-4 border-t border-[#12101F]/10">
+                <button
+                  type="button"
+                  onClick={() => setShowCreateAffModal(false)}
+                  className="px-4 py-2.5 rounded-xl border border-[#12101F]/15 bg-white text-xs font-bold text-[#575266] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createAffLoading || selectedAffLedgerIds.length === 0}
+                  className="px-5 py-2.5 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold hover:bg-[#5827EB] cursor-pointer border-none shadow-md shadow-[#6B3CFF]/20 disabled:opacity-50"
+                >
+                  {createAffLoading ? 'Issuing Invoice...' : 'Issue Payout Invoice to Affiliate'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* RECORD PROVIDER PAYMENT MODAL */}
       {payingInvoice && (
         <div className="fixed inset-0 z-50 bg-[#0E0B1E]/60 backdrop-blur-xs flex items-center justify-center p-4">
@@ -811,7 +1178,7 @@ export default function AdminInvoicesPage() {
             <div className="flex items-center justify-between border-b border-[#12101F]/10 pb-4">
               <div>
                 <h2 className="text-lg font-black font-headline text-[#12101F]">
-                  Record Affiliate Payout
+                  Record Affiliate Disbursal Payout
                 </h2>
                 <p className="text-xs text-[#575266] mt-0.5">
                   Affiliate: <span className="font-bold text-[#12101F]">{payoutInvoice.affiliate_name}</span>
@@ -828,8 +1195,8 @@ export default function AdminInvoicesPage() {
 
             <div className="p-4 rounded-2xl bg-purple-50 border border-purple-100 text-xs space-y-1.5">
               <div className="flex justify-between">
-                <span className="text-purple-900">Total Payable:</span>
-                <span className="font-mono font-bold text-[#6B3CFF] text-sm">
+                <span className="text-purple-900">Total Net Payable:</span>
+                <span className="font-mono font-bold text-emerald-700 text-sm">
                   ₹{payoutInvoice.total_payable?.toLocaleString('en-IN')}
                 </span>
               </div>
@@ -841,12 +1208,33 @@ export default function AdminInvoicesPage() {
                 <span>IFSC:</span>
                 <span className="font-mono font-semibold">{payoutInvoice.bank_ifsc || 'N/A'}</span>
               </div>
+              {payoutInvoice.pan_number && (
+                <div className="flex justify-between text-[#575266]">
+                  <span>PAN:</span>
+                  <span className="font-mono font-semibold">{payoutInvoice.pan_number}</span>
+                </div>
+              )}
             </div>
 
             <form onSubmit={handleRecordAffiliatePayout} className="space-y-4 text-xs">
               <div>
                 <label className="block font-bold uppercase tracking-wider text-[#827C94] mb-1">
-                  Payout Reference / UTR Number *
+                  Payout Method
+                </label>
+                <select
+                  value={payoutForm.payout_method}
+                  onChange={(e) => setPayoutForm({ ...payoutForm, payout_method: e.target.value })}
+                  className="w-full px-3 py-2.5 rounded-xl border border-[#12101F]/15 bg-white text-xs font-semibold"
+                >
+                  <option value="bank_transfer">Direct Bank Transfer (NEFT / RTGS / IMPS)</option>
+                  <option value="upi">UPI / Instant Disbursal</option>
+                  <option value="cheque">Cheque</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold uppercase tracking-wider text-[#827C94] mb-1">
+                  Disbursal Reference / Banking UTR *
                 </label>
                 <input
                   type="text"
@@ -855,6 +1243,19 @@ export default function AdminInvoicesPage() {
                   onChange={(e) => setPayoutForm({ ...payoutForm, payout_reference: e.target.value })}
                   className="w-full px-3 py-2.5 rounded-xl border border-[#12101F]/15 font-mono text-xs uppercase"
                   required
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold uppercase tracking-wider text-[#827C94] mb-1">
+                  Disbursal Notes (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Settlement reference or batch note"
+                  value={payoutForm.notes}
+                  onChange={(e) => setPayoutForm({ ...payoutForm, notes: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl border border-[#12101F]/15 text-xs"
                 />
               </div>
 
@@ -869,9 +1270,9 @@ export default function AdminInvoicesPage() {
                 <button
                   type="submit"
                   disabled={payoutLoading}
-                  className="px-5 py-2.5 rounded-xl bg-[#6B3CFF] text-white text-xs font-bold hover:bg-[#5025D1] cursor-pointer border-none shadow-md shadow-[#6B3CFF]/20"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 cursor-pointer border-none shadow-md"
                 >
-                  {payoutLoading ? 'Recording...' : 'Confirm Payout'}
+                  {payoutLoading ? 'Recording Disbursal...' : 'Confirm Disbursal Payout'}
                 </button>
               </div>
             </form>
@@ -888,7 +1289,7 @@ export default function AdminInvoicesPage() {
               <div className="flex items-center gap-2">
                 <Receipt size={20} className="text-[#6B3CFF]" />
                 <h2 className="text-base font-black font-headline text-[#12101F]">
-                  Official Invoice Document
+                  {inspectType === 'provider' ? 'Provider Billing Invoice' : 'Affiliate Commission Settlement Invoice'}
                 </h2>
               </div>
               <div className="flex items-center gap-2">
@@ -915,7 +1316,7 @@ export default function AdminInvoicesPage() {
                 <div>
                   <div className="font-extrabold text-xl text-[#6B3CFF]">sBLOOM Technologies</div>
                   <div className="text-[11px] text-[#575266] mt-0.5">
-                    Affiliate Network Financial Operations
+                    Affiliate Network Financial Operations & Settlements
                   </div>
                 </div>
                 <div className="text-right">
@@ -923,7 +1324,10 @@ export default function AdminInvoicesPage() {
                     {inspectingInvoice.invoice_number}
                   </div>
                   <div className="text-[11px] text-[#827C94]">
-                    Date: {new Date(inspectingInvoice.invoice_date).toLocaleDateString()}
+                    Period: {inspectingInvoice.billing_period || 'N/A'}
+                  </div>
+                  <div className="text-[11px] text-[#827C94]">
+                    Issue Date: {new Date(inspectingInvoice.invoice_date).toLocaleDateString()}
                   </div>
                 </div>
               </div>
@@ -931,24 +1335,47 @@ export default function AdminInvoicesPage() {
               <div className="grid grid-cols-2 gap-4 p-4 rounded-2xl bg-slate-50 border border-[#12101F]/10">
                 <div>
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[#827C94]">
-                    {inspectType === 'provider' ? 'Billed To (Provider):' : 'Billed By (Affiliate):'}
+                    {inspectType === 'provider' ? 'Billed To (Provider):' : 'Issued To (Affiliate Partner):'}
                   </div>
                   <div className="font-bold text-xs mt-1 text-[#12101F]">
                     {inspectType === 'provider' ? inspectingInvoice.provider_name : inspectingInvoice.affiliate_name}
                   </div>
                   <div className="text-[11px] text-[#575266]">
                     {inspectType === 'provider'
-                      ? inspectingInvoice.billing_address || 'Registered Provider Partner'
+                      ? inspectingInvoice.billing_address || 'Registered Service Provider Partner'
                       : inspectingInvoice.affiliate_email}
                   </div>
+                  {inspectType === 'affiliate' && inspectingInvoice.pan_number && (
+                    <div className="text-[10px] font-mono text-[#827C94] mt-0.5">
+                      PAN: {inspectingInvoice.pan_number}
+                    </div>
+                  )}
+                  {inspectType === 'affiliate' && inspectingInvoice.bank_account_number && (
+                    <div className="text-[10px] text-[#827C94] mt-0.5">
+                      Bank A/C: {inspectingInvoice.bank_account_number} ({inspectingInvoice.bank_ifsc || 'IFSC on file'})
+                    </div>
+                  )}
                 </div>
                 <div className="text-right">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-[#827C94]">
-                    Payment Status:
+                    Settlement Status:
                   </div>
-                  <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-200 text-[#12101F]">
-                    {inspectingInvoice.status}
+                  <span
+                    className={`inline-block mt-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                      inspectingInvoice.status === 'paid'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : inspectingInvoice.status === 'cancelled'
+                        ? 'bg-red-50 text-red-700 border border-red-200'
+                        : 'bg-purple-50 text-purple-700 border border-purple-200'
+                    }`}
+                  >
+                    {inspectingInvoice.status === 'paid' ? 'Paid / Disbursed' : inspectingInvoice.status}
                   </span>
+                  {inspectingInvoice.payout_reference && (
+                    <div className="text-[11px] font-mono text-emerald-700 font-bold mt-1">
+                      UTR: {inspectingInvoice.payout_reference}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -956,7 +1383,7 @@ export default function AdminInvoicesPage() {
               {inspectingInvoice.items?.length > 0 && (
                 <div className="space-y-2">
                   <div className="font-bold text-xs uppercase tracking-wider text-[#827C94]">
-                    Referral Service Line Items
+                    Verified Referral Commission Line Items
                   </div>
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
@@ -992,9 +1419,21 @@ export default function AdminInvoicesPage() {
                     <span>Subtotal:</span>
                     <span className="font-mono">₹{inspectingInvoice.subtotal_amount?.toLocaleString('en-IN')}</span>
                   </div>
+                  {inspectType === 'affiliate' && inspectingInvoice.tds_amount > 0 && (
+                    <div className="flex justify-between text-red-600">
+                      <span>TDS Withholding ({inspectingInvoice.tds_rate || 5}%):</span>
+                      <span className="font-mono">-₹{inspectingInvoice.tds_amount?.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
+                  {inspectType === 'provider' && inspectingInvoice.tax_amount > 0 && (
+                    <div className="flex justify-between text-[#575266]">
+                      <span>GST / Tax:</span>
+                      <span className="font-mono">₹{inspectingInvoice.tax_amount?.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between font-bold text-sm text-[#12101F] pt-2 border-t border-[#12101F]/10">
-                    <span>Total Amount:</span>
-                    <span className="font-mono text-[#6B3CFF]">
+                    <span>{inspectType === 'provider' ? 'Total Invoiced:' : 'Net Disbursed / Payable:'}</span>
+                    <span className="font-mono text-emerald-700">
                       ₹{(inspectType === 'provider' ? inspectingInvoice.total_amount : inspectingInvoice.total_payable)?.toLocaleString('en-IN')}
                     </span>
                   </div>
@@ -1007,4 +1446,3 @@ export default function AdminInvoicesPage() {
     </div>
   )
 }
-

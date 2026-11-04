@@ -453,7 +453,7 @@ def get_affiliate_finance_summary(
         db.query(func.coalesce(func.sum(CommissionLedger.affiliate_commission_amount), 0.0))
         .filter(
             CommissionLedger.affiliate_user_id == current_user.id,
-            CommissionLedger.status.in_(["eligible", "invoiced_by_affiliate", "paid_to_affiliate"]),
+            CommissionLedger.status.in_(["eligible", "invoiced_to_affiliate", "invoiced_by_affiliate", "paid_to_affiliate"]),
         )
         .scalar()
     )
@@ -461,7 +461,7 @@ def get_affiliate_finance_summary(
         db.query(func.coalesce(func.sum(AffiliateInvoice.total_payable), 0.0))
         .filter(
             AffiliateInvoice.affiliate_user_id == current_user.id,
-            AffiliateInvoice.status.in_(["submitted", "verified", "approved", "paid"]),
+            AffiliateInvoice.status.in_(["issued", "submitted", "verified", "approved", "paid"]),
         )
         .scalar()
     )
