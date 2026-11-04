@@ -1441,7 +1441,7 @@ def list_admin_affiliates(
 ):
     query = (
         db.query(User, AffiliateProfile)
-        .join(AffiliateProfile, AffiliateProfile.user_id == User.id)
+        .outerjoin(AffiliateProfile, AffiliateProfile.user_id == User.id)
     )
 
     if status_filter and status_filter != "all":
@@ -1461,14 +1461,14 @@ def list_admin_affiliates(
             (func.lower(User.email).like(s))
             | (func.lower(AffiliateProfile.full_name).like(s))
             | (func.lower(AffiliateProfile.city).like(s))
-            | (func.lower(AffiliateProfile.mobile_number).like(s))
+            | (func.lower(AffiliateProfile.mobile).like(s))
         )
 
     total = query.count()
     response.headers["X-Total-Count"] = str(total)
     response.headers["Access-Control-Expose-Headers"] = "X-Total-Count"
 
-    users = query.order_by(AffiliateProfile.created_at.desc()).offset(offset).limit(limit).all()
+    users = query.order_by(User.created_at.desc()).offset(offset).limit(limit).all()
 
     items = []
     for user, prof in users:
@@ -1488,17 +1488,21 @@ def list_admin_affiliates(
         )
         outstanding = max(0.0, float(elig_comm) - float(paid_comm))
 
+        full_name = prof.full_name if (prof and prof.full_name) else user.email.split("@")[0]
+        status = prof.status if prof else "draft"
+        reg_at = prof.created_at if (prof and prof.created_at) else user.created_at
+
         items.append(
             AdminAffiliateListItem(
                 id=user.id,
-                full_name=prof.full_name or "Anonymous Affiliate",
+                full_name=full_name,
                 email=user.email,
-                mobile=prof.mobile_number,
-                city=prof.city,
-                area=prof.area,
-                status=prof.status,
+                mobile=prof.mobile if prof else None,
+                city=prof.city if prof else None,
+                area=prof.area if prof else None,
+                status=status,
                 email_verified=user.email_verified_at is not None,
-                registered_at=prof.created_at,
+                registered_at=reg_at,
                 total_referrals=tot_refs,
                 converted_referrals=conv_refs,
                 eligible_commission=round(float(elig_comm), 2),
@@ -1518,14 +1522,14 @@ def export_affiliates_csv(
 ):
     query = (
         db.query(User, AffiliateProfile)
-        .join(AffiliateProfile, AffiliateProfile.user_id == User.id)
+        .outerjoin(AffiliateProfile, AffiliateProfile.user_id == User.id)
     )
     if status_filter and status_filter != "all":
         query = query.filter(AffiliateProfile.status == status_filter)
     if city and city.strip():
         query = query.filter(func.lower(AffiliateProfile.city).like(f"%{city.strip().lower()}%"))
 
-    users = query.order_by(AffiliateProfile.created_at.desc()).all()
+    users = query.order_by(User.created_at.desc()).all()
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -1542,17 +1546,21 @@ def export_affiliates_csv(
             .filter(CommissionLedger.affiliate_user_id == user.id, CommissionLedger.status.in_(["eligible", "invoiced_by_affiliate", "paid_to_affiliate"]))
             .scalar()
         )
+        full_name = prof.full_name if (prof and prof.full_name) else user.email.split("@")[0]
+        status = prof.status if prof else "draft"
+        reg_at = prof.created_at if (prof and prof.created_at) else user.created_at
+
         writer.writerow([
             str(user.id),
-            prof.full_name or "",
+            full_name,
             user.email,
-            prof.mobile_number or "",
-            prof.city or "",
-            prof.area or "",
-            prof.occupation or "",
-            prof.status,
+            (prof.mobile if prof else "") or "",
+            (prof.city if prof else "") or "",
+            (prof.area if prof else "") or "",
+            (prof.occupation if prof else "") or "",
+            status,
             "Yes" if user.email_verified_at else "No",
-            prof.created_at.strftime("%Y-%m-%d %H:%M"),
+            reg_at.strftime("%Y-%m-%d %H:%M"),
             tot_refs,
             conv_refs,
             f"{float(elig_comm):.2f}",
@@ -1577,7 +1585,10 @@ def get_admin_affiliate_detail(
 
     prof = db.query(AffiliateProfile).filter(AffiliateProfile.user_id == user_id).first()
     if not prof:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Affiliate profile not found.")
+        prof = AffiliateProfile(user_id=user_id, status="draft")
+        db.add(prof)
+        db.commit()
+        db.refresh(prof)
 
     leads = (
         db.query(ReferralLead, ServiceProvider.name, ProviderService.service_name)
@@ -1687,7 +1698,7 @@ def get_admin_affiliate_detail(
         user_id=user.id,
         full_name=prof.full_name or "Anonymous Affiliate",
         email=user.email,
-        mobile=prof.mobile_number,
+        mobile=prof.mobile,
         city=prof.city,
         area=prof.area,
         occupation=prof.occupation,

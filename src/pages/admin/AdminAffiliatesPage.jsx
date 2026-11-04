@@ -144,7 +144,7 @@ export default function AdminAffiliatesPage() {
 
   // Aggregate stats
   const approvedCount = affiliates.filter((a) => a.status === 'approved').length
-  const pendingCount = affiliates.filter((a) => a.status === 'pending' || a.status === 'info_requested').length
+  const pendingCount = affiliates.filter((a) => a.status === 'pending' || a.status === 'info_requested' || a.status === 'draft').length
   const verifiedCount = affiliates.filter((a) => a.email_verified).length
   const suspendedCount = affiliates.filter((a) => a.status === 'suspended' || a.status === 'rejected').length
 
@@ -155,6 +155,13 @@ export default function AdminAffiliatesPage() {
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
             <CheckCircle2 size={12} />
             {lang === 'te' ? 'ఆమోదించబడింది' : 'Approved'}
+          </span>
+        )
+      case 'draft':
+        return (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 border border-slate-300">
+            <Clock size={12} />
+            {lang === 'te' ? 'డ్రాఫ్ట్ (కొత్త నమోదు)' : 'Draft (New Signup)'}
           </span>
         )
       case 'pending':
@@ -310,6 +317,7 @@ export default function AdminAffiliatesPage() {
           >
             <option value="all">{lang === 'te' ? 'అన్ని స్థితులు' : 'All Statuses'}</option>
             <option value="approved">{lang === 'te' ? 'ఆమోదించబడింది (Approved)' : 'Approved'}</option>
+            <option value="draft">{lang === 'te' ? 'డ్రాఫ్ట్ / కొత్త నమోదు (Draft)' : 'Draft / New Signups'}</option>
             <option value="pending">{lang === 'te' ? 'పరిశీలనలో ఉంది (Pending)' : 'Pending'}</option>
             <option value="info_requested">{lang === 'te' ? 'సమాచారం కోరబడింది' : 'Info Requested'}</option>
             <option value="suspended">{lang === 'te' ? 'సస్పెండ్ చేయబడింది' : 'Suspended'}</option>
@@ -657,3 +665,4 @@ export default function AdminAffiliatesPage() {
     </div>
   )
 }
+

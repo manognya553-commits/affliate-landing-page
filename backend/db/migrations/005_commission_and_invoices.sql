@@ -246,3 +246,4 @@ END $$;
 SELECT app.lock_down_tables();
 
 COMMIT;
+
