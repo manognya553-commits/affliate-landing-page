@@ -6,7 +6,6 @@ import Button from '../../components/ui/Button'
 import Input from '../../components/ui/Input'
 import Select from '../../components/ui/Select'
 import Textarea from '../../components/ui/Textarea'
-import DemoDataNotice from '../../components/ui/DemoDataNotice'
 import {
   User,
   ShieldCheck,
@@ -394,8 +393,6 @@ export default function AffiliateProfilePage() {
           </Button>
         </div>
       </form>
-
-      <DemoDataNotice />
     </div>
   )
 }

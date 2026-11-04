@@ -7,7 +7,6 @@ import Card from '../../components/ui/Card'
 import Button from '../../components/ui/Button'
 import Table from '../../components/ui/Table'
 import StatusBadge from '../../components/ui/StatusBadge'
-import DemoDataNotice from '../../components/ui/DemoDataNotice'
 import {
   Users,
   CheckCircle2,
@@ -25,9 +24,6 @@ import {
   Clock,
   Sparkles,
   Inbox,
-  MessageSquare,
-  Globe,
-  SearchCheck,
 } from 'lucide-react'
 
 export default function AffiliateDashboardPage() {
@@ -145,34 +141,40 @@ export default function AffiliateDashboardPage() {
     },
   ]
 
-  // Top 3 Promotional Catalog Highlights
-  const catalogHighlights = [
+  // Three Official Service Sectors from docs/copy-deck.md
+  const serviceSectors = [
     {
-      id: 'srv-whatsapp',
-      name: 'WhatsApp Automation',
-      rate: '20% Commission',
-      avg: 'Avg ₹18,500',
-      icon: MessageSquare,
+      id: 'healthcare',
+      name: lang === 'te' ? 'ఆరోగ్య సంరక్షణ' : 'Healthcare',
+      description:
+        lang === 'te'
+          ? 'సరైన ఆరోగ్య సంరక్షణ సేవ అవసరమైన వారిని సంబంధిత ప్రొవైడర్‌తో అనుసంధానించండి.'
+          : 'Introduce someone looking for a suitable healthcare service to a relevant provider.',
+      icon: HeartPulse,
       color: 'bg-emerald-50 text-emerald-600',
-      description: 'Official Meta Cloud API booking and inquiry automation for regional clinics & institutes.',
+      badge: lang === 'te' ? 'ఆరోగ్య రంగం' : 'Healthcare Sector',
     },
     {
-      id: 'srv-website',
-      name: 'Website Building & Redesign',
-      rate: '25% Commission',
-      avg: 'Avg ₹24,000',
-      icon: Globe,
-      color: 'bg-indigo-50 text-indigo-600',
-      description: 'Conversion-optimized responsive web development with sub-second page performance.',
+      id: 'education',
+      name: lang === 'te' ? 'విద్య' : 'Education',
+      description:
+        lang === 'te'
+          ? 'విద్యార్థులు మరియు కుటుంబాలను తగిన విద్యా సేవల ప్రొవైడర్లతో కనెక్ట్ చేయండి.'
+          : 'Connect students and families with relevant educational services.',
+      icon: GraduationCap,
+      color: 'bg-blue-50 text-blue-600',
+      badge: lang === 'te' ? 'విద్యా రంగం' : 'Education Sector',
     },
     {
-      id: 'srv-seo',
-      name: 'Search Engine Optimization (SEO)',
-      rate: '20% Commission',
-      avg: 'Avg ₹15,000',
-      icon: SearchCheck,
+      id: 'professional',
+      name: lang === 'te' ? 'వృత్తిపరమైన సేవలు' : 'Professional Services',
+      description:
+        lang === 'te'
+          ? 'వ్యాపారాలు మరియు వ్యక్తులను వారి అవసరాలకు తగిన సేవా ప్రొవైడర్లకు పరిచయం చేయండి.'
+          : 'Introduce businesses and individuals to providers whose services may meet their needs.',
+      icon: Building2,
       color: 'bg-purple-50 text-purple-600',
-      description: 'Dominant local Google Maps 3-pack ranking for healthcare and regional businesses.',
+      badge: lang === 'te' ? 'వృత్తిపరమైన సేవలు' : 'Professional Services',
     },
   ]
 
@@ -338,31 +340,33 @@ export default function AffiliateDashboardPage() {
         </Card>
       </div>
 
-      {/* 3. Catalog Highlights: Top 3 Services */}
+      {/* 3. Three Service Sectors from docs/copy-deck.md */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold font-serif text-[#12101F]">
-              Promotional Catalog Highlights
+              {lang === 'te' ? 'మూడు సేవా రంగాలు' : 'Three Service Sectors'}
             </h2>
             <p className="text-xs text-[#575266]">
-              Top 3 verified services for rapid South Indian client referral.
+              {lang === 'te'
+                ? 'ఒకే నెట్‌వర్క్ సంబంధాలు. మూడు అవకాశాల రంగాలు. అర్హత మరియు కమీషన్ ప్రొవైడర్ నిబంధనల ప్రకారం ఉంటాయి.'
+                : 'One network of connections. Three areas of opportunity. Referral eligibility and compensation depend on provider terms.'}
             </p>
           </div>
 
           <Link to="/app/services">
             <Button variant="ghost" size="sm" rightIcon={ArrowRight}>
-              View All 5 Services
+              {lang === 'te' ? 'ప్రొవైడర్ల వివరాలు చూడండి' : 'View Service Providers'}
             </Button>
           </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {catalogHighlights.map((srv) => {
-            const Icon = srv.icon
+          {serviceSectors.map((sector) => {
+            const Icon = sector.icon
             return (
               <Card
-                key={srv.id}
+                key={sector.id}
                 padding="p-6"
                 variant="surface"
                 hoverable
@@ -370,31 +374,33 @@ export default function AffiliateDashboardPage() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${srv.color}`}>
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${sector.color}`}>
                       <Icon className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#6B3CFF] text-white">
-                      {srv.rate}
+                    <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#FAF7F2] border border-black/10 text-[#0E0B1E]/70">
+                      {sector.badge}
                     </span>
                   </div>
 
                   <h3 className="font-serif font-bold text-base text-[#12101F] leading-snug">
-                    {srv.name}
+                    {sector.name}
                   </h3>
-                  <p className="text-xs text-[#575266] mt-1.5 leading-relaxed">
-                    {srv.description}
+                  <p className="text-xs text-[#575266] mt-2 leading-relaxed">
+                    {sector.description}
                   </p>
                 </div>
 
                 <div className="pt-4 border-t border-[#E8E2D8] mt-4 flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#12101F]">{srv.avg}</span>
+                  <span className="text-[11px] text-[#575266]">
+                    {lang === 'te' ? 'నిబంధనలు వర్తిస్తాయి' : 'Provider terms apply'}
+                  </span>
                   <Button
                     size="sm"
                     variant="primary"
                     rightIcon={ArrowRight}
-                    onClick={() => handleOpenReferralDrawer(srv.name)}
+                    onClick={() => handleOpenReferralDrawer()}
                   >
-                    Refer Deal
+                    {lang === 'te' ? 'కస్టమర్‌ను రిఫర్ చేయండి' : 'Refer a Customer'}
                   </Button>
                 </div>
               </Card>
@@ -450,8 +456,6 @@ export default function AffiliateDashboardPage() {
           />
         )}
       </div>
-
-      <DemoDataNotice />
     </div>
   )
 }

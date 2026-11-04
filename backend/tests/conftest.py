@@ -1,86 +1,79 @@
 import pytest
 from datetime import datetime, timezone
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine, event, text
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 from app.main import app
 from app.database import get_db, SessionLocal, engine as default_engine
-from app.models import Base, User, Role, UserRole, AffiliateProfile, Permission, RolePermission, TermsVersion
+from app.models import (
+    User,
+    Role,
+    UserRole,
+    AffiliateProfile,
+    Permission,
+    RolePermission,
+    TermsVersion,
+    ServiceProvider,
+    ProviderService,
+    ProviderCommissionAgreement,
+    ReferralLead,
+    CommissionLedger,
+    AffiliateInvoice,
+    AffiliateInvoiceItem,
+    ProviderInvoiceItem,
+    AuthToken,
+    RefreshSession,
+    ConsentRecord,
+)
 from app.security import hash_password, create_access_token
 
+TestSession = SessionLocal
 
-# Check if default PostgreSQL database is reachable
-def is_db_connected():
-    try:
-        with default_engine.connect() as conn:
-            conn.execute(text("SELECT 1;"))
-            return True
-    except Exception:
-        return False
-
-
-_pg_reachable = is_db_connected()
-
-if not _pg_reachable:
-    print("\n[Notice] Real database not reachable yet (waiting for user credentials). Using local test database for pytest.")
-    test_db_engine = create_engine("sqlite:///sbloom_test.db")
-
-    @event.listens_for(test_db_engine, "connect")
-    def attach_app_schema(dbapi_con, con_record):
-        dbapi_con.execute("ATTACH 'sbloom_test.db' AS app")
-
-    TestSession = sessionmaker(autocommit=False, autoflush=False, bind=test_db_engine, expire_on_commit=False)
-    Base.metadata.create_all(test_db_engine)
-
-    # Seed initial test data if empty
-    with TestSession() as s:
-        if not s.query(Role).filter(Role.key == "affiliate").first():
-            s.add(Role(key="affiliate", name="Affiliate"))
-        if not s.query(Role).filter(Role.key == "admin").first():
-            s.add(Role(key="admin", name="Admin"))
-        if not s.query(TermsVersion).filter(TermsVersion.document_key == "affiliate_terms", TermsVersion.version == 1).first():
-            s.add(TermsVersion(document_key="affiliate_terms", version=1, title="Affiliate Programme Terms"))
-        s.commit()
-else:
-    test_db_engine = default_engine
-    TestSession = SessionLocal
+CANONICAL_PROVIDER_NAMES = [
+    "Apex Multi-Specialty Care Network",
+    "Pragathi Academy for Higher Studies",
+    "Venkata Corporate Advisors & Tax Consultants",
+]
 
 
 def cleanup_test_records():
-    """Safely cleans up transient test accounts ending in @sbloom-test.invalid."""
+    """Safely and thoroughly cleans up transient test records created during pytest runs."""
     try:
         with TestSession() as db:
+            # 1. Clean up non-canonical test providers
+            test_providers = db.query(ServiceProvider).filter(ServiceProvider.name.not_in(CANONICAL_PROVIDER_NAMES)).all()
+            for p in test_providers:
+                db.delete(p)
+
+            # 2. Clean up test users ending in @sbloom-test.invalid
             test_users = db.query(User.id).filter(User.email.like("%@sbloom-test.invalid")).all()
-            test_user_ids = [str(u[0]) for u in test_users]
+            test_user_ids = [u[0] for u in test_users]
 
             if test_user_ids:
-                try:
-                    db.execute(text("DELETE FROM app.referral_leads WHERE affiliate_user_id IN (SELECT id FROM app.users WHERE email LIKE '%@sbloom-test.invalid')"))
-                    db.commit()
-                except Exception:
-                    db.rollback()
+                # Delete test child records in correct order
+                db.query(AffiliateInvoiceItem).filter(
+                    AffiliateInvoiceItem.referral_id.in_(
+                        db.query(ReferralLead.id).filter(ReferralLead.affiliate_user_id.in_(test_user_ids))
+                    )
+                ).delete(synchronize_session=False)
 
-                try:
-                    db.execute(text("DELETE FROM app.audit_log WHERE actor_user_id IN (SELECT id FROM app.users WHERE email LIKE '%@sbloom-test.invalid')"))
-                    db.commit()
-                except Exception:
-                    db.rollback()
+                db.query(ProviderInvoiceItem).filter(
+                    ProviderInvoiceItem.referral_id.in_(
+                        db.query(ReferralLead.id).filter(ReferralLead.affiliate_user_id.in_(test_user_ids))
+                    )
+                ).delete(synchronize_session=False)
 
-                try:
-                    db.execute(text("DELETE FROM app.consent_records WHERE user_id IN (SELECT id FROM app.users WHERE email LIKE '%@sbloom-test.invalid')"))
-                    db.commit()
-                except Exception:
-                    db.rollback()
+                db.query(CommissionLedger).filter(CommissionLedger.affiliate_user_id.in_(test_user_ids)).delete(synchronize_session=False)
+                db.query(ReferralLead).filter(ReferralLead.affiliate_user_id.in_(test_user_ids)).delete(synchronize_session=False)
+                db.query(AuthToken).filter(AuthToken.user_id.in_(test_user_ids)).delete(synchronize_session=False)
+                db.query(RefreshSession).filter(RefreshSession.user_id.in_(test_user_ids)).delete(synchronize_session=False)
+                db.query(UserRole).filter(UserRole.user_id.in_(test_user_ids)).delete(synchronize_session=False)
+                db.query(AffiliateProfile).filter(AffiliateProfile.user_id.in_(test_user_ids)).delete(synchronize_session=False)
+                db.query(ConsentRecord).filter(ConsentRecord.user_id.in_(test_user_ids)).delete(synchronize_session=False)
+                db.query(User).filter(User.id.in_(test_user_ids)).delete(synchronize_session=False)
 
-                try:
-                    db.execute(text("""
-                        DELETE FROM app.users 
-                        WHERE email LIKE '%@sbloom-test.invalid' 
-                    """))
-                    db.commit()
-                except Exception:
-                    db.rollback()
+            db.commit()
     except Exception as e:
         print(f"[Cleanup Notice] {e}")
 
