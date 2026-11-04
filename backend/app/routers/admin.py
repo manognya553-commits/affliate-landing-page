@@ -145,7 +145,7 @@ def get_admin_summary(
     )
     aff_payable_sum = (
         db.query(func.coalesce(func.sum(CommissionLedger.affiliate_commission_amount), 0.0))
-        .filter(CommissionLedger.status.in_(["eligible", "invoiced_to_affiliate", "invoiced_by_affiliate"]))
+        .filter(CommissionLedger.status.in_(["eligible", "invoiced_by_affiliate"]))
         .scalar()
     )
     sbloom_retained_sum = (
@@ -165,7 +165,7 @@ def get_admin_summary(
     )
     aff_invoiced_sum = (
         db.query(func.coalesce(func.sum(AffiliateInvoice.total_payable), 0.0))
-        .filter(AffiliateInvoice.status.in_(["issued", "submitted", "verified", "approved", "paid"]))
+        .filter(AffiliateInvoice.status.in_(["submitted", "verified", "approved", "paid"]))
         .scalar()
     )
     aff_paid_sum = (
@@ -1480,7 +1480,7 @@ def list_admin_affiliates(
         # Financial ledger calculations
         elig_comm = (
             db.query(func.coalesce(func.sum(CommissionLedger.affiliate_commission_amount), 0.0))
-            .filter(CommissionLedger.affiliate_user_id == user.id, CommissionLedger.status.in_(["eligible", "invoiced_to_affiliate", "invoiced_by_affiliate", "paid_to_affiliate"]))
+            .filter(CommissionLedger.affiliate_user_id == user.id, CommissionLedger.status.in_(["eligible", "invoiced_by_affiliate", "paid_to_affiliate"]))
             .scalar()
         )
         paid_comm = (
@@ -1545,7 +1545,7 @@ def export_affiliates_csv(
         conv_refs = db.query(ReferralLead).filter(ReferralLead.affiliate_user_id == user.id, ReferralLead.status == "converted").count()
         elig_comm = (
             db.query(func.coalesce(func.sum(CommissionLedger.affiliate_commission_amount), 0.0))
-            .filter(CommissionLedger.affiliate_user_id == user.id, CommissionLedger.status.in_(["eligible", "invoiced_to_affiliate", "invoiced_by_affiliate", "paid_to_affiliate"]))
+            .filter(CommissionLedger.affiliate_user_id == user.id, CommissionLedger.status.in_(["eligible", "invoiced_by_affiliate", "paid_to_affiliate"]))
             .scalar()
         )
         full_name = prof.full_name if (prof and prof.full_name) else user.email.split("@")[0]
@@ -1618,7 +1618,7 @@ def get_admin_affiliate_detail(
     ledger_resp = []
     elig_comm = 0.0
     for item, p_name, s_name, c_name in ledger_items:
-        if item.status in ["eligible", "invoiced_to_affiliate", "invoiced_by_affiliate", "paid_to_affiliate"]:
+        if item.status in ["eligible", "invoiced_by_affiliate", "paid_to_affiliate"]:
             elig_comm += float(item.affiliate_commission_amount)
         ledger_resp.append(
             CommissionLedgerItemResponse(
@@ -2032,7 +2032,7 @@ def export_commission_ledger_csv(
 @router.post("/ledger/{ledger_id}/status", response_model=CommissionLedgerItemResponse, dependencies=[Depends(csrf_protect)])
 def update_ledger_status(
     ledger_id: UUID,
-    status: str = Query(..., pattern="^(pending_verification|eligible|invoiced_to_provider|collected_from_provider|invoiced_to_affiliate|invoiced_by_affiliate|paid_to_affiliate|disputed|reversed)$"),
+    status: str = Query(..., pattern="^(pending_verification|eligible|invoiced_to_provider|collected_from_provider|invoiced_by_affiliate|paid_to_affiliate|disputed|reversed)$"),
     notes: Optional[str] = Query(None),
     request: Request = None,
     current_user: AuthenticatedUser = Depends(require_permission("leads.manage")),
@@ -2127,7 +2127,7 @@ def get_admin_finance_summary(
     )
     aff_invoiced_sum = (
         db.query(func.coalesce(func.sum(AffiliateInvoice.total_payable), 0.0))
-        .filter(AffiliateInvoice.status.in_(["issued", "submitted", "verified", "approved", "paid"]))
+        .filter(AffiliateInvoice.status.in_(["submitted", "verified", "approved", "paid"]))
         .scalar()
     )
     aff_paid_sum = (
