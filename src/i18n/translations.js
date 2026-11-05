@@ -1,8 +1,8 @@
-﻿import { enCopy, teConfirmed } from './copyDeck'
+import { enCopy } from './copyDeck'
 import { teDraft } from './teDraft'
 
 /**
- * Helper to deep resolve a property path in an object
+ * Deep resolve a property path in an object
  */
 function getDeep(obj, path) {
   if (!obj) return undefined
@@ -11,7 +11,6 @@ function getDeep(obj, path) {
 
 /**
  * Get translated content for a given key path and language
- * Fallback order: Authoritative Telugu (teDraft) -> Confirmed Telugu -> English
  */
 export function getTranslation(keyPath, lang = 'en') {
   const enVal = getDeep(enCopy, keyPath)
@@ -20,31 +19,22 @@ export function getTranslation(keyPath, lang = 'en') {
     return enVal
   }
 
-  // Check authoritative Telugu first
-  const teDraftVal = getDeep(teDraft, keyPath)
-  if (teDraftVal !== undefined) {
-    return teDraftVal
+  const teVal = getDeep(teDraft, keyPath)
+  if (teVal !== undefined) {
+    return teVal
   }
 
-  // Next check confirmed kit
-  const teConfVal = getDeep(teConfirmed, keyPath)
-  if (teConfVal !== undefined) {
-    return teConfVal
-  }
-
-  // Graceful fallback to English
   return enVal
 }
 
 /**
- * Hook or helper to get the active translation tree
+ * Helper to get the active translation tree
  */
 export function getCopy(lang = 'en') {
   if (lang === 'en') {
     return enCopy
   }
 
-  // Return a merged Telugu view with English fallbacks
   return {
     nav: {
       brandSubtitle: teDraft.nav?.brandSubtitle || enCopy.nav.brandSubtitle,
@@ -52,6 +42,7 @@ export function getCopy(lang = 'en') {
         ...link,
         label: teDraft.nav?.links?.[idx]?.label || link.label,
       })),
+      login: teDraft.nav?.login || enCopy.nav.login,
       cta: teDraft.nav?.cta || enCopy.nav.cta,
     },
     hero: {
@@ -62,85 +53,81 @@ export function getCopy(lang = 'en') {
       primaryCta: teDraft.hero?.primaryCta || enCopy.hero.primaryCta,
       secondaryCta: teDraft.hero?.secondaryCta || enCopy.hero.secondaryCta,
       trustRow: teDraft.hero?.trustRow || enCopy.hero.trustRow,
-      bubbles: teDraft.hero?.bubbles || enCopy.hero.bubbles,
     },
     soundFamiliar: {
       eyebrow: teDraft.soundFamiliar?.eyebrow || enCopy.soundFamiliar.eyebrow,
-      headline: teDraft.soundFamiliar?.headline || enCopy.soundFamiliar.headline,
-      subheading: teDraft.soundFamiliar?.subheading || enCopy.soundFamiliar.subheading,
-      body: teDraft.soundFamiliar?.body || enCopy.soundFamiliar.body,
-      trustLine: teDraft.soundFamiliar?.trustLine || enCopy.soundFamiliar.trustLine,
-      conclusion: teDraft.soundFamiliar?.conclusion || enCopy.soundFamiliar.conclusion,
-      closing: teDraft.soundFamiliar?.closing || enCopy.soundFamiliar.closing,
-      benefits: teDraft.soundFamiliar?.benefits || enCopy.soundFamiliar.benefits,
-      pillars: teDraft.soundFamiliar?.pillars || enCopy.soundFamiliar.pillars,
-      personas: teDraft.soundFamiliar?.personas || enCopy.soundFamiliar.personas,
+      heading: teDraft.soundFamiliar?.heading || enCopy.soundFamiliar.heading,
+      description: teDraft.soundFamiliar?.description || enCopy.soundFamiliar.description,
       videoExplainer: teDraft.soundFamiliar?.videoExplainer || enCopy.soundFamiliar.videoExplainer,
-    },
-    conversations: {
-      eyebrow: teDraft.conversations?.eyebrow || enCopy.conversations.eyebrow,
-      headline: teDraft.conversations?.headline || enCopy.conversations.headline,
-      subheading: teDraft.conversations?.subheading || enCopy.conversations.subheading,
-      disclaimer: teDraft.conversations?.disclaimer || enCopy.conversations.disclaimer,
-      rule: teDraft.conversations?.rule || enCopy.conversations.rule,
-      sectors: teDraft.conversations?.sectors || enCopy.conversations.sectors,
     },
     howItWorks: {
       eyebrow: teDraft.howItWorks?.eyebrow || enCopy.howItWorks.eyebrow,
-      headline: teDraft.howItWorks?.headline || enCopy.howItWorks.headline,
-      subheading: teDraft.howItWorks?.subheading || enCopy.howItWorks.subheading,
+      heading: teDraft.howItWorks?.heading || enCopy.howItWorks.heading,
       steps: teDraft.howItWorks?.steps || enCopy.howItWorks.steps,
+      supportingLine: teDraft.howItWorks?.supportingLine || enCopy.howItWorks.supportingLine,
+    },
+    conversations: {
+      eyebrow: teDraft.conversations?.eyebrow || enCopy.conversations.eyebrow,
+      heading: teDraft.conversations?.heading || enCopy.conversations.heading,
+      label: teDraft.conversations?.label || enCopy.conversations.label,
+      note: teDraft.conversations?.note || enCopy.conversations.note,
+      cards: teDraft.conversations?.cards || enCopy.conversations.cards,
     },
     promises: {
-      headline: teDraft.promises?.headline || enCopy.promises.headline,
-      lead: teDraft.promises?.lead || enCopy.promises.lead,
-      subhead: teDraft.promises?.subhead || enCopy.promises.subhead,
-      items: teDraft.promises?.items || enCopy.promises.items,
+      eyebrow: teDraft.promises?.eyebrow || enCopy.promises.eyebrow,
+      heading: teDraft.promises?.heading || enCopy.promises.heading,
+      promises: teDraft.promises?.promises || enCopy.promises.promises,
     },
-    whoCanJoin: teDraft.whoCanJoin || enCopy.whoCanJoin,
-    whatYouCanIntroduce: teDraft.whatYouCanIntroduce || enCopy.whatYouCanIntroduce,
-    sectors: {
-      headline: teDraft.sectors?.headline || enCopy.sectors.headline,
-      items: teDraft.sectors?.items || enCopy.sectors.items,
-      note: teDraft.sectors?.note || enCopy.sectors.note,
+    whatYouCanIntroduce: {
+      eyebrow: teDraft.whatYouCanIntroduce?.eyebrow || enCopy.whatYouCanIntroduce.eyebrow,
+      heading: teDraft.whatYouCanIntroduce?.heading || enCopy.whatYouCanIntroduce.heading,
+      areas: teDraft.whatYouCanIntroduce?.areas || enCopy.whatYouCanIntroduce.areas,
+      note: teDraft.whatYouCanIntroduce?.note || enCopy.whatYouCanIntroduce.note,
     },
-    introductionSimulator: {
-      headline: teDraft.introductionSimulator?.headline || enCopy.introductionSimulator.headline,
-      lead: teDraft.introductionSimulator?.lead || enCopy.introductionSimulator.lead,
-      examples: teDraft.introductionSimulator?.examples || enCopy.introductionSimulator.examples,
-      rule: teDraft.introductionSimulator?.rule || enCopy.introductionSimulator.rule,
-    },
-    earning: teDraft.earning || enCopy.earning,
     tools: {
-      eyebrow: teDraft.tools?.eyebrow || 'నాలెడ్జ్, సపోర్ట్ & టూల్స్',
-      headline: teDraft.tools?.headline || enCopy.tools.headline,
-      subtitle: teDraft.tools?.subtitle || enCopy.tools.subtitle,
-      body: teDraft.tools?.body || enCopy.tools.body,
-      capabilities: teDraft.tools?.capabilities || enCopy.tools.capabilities,
-      note: teDraft.tools?.note || enCopy.tools.note,
-      bento: teDraft.tools?.bento || enCopy.tools.bento,
+      eyebrow: teDraft.tools?.eyebrow || enCopy.tools.eyebrow,
+      heading: teDraft.tools?.heading || enCopy.tools.heading,
+      description: teDraft.tools?.description || enCopy.tools.description,
+      features: teDraft.tools?.features || enCopy.tools.features,
+      availabilityNote: teDraft.tools?.availabilityNote || enCopy.tools.availabilityNote,
     },
-    trustStrip: {
-      headline: teDraft.trustStrip?.headline || enCopy.trustStrip.headline,
-      items: teDraft.trustStrip?.items || enCopy.trustStrip.items,
+    whoCanJoin: {
+      eyebrow: teDraft.whoCanJoin?.eyebrow || enCopy.whoCanJoin.eyebrow,
+      heading: teDraft.whoCanJoin?.heading || enCopy.whoCanJoin.heading,
+      description: teDraft.whoCanJoin?.description || enCopy.whoCanJoin.description,
+      cards: teDraft.whoCanJoin?.cards || enCopy.whoCanJoin.cards,
     },
-    faq: teDraft.faq || enCopy.faq,
-    finalCta: teDraft.finalCta || enCopy.finalCta,
-    contact: teDraft.contact || enCopy.contact,
-    form: {
-      title: teDraft.form?.title || enCopy.form.title,
-      step1: teDraft.form?.step1 || enCopy.form.step1,
-      step2: teDraft.form?.step2 || enCopy.form.step2,
-      step3: teDraft.form?.step3 || enCopy.form.step3,
-      success: teDraft.form?.success || enCopy.form.success,
+    earning: {
+      eyebrow: teDraft.earning?.eyebrow || enCopy.earning.eyebrow,
+      heading: teDraft.earning?.heading || enCopy.earning.heading,
+      steps: teDraft.earning?.steps || enCopy.earning.steps,
+      disclaimer: teDraft.earning?.disclaimer || enCopy.earning.disclaimer,
+    },
+    faq: {
+      eyebrow: teDraft.faq?.eyebrow || enCopy.faq.eyebrow,
+      heading: teDraft.faq?.heading || enCopy.faq.heading,
+      items: teDraft.faq?.items || enCopy.faq.items,
+    },
+    finalCta: {
+      heading: teDraft.finalCta?.heading || enCopy.finalCta.heading,
+      description: teDraft.finalCta?.description || enCopy.finalCta.description,
+      primaryCta: teDraft.finalCta?.primaryCta || enCopy.finalCta.primaryCta,
+      secondaryLink: teDraft.finalCta?.secondaryLink || enCopy.finalCta.secondaryLink,
+    },
+    contact: {
+      heading: teDraft.contact?.heading || enCopy.contact.heading,
+      nameLabel: teDraft.contact?.nameLabel || enCopy.contact.nameLabel,
+      emailLabel: teDraft.contact?.emailLabel || enCopy.contact.emailLabel,
+      messageLabel: teDraft.contact?.messageLabel || enCopy.contact.messageLabel,
+      buttonText: teDraft.contact?.buttonText || enCopy.contact.buttonText,
+      privacyNote: teDraft.contact?.privacyNote || enCopy.contact.privacyNote,
     },
     footer: {
+      brand: teDraft.footer?.brand || enCopy.footer.brand,
       descriptor: teDraft.footer?.descriptor || enCopy.footer.descriptor,
-      links: teDraft.footer?.links || enCopy.footer.links,
       termsLink: teDraft.footer?.termsLink || enCopy.footer.termsLink,
       privacyLink: teDraft.footer?.privacyLink || enCopy.footer.privacyLink,
-      contactLink: teDraft.footer?.contactLink || enCopy.footer.contactLink,
-      contactPlaceholder: teDraft.footer?.contactPlaceholder || enCopy.footer.contactPlaceholder,
+      copyright: teDraft.footer?.copyright || enCopy.footer.copyright,
       legalDrawerTitle: teDraft.footer?.legalDrawerTitle || enCopy.footer.legalDrawerTitle,
       legalPlaceholder: teDraft.footer?.legalPlaceholder || enCopy.footer.legalPlaceholder,
     },

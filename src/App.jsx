@@ -107,11 +107,11 @@ function App() {
           <SoundFamiliarSection />
         </div>
 
-        {/* Section 3: Dedicated Three-Phone Conversation Carousel */}
-        <ConversationCarouselSection />
-
-        {/* Section 4: Four-Step Stepper with Plain-Language Earning Mechanism */}
+        {/* Section 4: How It Works — Three Simple Steps */}
         <HowItWorksSection onBecomeAffiliate={handleBecomeAffiliate} />
+
+        {/* Section 5: What An Introduction Sounds Like (Conversation Cards) */}
+        <ConversationCarouselSection />
 
         {/* Section 5: Three Promise Cards: Ask first, Stay in your lane, Tell the truth */}
         <PromisesSection />

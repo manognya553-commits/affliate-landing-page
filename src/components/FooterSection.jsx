@@ -33,14 +33,12 @@ export default function FooterSection({
     else setInternalModal(null)
   }, [onCloseModal])
 
-  // Handle focus management, keyboard trap, and body scroll lock when modal is open
   useEffect(() => {
     if (!activeModal) return
 
     const lastActive = document.activeElement
     document.body.style.overflow = 'hidden'
 
-    // Focus the close button once modal mounts
     const timer = setTimeout(() => {
       closeBtnRef.current?.focus()
     }, 50)
@@ -83,51 +81,47 @@ export default function FooterSection({
     }
   }, [activeModal, handleClose])
 
+  const footerData = copy.footer || {}
+
   return (
     <footer className="bg-[#0E0B1E] text-white/70 pt-16 pb-12 mt-auto border-t border-white/10" aria-label="Footer">
       <div className="site-container flex flex-col gap-10">
-        {/* Top / Main Footer Row */}
+        {/* Main Footer Row */}
         <div className="flex flex-col sm:flex-row justify-between items-start flex-wrap gap-8">
           <div className="flex flex-col gap-2">
             <a href="#hero" className="inline-flex items-center font-headline text-2xl font-bold tracking-tight text-white no-underline" aria-label="sBLOOM Home">
               <span className="text-[#C4B5FD] italic font-extrabold mr-0.5">s</span>
               <span className="text-white">BLOOM</span>
             </a>
-            <p className="text-sm text-white/55 m-0">{copy.footer.descriptor}</p>
+            <p className="text-sm text-white/55 m-0 font-body">
+              {footerData.descriptor}
+            </p>
           </div>
 
           <div className="flex flex-col sm:items-end items-start gap-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <a href="#terms" onClick={handleOpenTerms} className="inline-flex items-center gap-1.5 text-sm text-white/85 no-underline transition-colors hover:text-[#D6F36B]">
                 <FileText size={15} aria-hidden="true" />
-                <span>{copy.footer.termsLink}</span>
+                <span>{footerData.termsLink}</span>
               </a>
               <span className="text-white/25 text-[10px]" aria-hidden="true">•</span>
               <a href="#privacy" onClick={handleOpenPrivacy} className="inline-flex items-center gap-1.5 text-sm text-white/85 no-underline transition-colors hover:text-[#D6F36B]">
                 <ShieldCheck size={15} aria-hidden="true" />
-                <span>{copy.footer.privacyLink}</span>
+                <span>{footerData.privacyLink}</span>
               </a>
             </div>
-
-            {/* Footer contact row is hidden until real details exist (logged in docs/open-items.md) */}
-            {copy.footer.contactDetails && (
-              <div className="inline-flex items-center gap-2 bg-white/5 border border-white/20 px-3.5 py-1.5 rounded-lg text-xs text-white/60" aria-label="Contact Information">
-                <span className="bg-white/10 px-1.5 py-0.5 rounded font-mono text-[10px] tracking-wider uppercase">Contact</span>
-                <span>{copy.footer.contactDetails}</span>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Bottom Microcopy & Year */}
+        {/* Bottom Row */}
         <div className="flex flex-col sm:flex-row justify-between items-center flex-wrap gap-4 pt-6 border-t border-white/10 text-xs text-white/50">
           <div className="inline-flex items-center gap-2 font-mono text-[11px] text-[#C4B5FD]/80">
             <span className="w-1.5 h-1.5 rounded-full bg-[#D6F36B] animate-pulse" aria-hidden="true" />
-            <span>sBLOOM AFFILIATE PROGRAMME // ACTIVE</span>
+            <span>sBLOOM AFFILIATE PROGRAMME</span>
           </div>
 
           <p className="m-0 font-mono text-[11px]">
-            © 2026 sBLOOM. All rights reserved.
+            {footerData.copyright}
           </p>
         </div>
       </div>
@@ -145,12 +139,12 @@ export default function FooterSection({
           >
             <div className="flex justify-between items-center px-6 py-5 border-b border-[#E8E2D8] bg-white">
               <h3 id="footer-modal-heading" className="font-headline text-lg font-bold text-[#12101F] m-0">
-                {activeModal === 'terms' ? copy.footer.termsLink : copy.footer.privacyLink}
+                {activeModal === 'terms' ? footerData.termsLink : footerData.privacyLink}
               </h3>
               <button
                 ref={closeBtnRef}
                 type="button"
-                className="text-[#827C94] hover:text-[#12101F] hover:bg-black/5 p-1 rounded-lg transition-all"
+                className="text-[#827C94] hover:text-[#12101F] hover:bg-black/5 p-1 rounded-lg transition-all border-none bg-transparent cursor-pointer"
                 onClick={handleClose}
                 aria-label="Close dialog"
               >
@@ -160,14 +154,16 @@ export default function FooterSection({
             <div className="p-6">
               {activeModal === 'terms' ? (
                 <div className="bg-white border border-[#12101F]/10 rounded-2xl p-6 shadow-sm">
-                  <p className="text-sm sm:text-base text-[#575266] m-0 leading-relaxed">{copy.footer.legalPlaceholder}</p>
+                  <p className="text-sm sm:text-base text-[#575266] m-0 leading-relaxed">
+                    {footerData.legalPlaceholder}
+                  </p>
                 </div>
               ) : (
                 <div className="bg-white border border-[#12101F]/10 rounded-2xl p-6 shadow-sm">
                   <p className="text-sm sm:text-base text-[#575266] m-0 leading-relaxed">
                     {lang === 'te'
-                      ? 'మీ డీటెయిల్స్ మా వద్దే సేఫ్‌గా ఉంటాయి. మీతో మాట్లాడటానికి తప్ప వేరే ఎవరికీ మీ డీటెయిల్స్ ఇవ్వము.'
-                      : 'Your details stay with the programme and are used only to communicate with you about your application. We never share your personal information with third parties.'}
+                      ? 'మీ వివరాలు ప్రోగ్రామ్ కోసం మాత్రమే ఉపయోగించబడతాయి. సరైన అనుమతి లేకుండా ఎవరి వ్యక్తిగత వివరాలను మేము ఎవరితోనూ పంచుకోము.'
+                      : 'Your details are used strictly for programme-related purposes. We never share personal information with third parties without consent.'}
                   </p>
                 </div>
               )}

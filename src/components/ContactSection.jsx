@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Mail, Send, CheckCircle2, AlertCircle, ShieldCheck, Loader2 } from 'lucide-react'
+import { Mail, Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import { useLanguage } from '../context/useLanguage'
 import { submitContact } from '../lib/submitContact'
 
 export default function ContactSection() {
   const { lang, copy } = useLanguage()
-  const data = copy.contact
+  const data = copy.contact || {}
 
   const [formData, setFormData] = useState({
     name: '',
@@ -18,10 +18,7 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
 
-  if (!data) return null
-
   const validateEmail = (email) => {
-    // RFC 5322 standard-compliant email regex
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return regex.test(email.trim())
   }
@@ -83,58 +80,60 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="relative py-20 lg:py-[112px] bg-white scroll-mt-24"
-      aria-label={data.heading}
+      className="relative py-20 lg:py-24 bg-white scroll-mt-24 border-b border-[#12101F]/6"
+      aria-label={data.heading || 'Contact Us'}
     >
-      {/* Soft Gradient Fade: Cream to White (80px tall, no hard edge) */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[80px] bg-gradient-to-b from-[#FAF7F2] to-[#FFFFFF] pointer-events-none z-10"
-        aria-hidden="true"
-      />
-
       <div className="site-container relative z-10 flex flex-col items-center gap-12">
         {/* Section Header */}
         <div data-reveal="heading" className="text-center max-w-[820px] flex flex-col items-center gap-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#FAF7F2] border border-[#12101F]/10 rounded-full shadow-sm text-sm text-[#827C94]">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#FAF7F2] border border-[#12101F]/10 rounded-full shadow-2xs text-xs text-[#827C94]">
             <Mail size={14} className="text-[#6B3CFF]" aria-hidden="true" />
-            <span className="font-mono">{lang === 'te' ? 'సంప్రదించండి' : 'Get in touch'}</span>
+            <span className="font-mono">{lang === 'te' ? 'సంప్రదించండి' : 'Get in Touch'}</span>
           </div>
 
-          <h2 className="section-heading font-bold text-[#12101F] tracking-tight m-0 font-headline">
+          <h2 className="section-heading font-bold text-[#12101F] tracking-tight m-0 font-headline leading-[1.2]">
             {data.heading}
           </h2>
-
-          <p className="text-lg sm:text-xl leading-relaxed text-[#575266] max-w-[640px] m-0">
-            {data.body}
-          </p>
         </div>
 
-        {/* Contact Form Card */}
-        <div data-reveal="contact-card" className="corner-mark w-full max-w-2xl bg-[#FAF7F2] rounded-[28px] card-depth p-8 sm:p-12 border border-[#12101F]/8">
+        {/* Contact Form Container */}
+        <div className="w-full max-w-xl">
           {isSuccess ? (
-            <div className="flex flex-col items-center text-center gap-5 py-8" role="status" aria-live="polite">
-              <div className="w-16 h-16 rounded-full bg-[#16A34A]/10 text-[#16A34A] flex items-center justify-center">
-                <CheckCircle2 size={36} />
+            <div
+              data-reveal="card"
+              className="bg-[#FAF7F2] rounded-[32px] p-8 sm:p-10 border border-[#12101F]/8 shadow-sm flex flex-col items-center text-center gap-4"
+              role="status"
+              aria-live="polite"
+            >
+              <div className="w-14 h-14 rounded-full bg-[#10B981]/15 text-[#10B981] flex items-center justify-center">
+                <CheckCircle2 size={28} />
               </div>
-
-              <h3 className="text-2xl font-bold font-headline text-[#12101F] m-0">
-                {data.success}
+              <h3 className="font-headline text-2xl font-bold text-[#12101F] m-0">
+                {lang === 'te' ? 'మెసేజ్ అందింది!' : 'Message Received!'}
               </h3>
-
+              <p className="text-sm sm:text-base text-[#575266] m-0 leading-relaxed max-w-md">
+                {lang === 'te'
+                  ? 'మీ సందేశం మాకు అందింది. త్వరలోనే మిమ్మల్ని సంప్రదిస్తాము.'
+                  : 'Thank you for reaching out. Our team will review your enquiry and get back to you shortly.'}
+              </p>
               <button
                 type="button"
                 onClick={handleReset}
-                className="mt-4 px-6 py-2.5 rounded-full text-sm font-semibold bg-white border border-[#12101F]/15 text-[#12101F] hover:bg-black/5 transition-colors cursor-pointer"
+                className="mt-2 text-sm font-semibold text-[#6B3CFF] hover:underline bg-transparent border-none cursor-pointer"
               >
-                {lang === 'te' ? 'మరో సందేశం పంపండి' : 'Send another message'}
+                {lang === 'te' ? 'మరొక మెసేజ్ పంపండి' : 'Send another message'}
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
-              {/* Spam Honeypot Field */}
+            <form
+              onSubmit={handleSubmit}
+              className="bg-[#FAF7F2] rounded-[32px] p-8 sm:p-10 border border-[#12101F]/8 shadow-sm flex flex-col gap-5"
+              noValidate
+            >
+              {/* Honeypot anti-spam field */}
               <input
                 type="text"
-                name="website"
+                name="website_hp"
                 value={honeypot}
                 onChange={(e) => setHoneypot(e.target.value)}
                 tabIndex={-1}
@@ -144,9 +143,9 @@ export default function ContactSection() {
               />
 
               {/* Name Field */}
-              <div className="flex flex-col gap-2">
-                <label htmlFor="contact-name" className="text-sm font-bold text-[#12101F] font-headline">
-                  {data.fields?.name} <span className="text-[#6B3CFF]">*</span>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="contact-name" className="text-xs font-mono font-bold text-[#575266] uppercase tracking-wider">
+                  {data.nameLabel} <span className="text-[#6B3CFF]">*</span>
                 </label>
                 <input
                   id="contact-name"
@@ -155,15 +154,15 @@ export default function ContactSection() {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  placeholder={data.fields?.name}
-                  className="w-full px-4 py-3.5 bg-white border border-[#12101F]/15 rounded-xl text-[#12101F] placeholder:text-[#827C94] focus:outline-none focus:border-[#6B3CFF] focus:ring-2 focus:ring-[#6B3CFF]/20 transition-all text-base"
+                  placeholder={lang === 'te' ? 'మీ పూర్తి పేరు' : 'Full name'}
+                  className="w-full px-4 py-3.5 rounded-2xl bg-white border border-[#12101F]/10 text-sm sm:text-base text-[#12101F] placeholder:text-[#827C94]/60 focus:outline-none focus:border-[#6B3CFF] focus:ring-2 focus:ring-[#6B3CFF]/20 transition-all box-border"
                 />
               </div>
 
               {/* Email Field */}
-              <div className="flex flex-col gap-2">
-                <label htmlFor="contact-email" className="text-sm font-bold text-[#12101F] font-headline">
-                  {data.fields?.email} <span className="text-[#6B3CFF]">*</span>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="contact-email" className="text-xs font-mono font-bold text-[#575266] uppercase tracking-wider">
+                  {data.emailLabel} <span className="text-[#6B3CFF]">*</span>
                 </label>
                 <input
                   id="contact-email"
@@ -172,27 +171,27 @@ export default function ContactSection() {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder={data.fields?.email}
-                  aria-invalid={emailError}
-                  aria-describedby={emailError ? 'email-error-msg' : undefined}
-                  className={`w-full px-4 py-3.5 bg-white border rounded-xl text-[#12101F] placeholder:text-[#827C94] focus:outline-none focus:ring-2 transition-all text-base ${
+                  placeholder={lang === 'te' ? 'మీ ఈమెయిల్ అడ్రస్' : 'Email address'}
+                  className={`w-full px-4 py-3.5 rounded-2xl bg-white border text-sm sm:text-base text-[#12101F] placeholder:text-[#827C94]/60 focus:outline-none transition-all box-border ${
                     emailError
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-200'
-                      : 'border-[#12101F]/15 focus:border-[#6B3CFF] focus:ring-[#6B3CFF]/20'
+                      ? 'border-[#EF4444] ring-2 ring-[#EF4444]/20'
+                      : 'border-[#12101F]/10 focus:border-[#6B3CFF] focus:ring-2 focus:ring-[#6B3CFF]/20'
                   }`}
+                  aria-invalid={emailError}
+                  aria-describedby={emailError ? 'email-error' : undefined}
                 />
                 {emailError && (
-                  <p id="email-error-msg" className="flex items-center gap-1.5 text-xs text-red-600 font-medium m-0">
-                    <AlertCircle size={14} />
-                    <span>{data.errorEmail}</span>
-                  </p>
+                  <span id="email-error" className="text-xs text-[#EF4444] font-medium flex items-center gap-1 mt-0.5">
+                    <AlertCircle size={12} />
+                    {lang === 'te' ? 'సరైన ఈమెయిల్ ఎంటర్ చేయండి' : 'Please enter a valid email address'}
+                  </span>
                 )}
               </div>
 
               {/* Message Field */}
-              <div className="flex flex-col gap-2">
-                <label htmlFor="contact-message" className="text-sm font-bold text-[#12101F] font-headline">
-                  {data.fields?.message} <span className="text-[#6B3CFF]">*</span>
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="contact-message" className="text-xs font-mono font-bold text-[#575266] uppercase tracking-wider">
+                  {data.messageLabel} <span className="text-[#6B3CFF]">*</span>
                 </label>
                 <textarea
                   id="contact-message"
@@ -201,24 +200,24 @@ export default function ContactSection() {
                   required
                   value={formData.message}
                   onChange={handleChange}
-                  placeholder={data.fields?.message}
-                  className="w-full px-4 py-3.5 bg-white border border-[#12101F]/15 rounded-xl text-[#12101F] placeholder:text-[#827C94] focus:outline-none focus:border-[#6B3CFF] focus:ring-2 focus:ring-[#6B3CFF]/20 transition-all text-base resize-y"
+                  placeholder={lang === 'te' ? 'మీ సందేశాన్ని ఇక్కడ టైప్ చేయండి...' : 'Type your message here...'}
+                  className="w-full px-4 py-3.5 rounded-2xl bg-white border border-[#12101F]/10 text-sm sm:text-base text-[#12101F] placeholder:text-[#827C94]/60 focus:outline-none focus:border-[#6B3CFF] focus:ring-2 focus:ring-[#6B3CFF]/20 transition-all resize-y min-h-[100px] box-border"
                 />
               </div>
 
-              {/* Error banner if submission fails */}
+              {/* Server send error feedback */}
               {sendError && (
-                <div className="flex items-center gap-2 p-3.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm font-medium">
-                  <AlertCircle size={16} className="shrink-0" />
-                  <span>{data.errorSend}</span>
+                <div className="p-3 rounded-xl bg-[#EF4444]/10 border border-[#EF4444]/20 text-xs text-[#DC2626] flex items-center gap-2">
+                  <AlertCircle size={14} className="shrink-0" />
+                  <span>{lang === 'te' ? 'సందేశం పంపడంలో సమస్య ఏర్పడింది. దయచేసి మళ్లీ ప్రయత్నించండి.' : 'Failed to send message. Please try again.'}</span>
                 </div>
               )}
 
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full font-bold text-base bg-[#6B3CFF] hover:bg-[#582CD6] text-white shadow-lg shadow-[#6B3CFF]/25 hover:shadow-xl hover:shadow-[#6B3CFF]/35 active:scale-[0.99] disabled:opacity-70 transition-all cursor-pointer"
+                disabled={isSubmitting || !formData.name.trim() || !formData.email.trim() || !formData.message.trim()}
+                className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 rounded-full font-bold text-base bg-[#6B3CFF] hover:bg-[#5025D1] text-white shadow-md shadow-[#6B3CFF]/25 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer border-none mt-2"
               >
                 {isSubmitting ? (
                   <>
@@ -227,19 +226,16 @@ export default function ContactSection() {
                   </>
                 ) : (
                   <>
-                    <span>{data.button}</span>
+                    <span>{data.buttonText}</span>
                     <Send size={16} />
                   </>
                 )}
               </button>
 
-              {/* Privacy Notice Line */}
-              {data.privacy && (
-                <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-[#827C94] text-center pt-1">
-                  <ShieldCheck size={16} className="text-[#16A34A] shrink-0" aria-hidden="true" />
-                  <span>{data.privacy}</span>
-                </div>
-              )}
+              {/* Privacy Note */}
+              <p className="text-xs text-center text-[#827C94] m-0 mt-1 leading-normal">
+                {data.privacyNote}
+              </p>
             </form>
           )}
         </div>

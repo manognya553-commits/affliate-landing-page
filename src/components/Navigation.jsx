@@ -272,7 +272,7 @@ export default function Navigation({ onBecomeAffiliate, onLogin }) {
               }`}
               onClick={() => setLang('te')}
             >
-              తె
+              తెలుగు
             </button>
           </div>
         </div>
